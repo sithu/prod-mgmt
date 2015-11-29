@@ -55,3 +55,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Node.JS
+node_modules/
+
+# Flask framework lib and Python virtual environment lib
+flask/

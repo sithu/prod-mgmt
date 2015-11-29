@@ -1,0 +1,43 @@
+{
+	"baseName": "prodmgmt",
+	"entities": [
+		{
+			"name": "User",
+			"attrs": [
+				{
+					"attrName": "name",
+					"attrType": "String",
+					"minLength": "3",
+					"maxLength": "50",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "email",
+					"attrType": "String",
+					"minLength": "5",
+					"maxLength": "50",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "password",
+					"attrType": "String",
+					"minLength": "3",
+					"maxLength": "100",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "id",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				}
+			]
+		}
+	],
+	"resources": []
+}
