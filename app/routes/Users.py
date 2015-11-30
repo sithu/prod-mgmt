@@ -1,10 +1,12 @@
 from app import app, db
 from app.models import User
 from flask import abort, jsonify, request
+from flask.ext.login import login_required
 import datetime
 import json
 
 @app.route('/prodmgmt/Users', methods = ['GET'])
+@login_required
 def get_all_Users():
     entities = User.User.query.all()
     return json.dumps([entity.to_dict() for entity in entities])
@@ -51,26 +53,4 @@ def delete_User(id):
     db.session.commit()
     return '', 204
 
-#### Customize /api/ endpoints
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    json_data = request.json
-    user = User.User.query.filter_by(email=json_data['email']).first()
-
-    if user and user.verify_password(json_data['password']):
-        from flask.ext.login import login_user
-        login_user(user, None)
-        status = True
-    else:
-        status = False
-        
-    return jsonify(result=status)
-
-
-@app.route('/api/logout')
-def logout():
-    from flask.ext.login import logout_user
-    logout_user()
-    return jsonify(result='success')
 
