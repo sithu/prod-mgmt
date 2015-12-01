@@ -37,6 +37,152 @@
 					"required": true
 				}
 			]
+		},
+		{
+			"name": "product",
+			"attrs": [
+				{
+					"attrName": "name",
+					"attrType": "String",
+					"minLength": "1",
+					"maxLength": "50",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "type",
+					"attrType": "Enum",
+					"enumValues": [
+						"chair",
+						"stool",
+						"basket",
+						"cup",
+						"bowl"
+					],
+					"required": true
+				},
+				{
+					"attrName": "weight",
+					"attrType": "Integer",
+					"min": "1",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "time_to_build",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "selling_price",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "color",
+					"attrType": "Enum",
+					"enumValues": [
+						"white",
+						"red",
+						"green",
+						"blue",
+						"yellow",
+						"clear",
+						"grey",
+						"brown",
+						"other"
+					],
+					"required": true
+				},
+				{
+					"attrName": "created_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "updated_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
+		},
+		{
+			"name": "raw_material",
+			"attrs": [
+				{
+					"attrName": "name",
+					"attrType": "String",
+					"minLength": "1",
+					"maxLength": "50",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "weight",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "count",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "purchase_price",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "color",
+					"attrType": "Enum",
+					"enumValues": [
+						"white",
+						"red",
+						"green",
+						"blue",
+						"yellow",
+						"clear",
+						"grey",
+						"brown",
+						"other"
+					],
+					"required": true
+				},
+				{
+					"attrName": "created_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "updated_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
 		}
 	],
 	"resources": []

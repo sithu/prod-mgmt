@@ -12,13 +12,18 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 
-from app.models import User
-from app.routes import index
-
-from app.routes import Users
-
 # def create_app(config_name):
 from app.auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
 login_manager.init_app(app)
+
+# product table
+from app.models import User
+from app.models import product
+from app.models import raw_material
+
+from app.routes import index
+from app.routes import Users
+from app.routes import products
+from app.routes import raw_materials
