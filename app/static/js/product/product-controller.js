@@ -1,12 +1,16 @@
 'use strict';
 
 angular.module('prodmgmt')
-  .controller('ProductController', ['$scope', '$modal', 'resolvedProduct', 'Product',
+  .controller('ProductController', ['$scope', '$modal', 'resolvedProduct', 'Product', 'Raw_material',
     function ($scope, $modal, resolvedProduct, Product) {
 
       $scope.products = resolvedProduct;
-
+      $scope.raw_materials = [];
+      $scope.selected_raw_material = null;
+      
       $scope.create = function () {
+        // load all raw materials to select
+        $scope.raw_materials = Raw_material.query();
         $scope.clear();
         $scope.open();
       };

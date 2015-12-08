@@ -24,8 +24,6 @@ def create_raw_material():
         , count = request.json['count']
         , purchase_price = request.json['purchase_price']
         , color = request.json['color']
-        , created_at = datetime.datetime.strptime(request.json['created_at'], "%Y-%m-%d").date()
-        , updated_at = datetime.datetime.strptime(request.json['updated_at'], "%Y-%m-%d").date()
     )
     db.session.add(entity)
     db.session.commit()

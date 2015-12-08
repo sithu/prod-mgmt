@@ -1,4 +1,6 @@
 from app import db
+from datetime import datetime
+from sqlalchemy import text
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -15,10 +17,13 @@ class Product(db.Model):
     
     color = db.Column(db.Enum('white', 'red', 'green', 'blue', 'yellow', 'clear', 'grey', 'brown', 'other'))
     
-    created_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime, server_default=text("now()"))
     
-    updated_at = db.Column(db.Date)
+    #updated_at = db.Column(db.DateTime, default=func.now(), onupdate=func.now)
+    updated_at = db.Column(db.DateTime, server_default=text("now()"), server_onupdate=text("now()"))
     
+    # 1-m 
+    raw_material_id = db.Column(db.Integer, db.ForeignKey('raw_material.id'))
 
     def to_dict(self):
         return dict(
@@ -30,7 +35,8 @@ class Product(db.Model):
             color = self.color,
             created_at = self.created_at.isoformat(),
             updated_at = self.updated_at.isoformat(),
-            id = self.id
+            id = self.id,
+            raw_material_id = self.raw_material_id
         )
 
     def __repr__(self):
