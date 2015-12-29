@@ -183,6 +183,91 @@
 					"required": false
 				}
 			]
+		},
+		{
+			"name": "Order",
+			"attrs": [
+				{
+					"attrName": "id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "status",
+					"attrType": "Enum",
+					"enumValues": [
+						"PLANNED",
+						"IN_PROGRESS",
+						"COMPLETED",
+						"SHIPPED"
+					],
+					"required": true
+				},
+				{
+					"attrName": "product_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "quantity",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "raw_material_quantity",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "created_at",
+					"attrType": "Date",
+					"dateConstraint": "Past",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "estimated_time_to_finish",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "production_start_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "production_end_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "note",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
 		}
 	],
 	"resources": []

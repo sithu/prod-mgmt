@@ -1,0 +1,184 @@
+<div>
+
+    <h2>Orders</h2>
+
+    <script type = "text/ng-template" id="Order-save.html">
+        <form name="form" role="form" novalidate
+              class="ng-scope ng-invalid ng-invalid-required ng-dirty"
+              ng-submit="ok()">
+
+            <div class="modal-header">
+                <button type="button" class="close"
+                        ng-click="cancel()">&times;</button>
+                <h4 class="modal-title" id="myOrderLabel">Create or edit a Order</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>ID</label>
+                    <input type="text" class="form-control" name="id"
+                           ng-model="Order.id" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>status:</label>
+
+                    <label class="radio"><input type="radio" name="status" value="PLANNED"
+                           ng-model="Order.status" ng-required="true"/> PLANNED </label>
+                    <label class="radio"><input type="radio" name="status" value="IN_PROGRESS"
+                           ng-model="Order.status" ng-required="true"/> IN_PROGRESS </label>
+                    <label class="radio"><input type="radio" name="status" value="COMPLETED"
+                           ng-model="Order.status" ng-required="true"/> COMPLETED </label>
+                    <label class="radio"><input type="radio" name="status" value="SHIPPED"
+                           ng-model="Order.status" ng-required="true"/> SHIPPED </label>
+                </div>
+
+                <div class="form-group">
+                    <label>product_id:</label>
+
+                    <input type="number" class="form-control" name="product_id"
+                           ng-model="Order.product_id" ng-required="true"
+                           />
+                    <span class="error" ng-show="form.product_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.product_id.$error.max">Must be less than or equal to .</span>
+                </div>
+
+                <div class="form-group">
+                    <label>quantity:</label>
+
+                    <input type="number" class="form-control" name="quantity"
+                           ng-model="Order.quantity" ng-required="true"
+                           />
+                    <span class="error" ng-show="form.quantity.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.quantity.$error.max">Must be less than or equal to .</span>
+                </div>
+
+                <div class="form-group">
+                    <label>raw_material_quantity:</label>
+
+                    <input type="number" class="form-control" name="raw_material_quantity"
+                           ng-model="Order.raw_material_quantity" ng-required="true"
+                           />
+                    <span class="error" ng-show="form.raw_material_quantity.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.raw_material_quantity.$error.max">Must be less than or equal to .</span>
+                </div>
+
+                <div class="form-group">
+                    <label>created_at:</label>
+
+                    <input type="text" class="form-control" name="created_at" ui-date="created_atDateOptions" ui-date-format="yy-mm-dd"
+                           ng-model="Order.created_at" ng-required="true"/>
+                </div>
+
+                <div class="form-group">
+                    <label>estimated_time_to_finish:</label>
+
+                    <input type="number" class="form-control" name="estimated_time_to_finish"
+                           ng-model="Order.estimated_time_to_finish" ng-required="true"
+                           min=0 />
+                    <span class="error" ng-show="form.estimated_time_to_finish.$error.min">Must be greater than or equal to 0.</span>
+                    <span class="error" ng-show="form.estimated_time_to_finish.$error.max">Must be less than or equal to .</span>
+                </div>
+
+                <div class="form-group">
+                    <label>production_start_at:</label>
+
+                    <input type="text" class="form-control" name="production_start_at" ui-date="production_start_atDateOptions" ui-date-format="yy-mm-dd"
+                           ng-model="Order.production_start_at" ng-required="false"/>
+                </div>
+
+                <div class="form-group">
+                    <label>production_end_at:</label>
+
+                    <input type="text" class="form-control" name="production_end_at" ui-date="production_end_atDateOptions" ui-date-format="yy-mm-dd"
+                           ng-model="Order.production_end_at" ng-required="false"/>
+                </div>
+
+                <div class="form-group">
+                    <label>note:</label>
+
+                    <input type="text" class="form-control" name="note"
+                           ng-model="Order.note" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.note.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.note.$error.maxlength">Must be at most  characters.</span>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
+                </button>
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </script>
+
+    <button class="btn btn-primary btn-lg" ng-click="create()">
+        <span class="glyphicon glyphicon-flash"></span> Create a new Order
+    </button>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+
+                <th>status</th>
+
+                <th>product_id</th>
+
+                <th>quantity</th>
+
+                <th>raw_material_quantity</th>
+
+                <th>created_at</th>
+
+                <th>estimated_time_to_finish</th>
+
+                <th>production_start_at</th>
+
+                <th>production_end_at</th>
+
+                <th>note</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="Order in Orders">
+                <td>{{Order.id}}</td>
+
+                <td>{{Order.status }}</td>
+
+                <td>{{Order.product_id }}</td>
+
+                <td>{{Order.quantity }}</td>
+
+                <td>{{Order.raw_material_quantity }}</td>
+
+                <td>{{Order.created_at  | date:'yyyy-MM-dd'}}</td>
+
+                <td>{{Order.estimated_time_to_finish }}</td>
+
+                <td>{{Order.production_start_at  | date:'yyyy-MM-dd'}}</td>
+
+                <td>{{Order.production_end_at  | date:'yyyy-MM-dd'}}</td>
+
+                <td>{{Order.note }}</td>
+
+                <td>
+                    <button type="submit"
+                            ng-click="update(Order.id)"
+                            class="btn">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </button>
+                    <button type="submit"
+                            ng-click="delete(Order.id)"
+                            class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
