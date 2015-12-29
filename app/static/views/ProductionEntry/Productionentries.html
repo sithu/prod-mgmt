@@ -1,0 +1,272 @@
+<div>
+
+    <h2>Productionentries</h2>
+
+    <script type = "text/ng-template" id="ProductionEntry-save.html">
+        <form name="form" role="form" novalidate
+              class="ng-scope ng-invalid ng-invalid-required ng-dirty"
+              ng-submit="ok()">
+
+            <div class="modal-header">
+                <button type="button" class="close"
+                        ng-click="cancel()">&times;</button>
+                <h4 class="modal-title" id="myProductionEntryLabel">Create or edit a ProductionEntry</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>ID</label>
+                    <input type="text" class="form-control" name="id"
+                           ng-model="ProductionEntry.id" readonly>
+                </div>
+
+                
+                <div class="form-group">
+                    <label>status:</label>
+                    
+                    <label class="radio"><input type="radio" name="status" value="PLANNED"
+                           ng-model="ProductionEntry.status" ng-required="true"/> PLANNED </label>
+                    <label class="radio"><input type="radio" name="status" value=" IN_PROGRESS"
+                           ng-model="ProductionEntry.status" ng-required="true"/>  IN_PROGRESS </label>
+                    <label class="radio"><input type="radio" name="status" value=" COMPLETED"
+                           ng-model="ProductionEntry.status" ng-required="true"/>  COMPLETED </label>
+                    <label class="radio"><input type="radio" name="status" value=" SHIPPED"
+                           ng-model="ProductionEntry.status" ng-required="true"/>  SHIPPED </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>shift_name:</label>
+                    
+                    <input type="text" class="form-control" name="shift_name"
+                           ng-model="ProductionEntry.shift_name" ng-required="true"
+                           />
+                    <span class="error" ng-show="form.shift_name.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.shift_name.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>machine_id:</label>
+                    
+                    <input type="number" class="form-control" name="machine_id"
+                           ng-model="ProductionEntry.machine_id" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.machine_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.machine_id.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>raw_material_id:</label>
+                    
+                    <input type="number" class="form-control" name="raw_material_id"
+                           ng-model="ProductionEntry.raw_material_id" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.raw_material_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.raw_material_id.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>order_id:</label>
+                    
+                    <input type="number" class="form-control" name="order_id"
+                           ng-model="ProductionEntry.order_id" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.order_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.order_id.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>team_lead_id:</label>
+                    
+                    <input type="number" class="form-control" name="team_lead_id"
+                           ng-model="ProductionEntry.team_lead_id" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.team_lead_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.team_lead_id.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>team_lead_name:</label>
+                    
+                    <input type="text" class="form-control" name="team_lead_name"
+                           ng-model="ProductionEntry.team_lead_name" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.team_lead_name.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.team_lead_name.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>estimated_time_to_finish:</label>
+                    
+                    <input type="number" class="form-control" name="estimated_time_to_finish"
+                           ng-model="ProductionEntry.estimated_time_to_finish" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.estimated_time_to_finish.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.estimated_time_to_finish.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>start:</label>
+                    
+                    <input type="text" class="form-control" name="start" ui-date="startDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="ProductionEntry.start" ng-required="false"/>
+                </div>
+                
+                <div class="form-group">
+                    <label>end:</label>
+                    
+                    <input type="text" class="form-control" name="end" ui-date="endDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="ProductionEntry.end" ng-required="false"/>
+                </div>
+                
+                <div class="form-group">
+                    <label>delay:</label>
+                    
+                    <input type="number" class="form-control" name="delay"
+                           ng-model="ProductionEntry.delay" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.delay.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.delay.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>delay_reason:</label>
+                    
+                    <input type="text" class="form-control" name="delay_reason"
+                           ng-model="ProductionEntry.delay_reason" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.delay_reason.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.delay_reason.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>planned_quantity:</label>
+                    
+                    <input type="number" class="form-control" name="planned_quantity"
+                           ng-model="ProductionEntry.planned_quantity" ng-required="true"
+                           />
+                    <span class="error" ng-show="form.planned_quantity.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.planned_quantity.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>finished_quantity:</label>
+                    
+                    <input type="number" class="form-control" name="finished_quantity"
+                           ng-model="ProductionEntry.finished_quantity" ng-required="true"
+                           min=0 />
+                    <span class="error" ng-show="form.finished_quantity.$error.min">Must be greater than or equal to 0.</span>
+                    <span class="error" ng-show="form.finished_quantity.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>defected_quantity:</label>
+                    
+                    <input type="number" class="form-control" name="defected_quantity"
+                           ng-model="ProductionEntry.defected_quantity" ng-required="true"
+                           min=0 />
+                    <span class="error" ng-show="form.defected_quantity.$error.min">Must be greater than or equal to 0.</span>
+                    <span class="error" ng-show="form.defected_quantity.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
+                </button>
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </script>
+
+    <button class="btn btn-primary btn-lg" ng-click="create()">
+        <span class="glyphicon glyphicon-flash"></span> Create a new ProductionEntry
+    </button>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                
+                <th>status</th>
+                
+                <th>shift_name</th>
+                
+                <th>machine_id</th>
+                
+                <th>raw_material_id</th>
+                
+                <th>order_id</th>
+                
+                <th>team_lead_id</th>
+                
+                <th>team_lead_name</th>
+                
+                <th>estimated_time_to_finish</th>
+                
+                <th>start</th>
+                
+                <th>end</th>
+                
+                <th>delay</th>
+                
+                <th>delay_reason</th>
+                
+                <th>planned_quantity</th>
+                
+                <th>finished_quantity</th>
+                
+                <th>defected_quantity</th>
+                
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="ProductionEntry in Productionentries">
+                <td>{{ProductionEntry.id}}</td>
+                
+                <td>{{ProductionEntry.status }}</td>
+                
+                <td>{{ProductionEntry.shift_name }}</td>
+                
+                <td>{{ProductionEntry.machine_id }}</td>
+                
+                <td>{{ProductionEntry.raw_material_id }}</td>
+                
+                <td>{{ProductionEntry.order_id }}</td>
+                
+                <td>{{ProductionEntry.team_lead_id }}</td>
+                
+                <td>{{ProductionEntry.team_lead_name }}</td>
+                
+                <td>{{ProductionEntry.estimated_time_to_finish }}</td>
+                
+                <td>{{ProductionEntry.start  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>{{ProductionEntry.end  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>{{ProductionEntry.delay }}</td>
+                
+                <td>{{ProductionEntry.delay_reason }}</td>
+                
+                <td>{{ProductionEntry.planned_quantity }}</td>
+                
+                <td>{{ProductionEntry.finished_quantity }}</td>
+                
+                <td>{{ProductionEntry.defected_quantity }}</td>
+                
+                <td>
+                    <button type="submit"
+                            ng-click="update(ProductionEntry.id)"
+                            class="btn">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </button>
+                    <button type="submit"
+                            ng-click="delete(ProductionEntry.id)"
+                            class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

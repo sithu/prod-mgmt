@@ -268,6 +268,132 @@
 					"required": false
 				}
 			]
+		},
+		{
+			"name": "ProductionEntry",
+			"attrs": [
+				{
+					"attrName": "status",
+					"attrType": "Enum",
+					"enumValues": [
+						"PLANNED",
+						" IN_PROGRESS",
+						" COMPLETED",
+						" SHIPPED"
+					],
+					"required": true
+				},
+				{
+					"attrName": "shift_name",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "machine_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "raw_material_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "order_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "team_lead_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "team_lead_name",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "estimated_time_to_finish",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "start",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "end",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "delay",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "delay_reason",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "planned_quantity",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "finished_quantity",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "defected_quantity",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": true
+				}
+			]
 		}
 	],
 	"resources": []
