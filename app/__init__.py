@@ -22,8 +22,12 @@ login_manager.init_app(app)
 from app.models import User
 from app.models import product
 from app.models import raw_material
-
+from app.models import Order
+from app.models import ProductionEntry
 from app.routes import index
+
 from app.routes import Users
 from app.routes import products
 from app.routes import raw_materials
+from app.routes import Orders
+from app.routes import Productionentries
