@@ -1,8 +1,12 @@
+import datetime
+import json
+import threading
+
 from app import app, db
 from app.models import ProductionEntry
 from flask import abort, jsonify, request
-import datetime
-import json
+
+lock = threading.RLock()
 
 
 @app.route('/prodmgmt/Productionentries', methods=['GET'])
@@ -80,3 +84,47 @@ def delete_ProductionEntry(id):
     db.session.delete(entity)
     db.session.commit()
     return '', 204
+
+
+@app.route('/prodmgmt/Productionentries/<int:id>/defected', methods=['POST'])
+def increment_defected_quantity(id):
+    """
+    Method to increment defected quantity. This method should be used for IoT device interaction.
+    :param id: Production Entry ID
+    :return:
+    """
+    lock.acquire();
+    try:
+        entity = ProductionEntry.ProductionEntry.query.get(id)
+        if not entity:
+            abort(404)
+        # TODO Additional check can be added to check if
+        # status is IN_PROGRESS before incrementing quantity
+        entity.defected_quantity = entity.defected_quantity + 1;
+        db.session.merge(entity)
+        db.session.commit()
+    finally:
+        lock.release()
+    return jsonify(entity.to_dict()), 200
+
+
+@app.route('/prodmgmt/Productionentries/<int:id>/finished', methods=['POST'])
+def increment_finished_quantity(id):
+    """
+    Method to increment finished quantity. This method should be used for IoT device interaction.
+    :param id: Production Entry ID
+    :return:
+    """
+    lock.acquire()
+    try:
+        entity = ProductionEntry.ProductionEntry.query.get(id)
+        if not entity:
+            abort(404)
+        # TODO Additional check can be added to check if
+        # status is IN_PROGRESS before incrementing quantity
+        entity.finished_quantity = entity.finished_quantity + 1;
+        db.session.merge(entity)
+        db.session.commit()
+    finally:
+        lock.release()
+    return jsonify(entity.to_dict()), 200
