@@ -2,7 +2,7 @@ from app import db
 
 
 class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     status = db.Column(db.Enum('PLANNED', 'IN_PROGRESS', 'COMPLETED', 'SHIPPED'))
 
