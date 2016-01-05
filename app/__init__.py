@@ -24,6 +24,11 @@ from app.models import product
 from app.models import raw_material
 from app.models import Order
 from app.models import ProductionEntry
+from app.models import Machine
+from app.models import MachineMold
+from app.models import MachineQueue
+from app.models import Shift
+from app.models import Schedule
 from app.routes import index
 
 from app.routes import Users
@@ -31,3 +36,8 @@ from app.routes import products
 from app.routes import raw_materials
 from app.routes import Orders
 from app.routes import Productionentries
+from app.routes import Machines
+from app.routes import Machinemolds
+from app.routes import Machinequeues
+from app.routes import Shifts
+from app.routes import Schedules

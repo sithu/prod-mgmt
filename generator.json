@@ -394,6 +394,268 @@
 					"required": true
 				}
 			]
+		},
+		{
+			"name": "Machine",
+			"attrs": [
+				{
+					"attrName": "name",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "supported_mold_type",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "installed_mold_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "status",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "downtime_start",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "downtime_end",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "total_downtime",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "created_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "modified_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
+		},
+		{
+			"name": "MachineMold",
+			"attrs": [
+				{
+					"attrName": "mold_type",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "time_to_install",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "created_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "modified_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
+		},
+		{
+			"name": "MachineQueue",
+			"attrs": [
+				{
+					"attrName": "machine_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "work_in_progress",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "slot_1",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "slot_2",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "slot_3",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "slot_4",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "slot_5",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
+		},
+		{
+			"name": "Shift",
+			"attrs": [
+				{
+					"attrName": "shift_name",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "start_time",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "end_time",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
+		},
+		{
+			"name": "Schedule",
+			"attrs": [
+				{
+					"attrName": "date",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "shift_name",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "employee_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "manager_id",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "is_in_duty",
+					"attrType": "Boolean",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "assigned_machine",
+					"attrType": "Integer",
+					"min": "",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "sign_in_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "sign_out_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
 		}
 	],
 	"resources": []
