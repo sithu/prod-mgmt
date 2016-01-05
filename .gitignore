@@ -61,3 +61,6 @@ node_modules/
 
 # Flask framework lib and Python virtual environment lib
 flask/
+
+#IDE settings
+.idea
