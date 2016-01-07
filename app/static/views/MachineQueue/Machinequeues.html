@@ -1,0 +1,163 @@
+<div>
+
+    <h2>Machinequeues</h2>
+
+    <script type = "text/ng-template" id="MachineQueue-save.html">
+        <form name="form" role="form" novalidate
+              class="ng-scope ng-invalid ng-invalid-required ng-dirty"
+              ng-submit="ok()">
+
+            <div class="modal-header">
+                <button type="button" class="close"
+                        ng-click="cancel()">&times;</button>
+                <h4 class="modal-title" id="myMachineQueueLabel">Create or edit a MachineQueue</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>ID</label>
+                    <input type="text" class="form-control" name="id"
+                           ng-model="MachineQueue.id" readonly>
+                </div>
+
+                
+                <div class="form-group">
+                    <label>machine_id:</label>
+                    
+                    <input type="number" class="form-control" name="machine_id"
+                           ng-model="MachineQueue.machine_id" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.machine_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.machine_id.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>work_in_progress:</label>
+                    
+                    <input type="text" class="form-control" name="work_in_progress"
+                           ng-model="MachineQueue.work_in_progress" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.work_in_progress.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.work_in_progress.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>slot_1:</label>
+                    
+                    <input type="number" class="form-control" name="slot_1"
+                           ng-model="MachineQueue.slot_1" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.slot_1.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.slot_1.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>slot_2:</label>
+                    
+                    <input type="number" class="form-control" name="slot_2"
+                           ng-model="MachineQueue.slot_2" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.slot_2.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.slot_2.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>slot_3:</label>
+                    
+                    <input type="number" class="form-control" name="slot_3"
+                           ng-model="MachineQueue.slot_3" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.slot_3.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.slot_3.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>slot_4:</label>
+                    
+                    <input type="number" class="form-control" name="slot_4"
+                           ng-model="MachineQueue.slot_4" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.slot_4.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.slot_4.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>slot_5:</label>
+                    
+                    <input type="number" class="form-control" name="slot_5"
+                           ng-model="MachineQueue.slot_5" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.slot_5.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.slot_5.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
+                </button>
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </script>
+
+    <button class="btn btn-primary btn-lg" ng-click="create()">
+        <span class="glyphicon glyphicon-flash"></span> Create a new MachineQueue
+    </button>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                
+                <th>machine_id</th>
+                
+                <th>work_in_progress</th>
+                
+                <th>slot_1</th>
+                
+                <th>slot_2</th>
+                
+                <th>slot_3</th>
+                
+                <th>slot_4</th>
+                
+                <th>slot_5</th>
+                
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="MachineQueue in Machinequeues">
+                <td>{{MachineQueue.id}}</td>
+                
+                <td>{{MachineQueue.machine_id }}</td>
+                
+                <td>{{MachineQueue.work_in_progress }}</td>
+                
+                <td>{{MachineQueue.slot_1 }}</td>
+                
+                <td>{{MachineQueue.slot_2 }}</td>
+                
+                <td>{{MachineQueue.slot_3 }}</td>
+                
+                <td>{{MachineQueue.slot_4 }}</td>
+                
+                <td>{{MachineQueue.slot_5 }}</td>
+                
+                <td>
+                    <button type="submit"
+                            ng-click="update(MachineQueue.id)"
+                            class="btn">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </button>
+                    <button type="submit"
+                            ng-click="delete(MachineQueue.id)"
+                            class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,179 @@
+<div>
+
+    <h2>Machines</h2>
+
+    <script type = "text/ng-template" id="Machine-save.html">
+        <form name="form" role="form" novalidate
+              class="ng-scope ng-invalid ng-invalid-required ng-dirty"
+              ng-submit="ok()">
+
+            <div class="modal-header">
+                <button type="button" class="close"
+                        ng-click="cancel()">&times;</button>
+                <h4 class="modal-title" id="myMachineLabel">Create or edit a Machine</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>ID</label>
+                    <input type="text" class="form-control" name="id"
+                           ng-model="Machine.id" readonly>
+                </div>
+
+                
+                <div class="form-group">
+                    <label>name:</label>
+                    
+                    <input type="text" class="form-control" name="name"
+                           ng-model="Machine.name" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.name.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.name.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>supported_mold_type:</label>
+                    
+                    <input type="number" class="form-control" name="supported_mold_type"
+                           ng-model="Machine.supported_mold_type" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.supported_mold_type.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.supported_mold_type.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>installed_mold_id:</label>
+                    
+                    <input type="number" class="form-control" name="installed_mold_id"
+                           ng-model="Machine.installed_mold_id" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.installed_mold_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.installed_mold_id.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>status:</label>
+                    
+                    <input type="text" class="form-control" name="status"
+                           ng-model="Machine.status" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.status.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.status.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>downtime_start:</label>
+                    
+                    <input type="text" class="form-control" name="downtime_start" ui-date="downtime_startDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="Machine.downtime_start" ng-required="false"/>
+                </div>
+                
+                <div class="form-group">
+                    <label>downtime_end:</label>
+                    
+                    <input type="text" class="form-control" name="downtime_end" ui-date="downtime_endDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="Machine.downtime_end" ng-required="false"/>
+                </div>
+                
+                <div class="form-group">
+                    <label>total_downtime:</label>
+                    
+                    <input type="number" class="form-control" name="total_downtime"
+                           ng-model="Machine.total_downtime" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.total_downtime.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.total_downtime.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>created_at:</label>
+                    
+                    <input type="text" class="form-control" name="created_at" ui-date="created_atDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="Machine.created_at" ng-required="false"/>
+                </div>
+                
+                <div class="form-group">
+                    <label>modified_at:</label>
+                    
+                    <input type="text" class="form-control" name="modified_at" ui-date="modified_atDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="Machine.modified_at" ng-required="false"/>
+                </div>
+                
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
+                </button>
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </script>
+
+    <button class="btn btn-primary btn-lg" ng-click="create()">
+        <span class="glyphicon glyphicon-flash"></span> Create a new Machine
+    </button>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                
+                <th>name</th>
+                
+                <th>supported_mold_type</th>
+                
+                <th>installed_mold_id</th>
+                
+                <th>status</th>
+                
+                <th>downtime_start</th>
+                
+                <th>downtime_end</th>
+                
+                <th>total_downtime</th>
+                
+                <th>created_at</th>
+                
+                <th>modified_at</th>
+                
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="Machine in Machines">
+                <td>{{Machine.id}}</td>
+                
+                <td>{{Machine.name }}</td>
+                
+                <td>{{Machine.supported_mold_type }}</td>
+                
+                <td>{{Machine.installed_mold_id }}</td>
+                
+                <td>{{Machine.status }}</td>
+                
+                <td>{{Machine.downtime_start  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>{{Machine.downtime_end  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>{{Machine.total_downtime }}</td>
+                
+                <td>{{Machine.created_at  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>{{Machine.modified_at  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>
+                    <button type="submit"
+                            ng-click="update(Machine.id)"
+                            class="btn">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </button>
+                    <button type="submit"
+                            ng-click="delete(Machine.id)"
+                            class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

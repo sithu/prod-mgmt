@@ -1,0 +1,115 @@
+<div>
+
+    <h2>Machinemolds</h2>
+
+    <script type = "text/ng-template" id="MachineMold-save.html">
+        <form name="form" role="form" novalidate
+              class="ng-scope ng-invalid ng-invalid-required ng-dirty"
+              ng-submit="ok()">
+
+            <div class="modal-header">
+                <button type="button" class="close"
+                        ng-click="cancel()">&times;</button>
+                <h4 class="modal-title" id="myMachineMoldLabel">Create or edit a MachineMold</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>ID</label>
+                    <input type="text" class="form-control" name="id"
+                           ng-model="MachineMold.id" readonly>
+                </div>
+
+                
+                <div class="form-group">
+                    <label>mold_type:</label>
+                    
+                    <input type="text" class="form-control" name="mold_type"
+                           ng-model="MachineMold.mold_type" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.mold_type.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.mold_type.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>time_to_install:</label>
+                    
+                    <input type="number" class="form-control" name="time_to_install"
+                           ng-model="MachineMold.time_to_install" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.time_to_install.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.time_to_install.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>created_at:</label>
+                    
+                    <input type="text" class="form-control" name="created_at" ui-date="created_atDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="MachineMold.created_at" ng-required="false"/>
+                </div>
+                
+                <div class="form-group">
+                    <label>modified_at:</label>
+                    
+                    <input type="text" class="form-control" name="modified_at" ui-date="modified_atDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="MachineMold.modified_at" ng-required="false"/>
+                </div>
+                
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
+                </button>
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </script>
+
+    <button class="btn btn-primary btn-lg" ng-click="create()">
+        <span class="glyphicon glyphicon-flash"></span> Create a new MachineMold
+    </button>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                
+                <th>mold_type</th>
+                
+                <th>time_to_install</th>
+                
+                <th>created_at</th>
+                
+                <th>modified_at</th>
+                
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="MachineMold in Machinemolds">
+                <td>{{MachineMold.id}}</td>
+                
+                <td>{{MachineMold.mold_type }}</td>
+                
+                <td>{{MachineMold.time_to_install }}</td>
+                
+                <td>{{MachineMold.created_at  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>{{MachineMold.modified_at  | date:'yyyy-MM-dd'}}</td>
+                
+                <td>
+                    <button type="submit"
+                            ng-click="update(MachineMold.id)"
+                            class="btn">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </button>
+                    <button type="submit"
+                            ng-click="delete(MachineMold.id)"
+                            class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
