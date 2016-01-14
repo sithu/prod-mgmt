@@ -1,0 +1,1 @@
+mosquitto -v -p 3000
