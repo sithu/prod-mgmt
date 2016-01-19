@@ -19,7 +19,7 @@ def get_Schedule(id):
         abort(404)
     return jsonify(entity.to_dict())
 
-
+'''
 @app.route('/prodmgmt/Schedules', methods=['POST'])
 def create_Schedule():
     entity = Schedule.Schedule(
@@ -35,7 +35,7 @@ def create_Schedule():
     db.session.add(entity)
     db.session.commit()
     return jsonify(entity.to_dict()), 201
-
+'''
 
 @app.route('/prodmgmt/Schedules/<int:id>', methods=['PUT'])
 def update_Schedule(id):
@@ -66,3 +66,22 @@ def delete_Schedule(id):
     db.session.delete(entity)
     db.session.commit()
     return '', 204
+
+@app.route('/prodmgmt/Schedules', methods=['POST'])
+def create_Schedule():
+    '''
+    Modified version of scheduler
+    '''
+    entity = Schedule.Schedule(
+        date=datetime.datetime.strptime(request.json['date'][:10], "%Y-%m-%d").date()
+        , shift_name=request.json['shift_name']
+        , employee_id=request.json['employee_id']
+        , manager_id=request.json['manager_id']
+        , is_in_duty=request.json['is_in_duty']
+        , assigned_machine=request.json['assigned_machine']
+        , sign_in_at=datetime.datetime.strptime(request.json['sign_in_at'][:10], "%Y-%m-%d").date()
+        , sign_out_at=datetime.datetime.strptime(request.json['sign_out_at'][:10], "%Y-%m-%d").date()
+    )
+    db.session.add(entity)
+    db.session.commit()
+    return jsonify(entity.to_dict()), 201

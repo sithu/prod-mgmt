@@ -17,6 +17,8 @@ class Product(db.Model):
     
     color = db.Column(db.Enum('white', 'red', 'green', 'blue', 'yellow', 'clear', 'grey', 'brown', 'other'))
     
+    num_employee_required = db.Column(db.Integer)
+
     created_at = db.Column(db.DateTime, server_default=text("now()"))
     
     #updated_at = db.Column(db.DateTime, default=func.now(), onupdate=func.now)
@@ -33,6 +35,7 @@ class Product(db.Model):
             time_to_build = self.time_to_build,
             selling_price = self.selling_price,
             color = self.color,
+            num_employee_required = self.num_employee_required,
             created_at = self.created_at.isoformat(),
             updated_at = self.updated_at.isoformat(),
             id = self.id,
