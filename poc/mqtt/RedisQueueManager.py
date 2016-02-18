@@ -1,0 +1,12 @@
+import redis
+r = redis.StrictRedis(host='localhost', port=6379)
+r.lpush('abc', 'task1')
+r.lpush('abc', 'task2')
+r.lpush('abc', 'task3')
+r.lpush('abc', 'task4')
+r.lpush('abc', 'task5')
+print (r.rpop('abc'))
+print (r.rpop('abc'))
+print (r.rpop('abc'))
+print (r.rpop('abc'))
+print (r.rpop('abc'))
