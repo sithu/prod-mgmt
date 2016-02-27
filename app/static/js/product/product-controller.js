@@ -11,10 +11,11 @@ angular.module('prodmgmt')
       $scope.create = function () {
         // load all raw materials to select
         $scope.clear();
-        Raw_material.query().$promise.then(function (data){
-            $scope.raw_materials = data;
-            console.log($scope.raw_materials);
-        });
+//        Raw_material.query().$promise.then(function (data){
+//            $scope.raw_materials = data;
+//            console.log($scope.raw_materials);
+//        });
+        $scope.raw_materials = Raw_material.query() || 'abc'
         $scope.open();
       };
 

@@ -86,14 +86,6 @@
                         <!--<option value="">Select Raw Material</option>-->
                     <option ng-repeat="raw_material in raw_materials" value={{raw_material.id}}>{{raw_material.name}}</option>
                     </select>
-
-                    PWRS
-                    <ul ng-if="raw_materials">
-                        APPLE
-                        <li ng-repeat="raw_material in raw_materials">
-                                Value at key {{ raw_material.id }} is: {{ raw_material.name }}
-                        </li>
-                    </ul>
                 </div>
 
                 <div class="form-group">
