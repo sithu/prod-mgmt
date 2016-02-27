@@ -1,12 +1,10 @@
 from app import app, db
 from app.models import User
 from flask import abort, jsonify, request
-from flask.ext.login import login_required
 import datetime
 import json
 
 @app.route('/prodmgmt/Users', methods = ['GET'])
-@login_required
 def get_all_Users():
     entities = User.User.query.all()
     return json.dumps([entity.to_dict() for entity in entities])
@@ -23,7 +21,17 @@ def create_User():
     entity = User.User(
         name = request.json['name']
         , email = request.json['email']
-        , password = request.json['password']
+        , phone = request.json['phone']
+        , password_hash = request.json['password_hash']
+        , level = request.json['level']
+        , salary = request.json['salary']
+        , department = request.json['department']
+        , status = request.json['status']
+        , start_date = datetime.datetime.strptime(request.json['start_date'][:10], "%Y-%m-%d").date()
+        , end_date = datetime.datetime.strptime(request.json['end_date'][:10], "%Y-%m-%d").date()
+        , profile_photo_url = request.json['profile_photo_url']
+        , last_login_at = datetime.datetime.strptime(request.json['last_login_at'][:10], "%Y-%m-%d").date()
+        , modified_at = datetime.datetime.strptime(request.json['modified_at'][:10], "%Y-%m-%d").date()
     )
     db.session.add(entity)
     db.session.commit()
@@ -37,7 +45,17 @@ def update_User(id):
     entity = User.User(
         name = request.json['name'],
         email = request.json['email'],
-        password = request.json['password'],
+        phone = request.json['phone'],
+        password_hash = request.json['password_hash'],
+        level = request.json['level'],
+        salary = request.json['salary'],
+        department = request.json['department'],
+        status = request.json['status'],
+        start_date = datetime.datetime.strptime(request.json['start_date'][:10], "%Y-%m-%d").date(),
+        end_date = datetime.datetime.strptime(request.json['end_date'][:10], "%Y-%m-%d").date(),
+        profile_photo_url = request.json['profile_photo_url'],
+        last_login_at = datetime.datetime.strptime(request.json['last_login_at'][:10], "%Y-%m-%d").date(),
+        modified_at = datetime.datetime.strptime(request.json['modified_at'][:10], "%Y-%m-%d").date(),
         id = id
     )
     db.session.merge(entity)
@@ -52,5 +70,3 @@ def delete_User(id):
     db.session.delete(entity)
     db.session.commit()
     return '', 204
-
-

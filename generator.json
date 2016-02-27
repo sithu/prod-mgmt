@@ -2,43 +2,6 @@
 	"baseName": "prodmgmt",
 	"entities": [
 		{
-			"name": "User",
-			"attrs": [
-				{
-					"attrName": "name",
-					"attrType": "String",
-					"minLength": "3",
-					"maxLength": "50",
-					"enumValues": [],
-					"required": true
-				},
-				{
-					"attrName": "email",
-					"attrType": "String",
-					"minLength": "5",
-					"maxLength": "50",
-					"enumValues": [],
-					"required": false
-				},
-				{
-					"attrName": "password",
-					"attrType": "String",
-					"minLength": "3",
-					"maxLength": "100",
-					"enumValues": [],
-					"required": true
-				},
-				{
-					"attrName": "id",
-					"attrType": "Integer",
-					"min": "0",
-					"max": "",
-					"enumValues": [],
-					"required": true
-				}
-			]
-		},
-		{
 			"name": "product",
 			"attrs": [
 				{
@@ -650,6 +613,111 @@
 				},
 				{
 					"attrName": "sign_out_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
+		},
+		{
+			"name": "User",
+			"attrs": [
+				{
+					"attrName": "name",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "email",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "phone",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "password_hash",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "level",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "salary",
+					"attrType": "Integer",
+					"min": "0",
+					"max": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "department",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "status",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "start_date",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "end_date",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "profile_photo_url",
+					"attrType": "String",
+					"minLength": "",
+					"maxLength": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "last_login_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "modified_at",
 					"attrType": "Date",
 					"dateConstraint": "",
 					"enumValues": [],
