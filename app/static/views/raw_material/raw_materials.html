@@ -19,50 +19,50 @@
                            ng-model="raw_material.id" readonly>
                 </div>
 
-                
+
                 <div class="form-group">
                     <label>name:</label>
-                    
+
                     <input type="text" class="form-control" name="name"
                            ng-model="raw_material.name" ng-required="true"
-                           ng-minlength=1 ng-maxlength=50/>
+                           ng-minlength=1 ng-maxlength=50 />
                     <span class="error" ng-show="form.name.$error.minlength">Must be at least 1 characters.</span>
                     <span class="error" ng-show="form.name.$error.maxlength">Must be at most 50 characters.</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>weight:</label>
-                    
+
                     <input type="number" class="form-control" name="weight"
                            ng-model="raw_material.weight" ng-required="false"
                            min=0 />
                     <span class="error" ng-show="form.weight.$error.min">Must be greater than or equal to 0.</span>
                     <span class="error" ng-show="form.weight.$error.max">Must be less than or equal to .</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>count:</label>
-                    
+
                     <input type="number" class="form-control" name="count"
                            ng-model="raw_material.count" ng-required="true"
                            />
                     <span class="error" ng-show="form.count.$error.min">Must be greater than or equal to .</span>
                     <span class="error" ng-show="form.count.$error.max">Must be less than or equal to .</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>purchase_price:</label>
-                    
+
                     <input type="number" class="form-control" name="purchase_price"
                            ng-model="raw_material.purchase_price" ng-required="false"
                            />
                     <span class="error" ng-show="form.purchase_price.$error.min">Must be greater than or equal to .</span>
                     <span class="error" ng-show="form.purchase_price.$error.max">Must be less than or equal to .</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>color:</label>
-                    
+
                     <label class="radio"><input type="radio" name="color" value="white"
                            ng-model="raw_material.color" ng-required="true"/> white </label>
                     <label class="radio"><input type="radio" name="color" value="red"
@@ -82,7 +82,7 @@
                     <label class="radio"><input type="radio" name="color" value="other"
                            ng-model="raw_material.color" ng-required="true"/> other </label>
                 </div>
-                
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
@@ -101,41 +101,41 @@
             <thead>
             <tr>
                 <th>ID</th>
-                
+
                 <th>name</th>
-                
+
                 <th>weight</th>
-                
+
                 <th>count</th>
-                
+
                 <th>purchase_price</th>
-                
+
                 <th>color</th>
-                
+
                 <th>created_at</th>
-                
+
                 <th>updated_at</th>
-                
+
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="raw_material in raw_materials">
                 <td>{{raw_material.id}}</td>
-                
+
                 <td>{{raw_material.name }}</td>
-                
+
                 <td>{{raw_material.weight }}</td>
-                
+
                 <td>{{raw_material.count }}</td>
-                
+
                 <td>{{raw_material.purchase_price }}</td>
-                
+
                 <td>{{raw_material.color }}</td>
-                
+
                 <td>{{raw_material.created_at  | date:'yyyy-MM-dd'}}</td>
-                
+
                 <td>{{raw_material.updated_at  | date:'yyyy-MM-dd'}}</td>
-                
+
                 <td>
                     <button type="submit"
                             ng-click="update(raw_material.id)"

@@ -19,20 +19,20 @@
                            ng-model="product.id" readonly>
                 </div>
 
-                
+
                 <div class="form-group">
                     <label>name:</label>
-                    
+
                     <input type="text" class="form-control" name="name"
                            ng-model="product.name" ng-required="true"
-                           ng-minlength=1 ng-maxlength=50/>
+                           ng-minlength=1 ng-maxlength=50 />
                     <span class="error" ng-show="form.name.$error.minlength">Must be at least 1 characters.</span>
                     <span class="error" ng-show="form.name.$error.maxlength">Must be at most 50 characters.</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>type:</label>
-                    
+
                     <label class="radio"><input type="radio" name="type" value="chair"
                            ng-model="product.type" ng-required="true"/> chair </label>
                     <label class="radio"><input type="radio" name="type" value="stool"
@@ -44,52 +44,53 @@
                     <label class="radio"><input type="radio" name="type" value="bowl"
                            ng-model="product.type" ng-required="true"/> bowl </label>
                 </div>
-                
+
                 <div class="form-group">
                     <label>weight:</label>
-                    
+
                     <input type="number" class="form-control" name="weight"
                            ng-model="product.weight" ng-required="true"
                            min=1 />
                     <span class="error" ng-show="form.weight.$error.min">Must be greater than or equal to 1.</span>
                     <span class="error" ng-show="form.weight.$error.max">Must be less than or equal to .</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>time_to_build:</label>
-                    
+
                     <input type="number" class="form-control" name="time_to_build"
                            ng-model="product.time_to_build" ng-required="true"
                            min=0 />
                     <span class="error" ng-show="form.time_to_build.$error.min">Must be greater than or equal to 0.</span>
                     <span class="error" ng-show="form.time_to_build.$error.max">Must be less than or equal to .</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>selling_price:</label>
-                    
+
                     <input type="number" class="form-control" name="selling_price"
                            ng-model="product.selling_price" ng-required="true"
                            />
                     <span class="error" ng-show="form.selling_price.$error.min">Must be greater than or equal to .</span>
                     <span class="error" ng-show="form.selling_price.$error.max">Must be less than or equal to .</span>
                 </div>
-                
+
                 <!-- Raw Material Selection -->
                 <div>
                     <label>Raw Material:</label>
-                    <select id="raw-material-select" 
-                        name="raw_material" 
+                    <select id="raw-material-select"
+                        name="raw_material"
                         ng-model="product.selected_raw_material"
-                        ng-required="true" 
-                        ng-options="raw_material.id as raw_material.name for raw_material in product.raw_materials"/>
-                        <option value="">Select Raw Material</option>
+                        ng-required="true">
+                        <!--ng-options="raw_material.id as raw_material.name for raw_material in product.raw_materials"/> -->
+                        <!--<option value="">Select Raw Material</option>-->
+                    <option ng-repeat="raw_material in raw_materials" value={{raw_material.id}}>{{raw_material.name}}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>color:</label>
-                    
+
                     <label class="radio"><input type="radio" name="color" value="white"
                            ng-model="product.color" ng-required="true"/> white </label>
                     <label class="radio"><input type="radio" name="color" value="red"
@@ -109,21 +110,21 @@
                     <label class="radio"><input type="radio" name="color" value="other"
                            ng-model="product.color" ng-required="true"/> other </label>
                 </div>
-                
+
                 <div class="form-group">
                     <label>created_at:</label>
-                    
-                    <input type="text" class="form-control" name="created_at" ui-date="created_atDateOptions" ui-date-format="yy-mm-dd" 
+
+                    <input type="text" class="form-control" name="created_at" ui-date="created_atDateOptions" ui-date-format="yy-mm-dd"
                            ng-model="product.created_at" ng-required="false"/>
                 </div>
-                
+
                 <div class="form-group">
                     <label>updated_at:</label>
-                    
-                    <input type="text" class="form-control" name="updated_at" ui-date="updated_atDateOptions" ui-date-format="yy-mm-dd" 
+
+                    <input type="text" class="form-control" name="updated_at" ui-date="updated_atDateOptions" ui-date-format="yy-mm-dd"
                            ng-model="product.updated_at" ng-required="false"/>
                 </div>
-                
+
 
             </div>
             <div class="modal-footer">
@@ -143,45 +144,45 @@
             <thead>
             <tr>
                 <th>ID</th>
-                
+
                 <th>name</th>
-                
+
                 <th>type</th>
-                
+
                 <th>weight</th>
-                
+
                 <th>time_to_build</th>
-                
+
                 <th>selling_price</th>
-                
+
                 <th>color</th>
-                
+
                 <th>created_at</th>
-                
+
                 <th>updated_at</th>
-                
+
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="product in products">
                 <td>{{product.id}}</td>
-                
+
                 <td>{{product.name }}</td>
-                
+
                 <td>{{product.type }}</td>
-                
+
                 <td>{{product.weight }}</td>
-                
+
                 <td>{{product.time_to_build }}</td>
-                
+
                 <td>{{product.selling_price }}</td>
-                
+
                 <td>{{product.color }}</td>
-                
+
                 <td>{{product.created_at  | date:'yyyy-MM-dd'}}</td>
-                
+
                 <td>{{product.updated_at  | date:'yyyy-MM-dd'}}</td>
-                
+
                 <td>
                     <button type="submit"
                             ng-click="update(product.id)"

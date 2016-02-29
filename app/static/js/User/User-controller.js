@@ -46,7 +46,27 @@ angular.module('prodmgmt')
           
           "email": "",
           
-          "password": "",
+          "phone": "",
+          
+          "password_hash": "",
+          
+          "level": "",
+          
+          "salary": "",
+          
+          "department": "",
+          
+          "status": "",
+          
+          "start_date": "",
+          
+          "end_date": "",
+          
+          "profile_photo_url": "",
+          
+          "last_login_at": "",
+          
+          "modified_at": "",
           
           "id": ""
         };
@@ -74,6 +94,26 @@ angular.module('prodmgmt')
       $scope.User = User;
 
       
+      $scope.start_dateDateOptions = {
+        dateFormat: 'yy-mm-dd',
+        
+        
+      };
+      $scope.end_dateDateOptions = {
+        dateFormat: 'yy-mm-dd',
+        
+        
+      };
+      $scope.last_login_atDateOptions = {
+        dateFormat: 'yy-mm-dd',
+        
+        
+      };
+      $scope.modified_atDateOptions = {
+        dateFormat: 'yy-mm-dd',
+        
+        
+      };
 
       $scope.ok = function () {
         $modalInstance.close($scope.User);

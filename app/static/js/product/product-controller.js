@@ -2,20 +2,25 @@
 
 angular.module('prodmgmt')
   .controller('ProductController', ['$scope', '$modal', 'resolvedProduct', 'Product', 'Raw_material',
-    function ($scope, $modal, resolvedProduct, Product) {
+    function ($scope, $modal, resolvedProduct, Product, Raw_material) {
 
       $scope.products = resolvedProduct;
       $scope.raw_materials = [];
       $scope.selected_raw_material = null;
-      
+
       $scope.create = function () {
         // load all raw materials to select
-        $scope.raw_materials = Raw_material.query();
         $scope.clear();
+//        Raw_material.query().$promise.then(function (data){
+//            $scope.raw_materials = data;
+//            console.log($scope.raw_materials);
+//        });
+        $scope.raw_materials = Raw_material.query() || 'abc'
         $scope.open();
       };
 
       $scope.update = function (id) {
+        $scope.raw_materials = Raw_material.query();
         $scope.product = Product.get({id: id});
         $scope.open(id);
       };
@@ -45,23 +50,23 @@ angular.module('prodmgmt')
 
       $scope.clear = function () {
         $scope.product = {
-          
+
           "name": "",
-          
+
           "type": "",
-          
+
           "weight": "",
-          
+
           "time_to_build": "",
-          
+
           "selling_price": "",
-          
+
           "color": "",
-          
+
           "created_at": "",
-          
+
           "updated_at": "",
-          
+
           "id": ""
         };
       };
@@ -87,16 +92,16 @@ angular.module('prodmgmt')
     function ($scope, $modalInstance, product) {
       $scope.product = product;
 
-      
+
       $scope.created_atDateOptions = {
         dateFormat: 'yy-mm-dd',
-        
-        
+
+
       };
       $scope.updated_atDateOptions = {
         dateFormat: 'yy-mm-dd',
-        
-        
+
+
       };
 
       $scope.ok = function () {
