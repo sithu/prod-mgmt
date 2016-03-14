@@ -72,6 +72,8 @@ def create_Schedule():
     '''
     Modified version of scheduler
     '''
+    return jsonify("foo"), 201
+    '''
     entity = Schedule.Schedule(
         date=datetime.datetime.strptime(request.json['date'][:10], "%Y-%m-%d").date()
         , shift_name=request.json['shift_name']
@@ -85,3 +87,4 @@ def create_Schedule():
     db.session.add(entity)
     db.session.commit()
     return jsonify(entity.to_dict()), 201
+    '''

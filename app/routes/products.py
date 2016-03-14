@@ -18,6 +18,7 @@ def get_product(id):
 
 @app.route('/prodmgmt/products', methods = ['POST'])
 def create_product():
+    now = datetime.datetime.utcnow()
     entity = product.Product(
         name = request.json['name']
         , type = request.json['type']
@@ -25,8 +26,9 @@ def create_product():
         , time_to_build = request.json['time_to_build']
         , selling_price = request.json['selling_price']
         , color = request.json['color']
-        , created_at = datetime.datetime.strptime(request.json['created_at'], "%Y-%m-%d").date()
-        , updated_at = datetime.datetime.strptime(request.json['updated_at'], "%Y-%m-%d").date()
+        , raw_material_id = request.json['raw_material_id']
+        , created_at = now
+        , updated_at = now
     )
     db.session.add(entity)
     db.session.commit()

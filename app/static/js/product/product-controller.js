@@ -3,19 +3,15 @@
 angular.module('prodmgmt')
   .controller('ProductController', ['$scope', '$modal', 'resolvedProduct', 'Product', 'Raw_material',
     function ($scope, $modal, resolvedProduct, Product, Raw_material) {
-
       $scope.products = resolvedProduct;
       $scope.raw_materials = [];
-      $scope.selected_raw_material = null;
+      
+      Raw_material.query().$promise.then(function (data){
+        $scope.raw_materials = data;
+      });
 
       $scope.create = function () {
-        // load all raw materials to select
         $scope.clear();
-//        Raw_material.query().$promise.then(function (data){
-//            $scope.raw_materials = data;
-//            console.log($scope.raw_materials);
-//        });
-        $scope.raw_materials = Raw_material.query() || 'abc'
         $scope.open();
       };
 
@@ -40,6 +36,7 @@ angular.module('prodmgmt')
               $scope.clear();
             });
         } else {
+          console.log($scope.product);
           Product.save($scope.product,
             function () {
               $scope.products = Product.query();
@@ -63,9 +60,7 @@ angular.module('prodmgmt')
 
           "color": "",
 
-          "created_at": "",
-
-          "updated_at": "",
+          "raw_material_id": 0,
 
           "id": ""
         };
@@ -78,6 +73,9 @@ angular.module('prodmgmt')
           resolve: {
             product: function () {
               return $scope.product;
+            },
+            raw_materials: function() {
+              return $scope.raw_materials;
             }
           }
         });
@@ -88,20 +86,18 @@ angular.module('prodmgmt')
         });
       };
     }])
-  .controller('ProductSaveController', ['$scope', '$modalInstance', 'product',
-    function ($scope, $modalInstance, product) {
+  .controller('ProductSaveController', ['$scope', '$modalInstance', 'product', 'raw_materials',
+    function ($scope, $modalInstance, product, raw_materials) {
       $scope.product = product;
-
-
+      $scope.raw_materials = raw_materials;
+      $scope.product.raw_material_id = raw_materials.length ? raw_materials[0].id : -1;
+      
       $scope.created_atDateOptions = {
         dateFormat: 'yy-mm-dd',
-
-
       };
+
       $scope.updated_atDateOptions = {
         dateFormat: 'yy-mm-dd',
-
-
       };
 
       $scope.ok = function () {

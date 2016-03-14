@@ -36,8 +36,8 @@ class Product(db.Model):
             selling_price = self.selling_price,
             color = self.color,
             num_employee_required = self.num_employee_required,
-            created_at = self.created_at.isoformat(),
-            updated_at = self.updated_at.isoformat(),
+            created_at = str(self.created_at),
+            updated_at = str(self.updated_at),
             id = self.id,
             raw_material_id = self.raw_material_id
         )

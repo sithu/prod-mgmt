@@ -21,7 +21,7 @@
 
 
                 <div class="form-group">
-                    <label>name:</label>
+                    <label>Name:</label>
 
                     <input type="text" class="form-control" name="name"
                            ng-model="product.name" ng-required="true"
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>type:</label>
+                    <label>Type:</label>
 
                     <label class="radio"><input type="radio" name="type" value="chair"
                            ng-model="product.type" ng-required="true"/> chair </label>
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>weight:</label>
+                    <label>Weight:</label>
 
                     <input type="number" class="form-control" name="weight"
                            ng-model="product.weight" ng-required="true"
@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>time_to_build:</label>
+                    <label>Time to Build:</label>
 
                     <input type="number" class="form-control" name="time_to_build"
                            ng-model="product.time_to_build" ng-required="true"
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>selling_price:</label>
+                    <label>Selling Price:</label>
 
                     <input type="number" class="form-control" name="selling_price"
                            ng-model="product.selling_price" ng-required="true"
@@ -76,20 +76,20 @@
                 </div>
 
                 <!-- Raw Material Selection -->
-                <div>
+                <div class="form-group">
                     <label>Raw Material:</label>
-                    <select id="raw-material-select"
+
+                    <select 
+                        id="raw-material-select"
                         name="raw_material"
-                        ng-model="product.selected_raw_material"
+                        ng-model="product.raw_material_id"
+                        ng-options="rm.id as rm.name for rm in raw_materials"
                         ng-required="true">
-                        <!--ng-options="raw_material.id as raw_material.name for raw_material in product.raw_materials"/> -->
-                        <!--<option value="">Select Raw Material</option>-->
-                    <option ng-repeat="raw_material in raw_materials" value={{raw_material.id}}>{{raw_material.name}}</option>
                     </select>
                 </div>
-
+               
                 <div class="form-group">
-                    <label>color:</label>
+                    <label>Color:</label>
 
                     <label class="radio"><input type="radio" name="color" value="white"
                            ng-model="product.color" ng-required="true"/> white </label>
@@ -110,22 +110,7 @@
                     <label class="radio"><input type="radio" name="color" value="other"
                            ng-model="product.color" ng-required="true"/> other </label>
                 </div>
-
-                <div class="form-group">
-                    <label>created_at:</label>
-
-                    <input type="text" class="form-control" name="created_at" ui-date="created_atDateOptions" ui-date-format="yy-mm-dd"
-                           ng-model="product.created_at" ng-required="false"/>
-                </div>
-
-                <div class="form-group">
-                    <label>updated_at:</label>
-
-                    <input type="text" class="form-control" name="updated_at" ui-date="updated_atDateOptions" ui-date-format="yy-mm-dd"
-                           ng-model="product.updated_at" ng-required="false"/>
-                </div>
-
-
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
