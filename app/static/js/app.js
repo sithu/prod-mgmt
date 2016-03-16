@@ -2,8 +2,9 @@
 var prodmgmt = angular.module('prodmgmt', ['ngResource','ngCookies','ngRoute', 'ui.bootstrap', 'ui.date'])
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
-      .when('/', {
+      .when('/home', {
         templateUrl: 'views/home/home.html',
+        controller: 'homeController',
         needLogin: true
       })
       .when('/login', {
@@ -15,7 +16,7 @@ var prodmgmt = angular.module('prodmgmt', ['ngResource','ngCookies','ngRoute', '
       	controller: 'logoutController',
       	needLogin: true
       })
-      .otherwise({redirectTo: '/', needLogin: true});
+      .otherwise({redirectTo: '/home', needLogin: true});
   }]);
 
 prodmgmt.run(function ($rootScope, $location, $route, AuthService) {
@@ -25,8 +26,11 @@ prodmgmt.run(function ($rootScope, $location, $route, AuthService) {
       console.log("Ypou must connect before you access to this url!!");
       event.preventDefault();
       $location.path('/login');
-      // $route.reload();
+      $route.reload();
     } 
 
   });
 });
+
+// Bootstrap Material Design Init
+$.material.init();

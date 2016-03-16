@@ -1,6 +1,6 @@
 angular.module('prodmgmt').factory('AuthService',
-  ['$q', '$timeout', '$http',
-  function ($q, $timeout, $http) {
+  ['$q', '$timeout', '$http', '$window',
+  function ($q, $timeout, $http, $window) {
 
     // create user variable
     var user = null;
@@ -32,6 +32,7 @@ angular.module('prodmgmt').factory('AuthService',
       .success(function (data, status) {
         if(status === 200 && data.result){
           user = true;
+          $window.sessionStorage["userInfo"] = JSON.stringify(data);
           deferred.resolve();
         } else {
           user = false;
@@ -58,11 +59,13 @@ angular.module('prodmgmt').factory('AuthService',
     $http.get('/api/logout')
       // handle success
       .success(function (data) {
+        $window.sessionStorage["userInfo"] = null;
         user = false;
         deferred.resolve();
       })
       // handle error
       .error(function (data) {
+        $window.sessionStorage["userInfo"] = null;
         user = false;
         deferred.reject();
       });
@@ -96,5 +99,18 @@ angular.module('prodmgmt').factory('AuthService',
     return deferred.promise;
 
   }
+
+  // FIXME: this is NOT working yet!
+  function init() {
+    if ($window.sessionStorage["userInfo"]) {
+      var userInfo = JSON.parse($window.sessionStorage["userInfo"]);
+      if (userInfo) {
+        user = userInfo.result;
+      }
+    } 
+  }
+  
+  init();
+
 
 }]);

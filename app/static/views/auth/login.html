@@ -1,17 +1,20 @@
-<div class="col-md-4">
-  <h1>Login</h2>
+<div class="col-md-4 col-md-offset-4 centered">
   <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
-  <form class="form" ng-submit="login()">
+  
+  <form class="form-horizontal" ng-submit="login()">
+  <fieldset>
+    <legend>Login</legend>
     <div class="form-group">
-      <label>Email</label>
-      <input type="text" class="form-control" name="email" ng-model="loginForm.email" required>
+      <input type="text" class="form-control" name="email" ng-model="loginForm.email" placeholder="E-mail" required>
     </div>
     <div class="form-group">
-      <label>Password</label>
-        <input type="password" class="form-control" name="password" ng-model="loginForm.password" required>
-      </div>
-      <div>
-        <button type="submit" class="btn btn-default" ng-disabled="disabled">Login</button>
-      </div>
+        <input type="password" class="form-control" name="password" ng-model="loginForm.password" placeholder="Password" required>
+    </div>
+    
+    <div class="form-group">
+        <button type="submit" class="btn btn-lg btn-block btn-raised btn-primary">Submit</button>
+    </div>
+  </fieldset>
   </form>
+  
 </div>

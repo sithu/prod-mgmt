@@ -4,13 +4,30 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prodmgmt</title>
-  <link href="lib/bootstrap-css/css/bootstrap.css" rel="stylesheet">
-  <link href="lib/jquery-ui/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
+  <title>Production Manager</title>
+  
+  <!-- Material Design fonts -->
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
+
+
+  <!-- Bootstrap -->
+  <link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+  
+  <!-- Bootstrap Material Design -->
+  <link href="lib/bootstrap-material-design/dist/css/bootstrap-material-design.css" rel="stylesheet">
+  <link href="lib/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet">
+  
+  <link href="//fezvrasta.github.io/snackbarjs/dist/snackbar.min.css" rel="stylesheet">
+
+  <!-- BS theme uses different colors for buttons. So, comment out-->
+  <!--link href="lib/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet"-->
+
+  <!--link href="lib/jquery-ui/themes/smoothness/jquery-ui.css" rel="stylesheet"-->
   <link href="css/app.css" rel="stylesheet">
 </head>
 <body>
- <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+ <nav class="navbar navbar-fixed-top" role="navigation">
    <div class="container">
      <div class="navbar-header">
        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -19,7 +36,7 @@
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
        </button>
-       <a class="navbar-brand" href="#" onclick="return false;">Deodarpark</a>
+       <a class="navbar-brand" href="#" onclick="return false;">DeodarPark</a>
      </div>
 
      <!-- Collect the nav links, forms, and other content for toggling -->
@@ -58,6 +75,10 @@
          <a href="/#/Users">Employee</a>
          </li>
 
+         <li ng-controller="logoutController">
+          <a ng-click="logout()">Logout</a>
+         </li>
+
        </ul>
      </div>
      <!-- /.navbar-collapse -->
@@ -66,12 +87,18 @@
   </nav>
   <div class="container" ng-view></div>
   <script src="lib/jquery/dist/jquery.js"></script>
+  <script src="lib/bootstrap/dist/js/bootstrap.js"></script>
   <script src="lib/jquery-ui/jquery-ui.js"></script>
   <script src="lib/lodash/dist/lodash.js"></script>
   <script src="lib/angular/angular.js"></script>
   <script src="lib/angular-resource/angular-resource.js"></script>
   <script src="lib/angular-route/angular-route.js"></script>
   <script src="lib/angular-cookies/angular-cookies.js"></script>
+  <!-- Boostrap Material Design [START] -->
+  <script src="lib/bootstrap-material-design/dist/js/material.min.js"></script>
+  <script src="lib/bootstrap-material-design/dist/js/ripples.min.js"></script>
+  <!-- Boostrap Material Design [END] -->
+  
   <script src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="lib/angular-ui-date/src/date.js"></script>
 
