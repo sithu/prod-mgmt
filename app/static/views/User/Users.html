@@ -1,6 +1,6 @@
 <div>
 
-    <h2>Users</h2>
+    <h2>Employees</h2>
 
     <script type = "text/ng-template" id="User-save.html">
         <form name="form" role="form" novalidate
@@ -148,73 +148,41 @@
         </form>
     </script>
 
-    <button class="btn btn-primary btn-lg" ng-click="create()">
-        <span class="glyphicon glyphicon-flash"></span> Create a new User
+    <button class="btn btn-primary btn-raised" ng-click="create()">
+        <i class="material-icons">add_circle</i> Add Employee
     </button>
 
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>ID</th>
+                <th>Name</th>
                 
-                <th>name</th>
+                <th>Phone</th>
                 
-                <th>email</th>
+                <th>Level</th>
                 
-                <th>phone</th>
+                <th>Department</th>
                 
-                <th>password_hash</th>
+                <th>Status</th>
                 
-                <th>level</th>
-                
-                <th>salary</th>
-                
-                <th>department</th>
-                
-                <th>status</th>
-                
-                <th>start_date</th>
-                
-                <th>end_date</th>
-                
-                <th>profile_photo_url</th>
-                
-                <th>last_login_at</th>
-                
-                <th>modified_at</th>
+                <th>Last Login</th>
                 
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="User in Users">
-                <td>{{User.id}}</td>
-                
                 <td>{{User.name }}</td>
-                
-                <td>{{User.email }}</td>
                 
                 <td>{{User.phone }}</td>
                 
-                <td>{{User.password_hash }}</td>
-                
                 <td>{{User.level }}</td>
-                
-                <td>{{User.salary }}</td>
                 
                 <td>{{User.department }}</td>
                 
                 <td>{{User.status }}</td>
                 
-                <td>{{User.start_date  | date:'yyyy-MM-dd'}}</td>
-                
-                <td>{{User.end_date  | date:'yyyy-MM-dd'}}</td>
-                
-                <td>{{User.profile_photo_url }}</td>
-                
                 <td>{{User.last_login_at  | date:'yyyy-MM-dd'}}</td>
-                
-                <td>{{User.modified_at  | date:'yyyy-MM-dd'}}</td>
                 
                 <td>
                     <button type="submit"
