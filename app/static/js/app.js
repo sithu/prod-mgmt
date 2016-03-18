@@ -20,6 +20,9 @@ var prodmgmt = angular.module('prodmgmt', ['ngResource','ngCookies','ngRoute', '
   }]);
 
 prodmgmt.run(function ($rootScope, $location, $route, AuthService) {
+  // to track current path so that nav bar can be hide for the login page.
+  $rootScope.location = $location;
+
   $rootScope.$on('$routeChangeStart', function (event, toState, toParams, fromState, fromParams) {
 
     if (toState.needLogin && AuthService.isLoggedIn() === false) {
