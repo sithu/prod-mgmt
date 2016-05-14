@@ -2,6 +2,64 @@
 
     <h2>Schedules</h2>
 
+    <script type = "text/ng-template" id="New-Schedule.html">
+        <form name="form" role="form" novalidate
+              class="ng-scope ng-invalid ng-invalid-required ng-dirty"
+              ng-submit="ok()">
+
+            <div class="modal-header">
+                <button type="button" class="close"
+                        ng-click="cancel()">&times;</button>
+                <h4 class="modal-title" id="myScheduleLabel">Create New Schedule</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Date:</label>
+                    
+                    <input type="text" class="form-control" name="date" ui-date="dateDateOptions" ui-date-format="yy-mm-dd" 
+                           ng-model="Schedule.date" ng-required="false"/>
+                </div>
+                
+                <div class="form-group">
+                    <label>Num Shifts / Day:</label>
+                    
+                    <input type="text" class="form-control" name="shift_name"
+                           ng-model="Schedule.shift_name" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.shift_name.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.shift_name.$error.maxlength">Must be at most  characters.</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>manager_id:</label>
+                    
+                    <input type="number" class="form-control" name="manager_id"
+                           ng-model="Schedule.manager_id" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.manager_id.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.manager_id.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>Num Machines:</label>
+                    
+                    <input type="number" class="form-control" name="assigned_machine"
+                           ng-model="Schedule.assigned_machine" ng-required="false"
+                           />
+                    <span class="error" ng-show="form.assigned_machine.$error.min">Must be greater than or equal to .</span>
+                    <span class="error" ng-show="form.assigned_machine.$error.max">Must be less than or equal to .</span>
+                </div>
+                
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
+                </button>
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </script>
+
     <script type = "text/ng-template" id="Schedule-save.html">
         <form name="form" role="form" novalidate
               class="ng-scope ng-invalid ng-invalid-required ng-dirty"
@@ -10,7 +68,7 @@
             <div class="modal-header">
                 <button type="button" class="close"
                         ng-click="cancel()">&times;</button>
-                <h4 class="modal-title" id="myScheduleLabel">Create or edit a Schedule</h4>
+                <h4 class="modal-title" id="myScheduleLabel">Edit a Schedule</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -98,8 +156,8 @@
         </form>
     </script>
 
-    <button class="btn btn-primary btn-lg" ng-click="create()">
-        <span class="glyphicon glyphicon-flash"></span> Create a new Schedule
+    <button class="btn btn-primary btn-raised" ng-click="create()">
+        <span class="glyphicon glyphicon-flash"></span> Create Schedule
     </button>
 
     <div class="table-responsive">

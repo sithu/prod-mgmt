@@ -22,7 +22,9 @@ class User(UserMixin, db.Model):
 
     department = db.Column(db.String)
 
-    status = db.Column(db.String)
+    status = db.Column(db.Enum('IN', 'OUT', 'SICK','DAY_OFF'))
+
+    shift_name = db.Column(db.Enum('Morning', 'Evening', 'Night'))
 
     start_date = db.Column(db.Date)
 
@@ -34,10 +36,23 @@ class User(UserMixin, db.Model):
 
     modified_at = db.Column(db.Date)
 
+    gender =  db.Column(db.Enum('M','F'))
+
     def to_dict(self):
-        dict = {'name': self.name, 'email': self.email, 'phone': self.phone, 'level': self.level, 'salary': self.salary,
-                'department': self.department, 'status': self.status, 'id': self.id,
-                'profile_photo_url': self.profile_photo_url}
+        dict = {
+                    'name': self.name, 
+                    'email': self.email, 
+                    'phone': self.phone, 
+                    'gender': self.gender,
+                    'level': self.level, 
+                    'salary': self.salary,
+                    'department': self.department, 
+                    'status': self.status, 
+                    'shift_name': self.shift_name,
+                    'id': self.id,
+                    'profile_photo_url': self.profile_photo_url
+                }
+
         if self.start_date is not None:
             dict['start_date'] = self.start_date.isoformat()
 

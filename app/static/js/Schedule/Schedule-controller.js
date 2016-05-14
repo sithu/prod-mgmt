@@ -8,7 +8,7 @@ angular.module('prodmgmt')
 
       $scope.create = function () {
         $scope.clear();
-        $scope.open();
+        $scope.createSchedule();
       };
 
       $scope.update = function (id) {
@@ -78,6 +78,24 @@ angular.module('prodmgmt')
           $scope.save(id);
         });
       };
+      // new schedule
+      $scope.createSchedule = function (id) {
+        var ScheduleCreate = $modal.open({
+          templateUrl: 'New-Schedule.html',
+          controller: 'ScheduleSaveController',
+          resolve: {
+            Schedule: function () {
+              return $scope.Schedule;
+            }
+          }
+        });
+
+        ScheduleCreate.result.then(function (entity) {
+          $scope.Schedule = entity;
+          $scope.save(id);
+        });
+      };
+
     }])
   .controller('ScheduleSaveController', ['$scope', '$modalInstance', 'Schedule',
     function ($scope, $modalInstance, Schedule) {

@@ -1,6 +1,6 @@
 <div>
 
-    <h2>Employees</h2>
+    <h2><i class="material-icons">group</i> Employee</h2>
 
     <script type = "text/ng-template" id="User-save.html">
         <form name="form" role="form" novalidate
@@ -10,7 +10,7 @@
             <div class="modal-header">
                 <button type="button" class="close"
                         ng-click="cancel()">&times;</button>
-                <h4 class="modal-title" id="myUserLabel">Create or edit a User</h4>
+                <h4 class="modal-title" id="myUserLabel">Create/Edit Employee</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -21,7 +21,7 @@
 
                 
                 <div class="form-group">
-                    <label>name:</label>
+                    <label>Name:</label>
                     
                     <input type="text" class="form-control" name="name"
                            ng-model="User.name" ng-required="true"
@@ -31,7 +31,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>email:</label>
+                    <label>E-mail:</label>
                     
                     <input type="text" class="form-control" name="email"
                            ng-model="User.email" ng-required="false"
@@ -41,7 +41,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>phone:</label>
+                    <label>Phone:</label>
                     
                     <input type="text" class="form-control" name="phone"
                            ng-model="User.phone" ng-required="false"
@@ -51,17 +51,22 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>password_hash:</label>
+                    <label>Gender:</label>
                     
-                    <input type="text" class="form-control" name="password_hash"
-                           ng-model="User.password_hash" ng-required="true"
-                           />
-                    <span class="error" ng-show="form.password_hash.$error.minlength">Must be at least  characters.</span>
-                    <span class="error" ng-show="form.password_hash.$error.maxlength">Must be at most  characters.</span>
+                    <div class="radio">
+                    <label class="radio"><input type="radio" name="gender" value="M"
+                           ng-model="User.gender" ng-required="true"/>
+                           <span class="circle"></span><span class="check"></span> Male </label>
+                    </div>
+                    <div class="radio">
+                    <label class="radio"><input type="radio" name="gender" value="F"
+                           ng-model="User.gender" ng-required="true"/>
+                           <span class="circle"></span><span class="check"></span> Female </label>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>level:</label>
+                    <label>Level:</label>
                     
                     <input type="number" class="form-control" name="level"
                            ng-model="User.level" ng-required="false"
@@ -71,7 +76,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>salary:</label>
+                    <label>Salary:</label>
                     
                     <input type="number" class="form-control" name="salary"
                            ng-model="User.salary" ng-required="false"
@@ -81,7 +86,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>department:</label>
+                    <label>Department:</label>
                     
                     <input type="text" class="form-control" name="department"
                            ng-model="User.department" ng-required="false"
@@ -91,7 +96,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>status:</label>
+                    <label>Status:</label>
                     
                     <input type="text" class="form-control" name="status"
                            ng-model="User.status" ng-required="false"
@@ -101,45 +106,20 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>start_date:</label>
+                    <label>Start Date:</label>
                     
                     <input type="text" class="form-control" name="start_date" ui-date="start_dateDateOptions" ui-date-format="yy-mm-dd" 
                            ng-model="User.start_date" ng-required="false"/>
                 </div>
                 
                 <div class="form-group">
-                    <label>end_date:</label>
+                    <label>End Date:</label>
                     
                     <input type="text" class="form-control" name="end_date" ui-date="end_dateDateOptions" ui-date-format="yy-mm-dd" 
                            ng-model="User.end_date" ng-required="false"/>
                 </div>
                 
-                <div class="form-group">
-                    <label>profile_photo_url:</label>
-                    
-                    <input type="text" class="form-control" name="profile_photo_url"
-                           ng-model="User.profile_photo_url" ng-required="false"
-                           />
-                    <span class="error" ng-show="form.profile_photo_url.$error.minlength">Must be at least  characters.</span>
-                    <span class="error" ng-show="form.profile_photo_url.$error.maxlength">Must be at most  characters.</span>
-                </div>
-                
-                <div class="form-group">
-                    <label>last_login_at:</label>
-                    
-                    <input type="text" class="form-control" name="last_login_at" ui-date="last_login_atDateOptions" ui-date-format="yy-mm-dd" 
-                           ng-model="User.last_login_at" ng-required="false"/>
-                </div>
-                
-                <div class="form-group">
-                    <label>modified_at:</label>
-                    
-                    <input type="text" class="form-control" name="modified_at" ui-date="modified_atDateOptions" ui-date-format="yy-mm-dd" 
-                           ng-model="User.modified_at" ng-required="false"/>
-                </div>
-                
-
-            </div>
+             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
                 </button>
@@ -166,6 +146,8 @@
                 
                 <th>Status</th>
                 
+                <th>Shift</th>
+
                 <th>Last Login</th>
                 
             </tr>
@@ -182,17 +164,19 @@
                 
                 <td>{{User.status }}</td>
                 
+                <td>{{User.shift }}</td>
+
                 <td>{{User.last_login_at  | date:'yyyy-MM-dd'}}</td>
                 
                 <td>
                     <button type="submit"
                             ng-click="update(User.id)"
-                            class="btn">
+                            class="btn btn-sm">
                         <span class="glyphicon glyphicon-pencil"></span> Edit
                     </button>
                     <button type="submit"
                             ng-click="delete(User.id)"
-                            class="btn btn-danger">
+                            class="btn btn-sm btn-danger">
                         <span class="glyphicon glyphicon-remove-circle"></span> Delete
                     </button>
                 </td>

@@ -23,6 +23,7 @@ def create_User():
         , email = request.json['email']
         , phone = request.json['phone']
         , password_hash = request.json['password_hash']
+        , gender = request.json['gender']
         , level = request.json['level']
         , salary = request.json['salary']
         , department = request.json['department']
@@ -47,6 +48,7 @@ def update_User(id):
         email = request.json['email'],
         phone = request.json['phone'],
         password_hash = request.json['password_hash'],
+        gender = request.json['gender'],
         level = request.json['level'],
         salary = request.json['salary'],
         department = request.json['department'],

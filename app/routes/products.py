@@ -6,6 +6,7 @@ import json
 
 @app.route('/prodmgmt/products', methods = ['GET'])
 def get_all_products():
+    app.logger.debug('GET all products')
     entities = product.Product.query.all()
     return json.dumps([entity.to_dict() for entity in entities])
 

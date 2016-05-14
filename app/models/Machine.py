@@ -21,6 +21,9 @@ class Machine(db.Model):
     
     modified_at = db.Column(db.Date)
     
+    supervisor_attention = db.Column(db.Integer)
+
+    num_worker_needed = db.Column(db.Integer)
 
     def to_dict(self):
         return dict(
@@ -33,6 +36,8 @@ class Machine(db.Model):
             total_downtime = self.total_downtime,
             created_at = self.created_at.isoformat(),
             modified_at = self.modified_at.isoformat(),
+            supervisor_attention = self.supervisor_attention,
+            num_worker_needed = self.num_worker_needed,
             id = self.id
         )
 

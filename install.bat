@@ -11,3 +11,4 @@ flask\Scripts\pip install flask-wtf==0.8.4
 flask\Scripts\pip install pytz==2013b
 flask\Scripts\pip install flask-babel==0.8
 flask\Scripts\pip install flup
+flask\Scripts\pip install flask-migrate
