@@ -3,6 +3,7 @@ from flask import current_app
 from app import app
 
 class BasicsTestCase(unittest.TestCase):
+
 	"""docstring for BasicsTestCase"""
 	def setUp(self):
 		# creates a test client
@@ -16,6 +17,7 @@ class BasicsTestCase(unittest.TestCase):
 	def test_home_status_cdoe(self):
 		result = self.app.get('/')
 		self.assertEqual(result.status_code, 200)
+		self.assertEqual(result.data, "Hello World!!!")
 
 	def test_create_schedule(self):
 		data = { }

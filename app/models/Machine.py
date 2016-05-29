@@ -28,14 +28,14 @@ class Machine(db.Model):
     def to_dict(self):
         return dict(
             name = self.name,
-            supported_mold_type = self.supported_mold_type,
-            installed_mold_id = self.installed_mold_id,
+            #supported_mold_type = self.supported_mold_type,
+            #installed_mold_id = self.installed_mold_id,
             status = self.status,
-            downtime_start = self.downtime_start.isoformat(),
-            downtime_end = self.downtime_end.isoformat(),
-            total_downtime = self.total_downtime,
-            created_at = self.created_at.isoformat(),
-            modified_at = self.modified_at.isoformat(),
+            #downtime_start = self.downtime_start.isoformat(),
+            #downtime_end = self.downtime_end.isoformat(),
+            #total_downtime = self.total_downtime,
+            created_at = str(self.created_at),
+            modified_at = str(self.modified_at),
             supervisor_attention = self.supervisor_attention,
             num_worker_needed = self.num_worker_needed,
             id = self.id

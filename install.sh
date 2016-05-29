@@ -14,3 +14,4 @@ flask/bin/pip install pytz==2013b
 flask/bin/pip install flask-babel==0.8
 flask/bin/pip install flup
 flask/bin/pip install flask-migrate
+flask/bin/pip install Flask-Testing

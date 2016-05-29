@@ -51,6 +51,10 @@ angular.module('prodmgmt')
           "password_hash": "",
           
           "level": "",
+
+          "gender": "",
+
+          "shift_name": "",
           
           "salary": "",
           
@@ -84,6 +88,9 @@ angular.module('prodmgmt')
         });
 
         UserSave.result.then(function (entity) {
+          if (entity && !entity.end_date) {
+            entity.end_date = "";
+          }
           $scope.User = entity;
           $scope.save(id);
         });

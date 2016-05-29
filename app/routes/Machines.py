@@ -24,14 +24,16 @@ def get_Machine(id):
 def create_Machine():
     entity = Machine.Machine(
         name=request.json['name']
-        , supported_mold_type=request.json['supported_mold_type']
-        , installed_mold_id=request.json['installed_mold_id']
+        #, supported_mold_type=request.json['supported_mold_type']
+        #, installed_mold_id=request.json['installed_mold_id']
         , status=request.json['status']
-        , downtime_start=datetime.datetime.strptime(request.json['downtime_start'][:10], "%Y-%m-%d").date()
-        , downtime_end=datetime.datetime.strptime(request.json['downtime_end'][:10], "%Y-%m-%d").date()
-        , total_downtime=request.json['total_downtime']
-        , created_at=datetime.datetime.strptime(request.json['created_at'][:10], "%Y-%m-%d").date()
-        , modified_at=datetime.datetime.strptime(request.json['modified_at'][:10], "%Y-%m-%d").date()
+        #, downtime_start=datetime.datetime.strptime(request.json['downtime_start'][:10], "%Y-%m-%d").date()
+        #, downtime_end=datetime.datetime.strptime(request.json['downtime_end'][:10], "%Y-%m-%d").date()
+        #, total_downtime=request.json['total_downtime']
+        , created_at=datetime.datetime.now()
+        , modified_at=datetime.datetime.now()
+        , supervisor_attention=request.json['supervisor_attention']
+        , num_worker_needed=request.json['num_worker_needed']
     )
     db.session.add(entity)
     db.session.commit()
@@ -45,14 +47,16 @@ def update_Machine(id):
         abort(404)
     entity = Machine.Machine(
         name=request.json['name'],
-        supported_mold_type=request.json['supported_mold_type'],
-        installed_mold_id=request.json['installed_mold_id'],
+        #supported_mold_type=request.json['supported_mold_type'],
+        #installed_mold_id=request.json['installed_mold_id'],
         status=request.json['status'],
-        downtime_start=datetime.datetime.strptime(request.json['downtime_start'][:10], "%Y-%m-%d").date(),
-        downtime_end=datetime.datetime.strptime(request.json['downtime_end'][:10], "%Y-%m-%d").date(),
-        total_downtime=request.json['total_downtime'],
-        created_at=datetime.datetime.strptime(request.json['created_at'][:10], "%Y-%m-%d").date(),
-        modified_at=datetime.datetime.strptime(request.json['modified_at'][:10], "%Y-%m-%d").date(),
+        #downtime_start=datetime.datetime.strptime(request.json['downtime_start'][:10], "%Y-%m-%d").date(),
+        #downtime_end=datetime.datetime.strptime(request.json['downtime_end'][:10], "%Y-%m-%d").date(),
+        #total_downtime=request.json['total_downtime'],
+        #created_at=datetime.datetime.strptime(request.json['created_at'][:10], "%Y-%m-%d").date(),
+        modified_at=datetime.datetime.now(),
+        supervisor_attention=request.json['supervisor_attention'],
+        num_worker_needed=request.json['num_worker_needed'],
         id=id
     )
     db.session.merge(entity)

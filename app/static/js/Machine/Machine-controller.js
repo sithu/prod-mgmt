@@ -44,29 +44,26 @@ angular.module('prodmgmt')
           
           "name": "",
           
-          "supported_mold_type": "",
+          "supervisor_attention": "",
           
-          "installed_mold_id": "",
+          "num_worker_needed": "",
           
           "status": "",
           
-          "downtime_start": "",
+          //"downtime_start": "",
           
-          "downtime_end": "",
+          //"downtime_end": "",
           
-          "total_downtime": "",
-          
-          "created_at": "",
-          
-          "modified_at": "",
+          //"total_downtime": "",
           
           "id": ""
         };
       };
 
       $scope.open = function (id) {
+        var template = id ? 'Machine-edit.html' : 'Machine-new.html';
         var MachineSave = $modal.open({
-          templateUrl: 'Machine-save.html',
+          templateUrl: template,
           controller: 'MachineSaveController',
           resolve: {
             Machine: function () {
