@@ -43,6 +43,28 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
+################ Flask-APScheduler #################
+class Config(object):
+    JOBS = [
+        {
+            'id': 'job1',
+            'func': '__main__:job1',
+            'args': (1, 2),
+            'trigger': 'interval',
+            'seconds': 10
+        }
+    ]
+
+    SCHEDULER_VIEWS_ENABLED = True
+
+def job1(a, b):
+    print(str(a) + ' ' + str(b))
+
+from flask_apscheduler import APScheduler
+scheduler = APScheduler()
+app.config.from_object(Config())
+scheduler.init_app(app)
+scheduler.start()
 
 
 # product table

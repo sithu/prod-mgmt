@@ -22,7 +22,7 @@ class User(UserMixin, db.Model):
 
     department = db.Column(db.String)
 
-    status = db.Column(db.Enum('IN', 'OUT', 'SICK','DAY_OFF'))
+    status = db.Column(db.Enum('IN', 'OUT', 'SICK','VACATION'))
 
     shift_name = db.Column(db.Enum('Morning', 'Evening', 'Night'))
 

@@ -15,3 +15,4 @@ flask/bin/pip install flask-babel==0.8
 flask/bin/pip install flup
 flask/bin/pip install flask-migrate
 flask/bin/pip install Flask-Testing
+flask/bin/pip install Flask-APScheduler==1.4.0

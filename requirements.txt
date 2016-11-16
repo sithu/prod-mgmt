@@ -29,3 +29,4 @@ Tempita==0.5.2
 Werkzeug==0.10.4
 Whoosh==2.7.0
 WTForms==2.0.2
+Flask-APScheduler=1.4.0
