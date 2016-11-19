@@ -1,19 +1,26 @@
 import datetime
 import json
+import random
+       
+from flask import abort, jsonify, request
+from datetime import datetime
 
 from app import app, db
 from app.models import Schedule
-from flask import abort, jsonify, request
+from app.models.Machine import Machine
+from app.models.User import User
+from app.models.Schedule import Schedule
+
 
 @app.route('/prodmgmt/Schedules', methods=['GET'])
 def get_all_Schedules():
-    entities = Schedule.Schedule.query.all()
+    entities = Schedule.query.all()
     return json.dumps([entity.to_dict() for entity in entities])
 
 
 @app.route('/prodmgmt/Schedules/<int:id>', methods=['GET'])
 def get_Schedule(id):
-    entity = Schedule.Schedule.query.get(id)
+    entity = Schedule.query.get(id)
     if not entity:
         abort(404)
     return jsonify(entity.to_dict())
@@ -38,10 +45,10 @@ def create_Schedule():
 
 @app.route('/prodmgmt/Schedules/<int:id>', methods=['PUT'])
 def update_Schedule(id):
-    entity = Schedule.Schedule.query.get(id)
+    entity = Schedule.query.get(id)
     if not entity:
         abort(404)
-    entity = Schedule.Schedule(
+    entity = Schedule(
         date=datetime.datetime.strptime(request.json['date'][:10], "%Y-%m-%d").date(),
         shift_name=request.json['shift_name'],
         employee_id=request.json['employee_id'],
@@ -59,7 +66,7 @@ def update_Schedule(id):
 
 @app.route('/prodmgmt/Schedules/<int:id>', methods=['DELETE'])
 def delete_Schedule(id):
-    entity = Schedule.Schedule.query.get(id)
+    entity = Schedule.query.get(id)
     if not entity:
         abort(404)
     db.session.delete(entity)
@@ -72,51 +79,63 @@ def create_Schedule():
     Modified version of scheduler
     '''
     # 1. Gets all available machines
-    from app.models.Machine import Machine
     app.logger.debug('Get all available machines')
     machines = Machine.query.filter_by(status='Available').all()
-    #app.logger.debug("################")
-    #for m in machines:
-    #    app.logger.debug(m.status)
     
     # 2. Gets all available employees and supervisors
-    from app.models.User import User
-    employees = User.query.filter(User.status != 'VACATION').all()
+    all_employees = User.query.filter(User.status != 'VACATION').all()
+    app.logger.debug('Num employees=%d', len(all_employees))
     supervisors = []
-    for e in employees:
-        if e.level == '4':
-            employees.remove(e)
+    employees = []
+    # Support one (first from the list) manager only!
+    managers = {}
+    for e in all_employees:
+        app.logger.debug('Name=%s', e.name)
+        if e.level == 3: # Manager
+            app.logger.debug('Manager Shift=%s', e.shift_name)
+            managers[e.shift_name] = e
+        elif e.level == 4: # Supervisor
             supervisors.append(e)
-            app.logger.debug('Supervisors')
-        elif e.level == '5':  
-            app.logger.debug('Employee')
-        else: 
-            app.logger.debug('Not valid to schedule=%s', e.name)
+        elif e.level == 5: # Employee
+            employees.append(e)
+    
+    app.logger.debug('##### Total Managers = %d #####', len(managers))
 
     numEmp = len(employees)
     app.logger.debug("numEmp=%d,numSup=%d", numEmp, len(supervisors))
-    import random
     indexes = random.sample(xrange(0, numEmp), numEmp)
     app.logger.debug(indexes)
 
     # set initail pointers (machine and supervisor)
     curr_machine = machines.pop()
     curr_supervisor = supervisors.pop()
+
     curr_supervisor_utilization = 100
     curr_assigned_worker_count = 0
 
-    from app.models.Schedule import Schedule
     for i in indexes:
         # machine assignment
         if curr_assigned_worker_count == curr_machine.num_worker_needed:
-            curr_machine = machines.pop()
+            if len(machines) == 0:
+                # If all machines are assigned, then use a dummy machine.
+                curr_machine = Machine(
+                    id=None, 
+                    name='N/A', 
+                    supervisor_attention=25,
+                    num_worker_needed=3)
+            else:
+                curr_machine = machines.pop()
             curr_assigned_worker_count = 0
         
         # supervisor assignment
         if curr_supervisor_utilization >= curr_machine.supervisor_attention:
             curr_supervisor_utilization -= curr_machine.supervisor_attention
         else:
-            curr_supervisor = supervisors.pop()
+            if len(supervisors) == 0:
+                curr_supervisor = managers[e.shift_name]
+            else:
+                curr_supervisor = supervisors.pop()
+            
             curr_supervisor_utilization = 100
         
         # worker assignment 
@@ -124,15 +143,14 @@ def create_Schedule():
         curr_assigned_worker_count += 1
 
         # schedule creation TODO: how to assignment shift?
-        app.logger.debug(e)
         s = Schedule(
             date=datetime.now(),
-            shift_name='M',
+            shift_name=e.shift_name,
             employee_id=e.id,
             lead_id=curr_supervisor.id,
-            assigned_machine=1
+            assigned_machine=curr_machine.id
         )
-        app.logger.debug(s.__dict__)
+        #app.logger.debug(s.__dict__)
 
 
     return "", 201

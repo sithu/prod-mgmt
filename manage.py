@@ -38,6 +38,32 @@ def create_admin():
     db.session.add(User(name='Administrator', email='cedar-admin@gmail.com', password='admin', level=0))
     db.session.commit()
 
+
+@manager.command
+def create_managers():
+    """Creates a set of supervisors."""
+    for i in range(0, 3):
+        _name = 'Manager %d' % i
+        _email = 'cedar-manager-%d@gmail.com' % i
+        print "creating a manager account...", _email
+        user = User(
+            name=_name, 
+            email=_email, 
+            password='manager', 
+            department='Production', 
+            shift_name=SHIFTS[i % 3],
+            level=3,
+            status='AVAILABLE',
+            gender='M',
+            start_date=datetime.now(),
+            salary=100000
+            )
+        print "new manager=", user.name, user.shift_name
+        db.session.add(user)
+    
+    db.session.commit()
+
+
 @manager.command
 def create_supervisors():
     """Creates a set of supervisors."""
