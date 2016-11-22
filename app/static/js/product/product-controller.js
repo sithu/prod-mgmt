@@ -19,7 +19,7 @@ angular.module('prodmgmt')
         $scope.raw_materials = Raw_material.query();
         $scope.product = Product.get({id: id});
         $scope.open(id);
-      };
+       };
 
       $scope.delete = function (id) {
         Product.delete({id: id},
@@ -61,6 +61,8 @@ angular.module('prodmgmt')
           "color": "",
 
           "raw_material_id": 0,
+
+          "mold_id": "",
 
           "id": ""
         };

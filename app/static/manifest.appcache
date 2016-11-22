@@ -1,0 +1,122 @@
+CACHE MANIFEST
+
+# Learn more:
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache
+
+# -----------------------------------------------------------------------------
+
+# It's necessary to tell web browsers to reconsider this manifest any time the
+# website is updated, and you do so by changing *anything* inside the manifest.
+# A common way to do this is by simply updating a commented-out string, like a
+# date or a version number, or both:
+
+2016-11-22:v0
+
+# -----------------------------------------------------------------------------
+
+# This is where you define all of the resources to be cached. Add new and/or
+# remove old resourses as needed, keeping each one on its own line. Learn more:
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache#Explicit_entries
+
+CACHE:
+favicon.ico
+#fonts/fancy-font.eot
+#fonts/fancy-font.ttf
+#fonts/fancy-font.woff
+#fonts/fancy-font.svg
+lib/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2
+font/roboto/Hgo13k-tfSpn0qi1SFdUfaCWcynf_cDxXwCLxiixG1c.ttf
+font/roboto/RxZJdnzeo3R5zSexge8UUaCWcynf_cDxXwCLxiixG1c.ttf
+font/roboto/d-6IYplOFocCacKzxwXSOKCWcynf_cDxXwCLxiixG1c.ttf
+font/roboto/zN7GBFwfMP4uA6AR0HCoLQ.ttf
+css/roboto-font.css
+css/material-icons.css
+lib/bootstrap/dist/css/bootstrap.css
+lib/bootstrap-material-design/dist/css/bootstrap-material-design.css
+lib/bootstrap-material-design/dist/css/ripples.min.css
+lib/jquery-ui/themes/smoothness/jquery-ui.css
+css/snackbar.min.css
+css/app.css
+lib/jquery/dist/jquery.js
+lib/bootstrap/dist/js/bootstrap.js
+lib/jquery-ui/jquery-ui.js
+lib/lodash/dist/lodash.js
+lib/angular/angular.js
+lib/angular-resource/angular-resource.js
+lib/angular-route/angular-route.js
+lib/angular-cookies/angular-cookies.js
+lib/bootstrap-material-design/dist/js/material.min.js
+lib/bootstrap-material-design/dist/js/ripples.min.js
+lib/angular-bootstrap/ui-bootstrap-tpls.js
+lib/angular-ui-date/src/date.js
+js/app.js
+js/home/home-controller.js
+js/auth/auth-controller.js
+js/auth/auth-service.js
+js/User/User-controller.js
+js/User/User-router.js
+js/User/User-service.js
+js/product/product-controller.js
+js/product/product-router.js
+js/product/product-service.js
+js/raw_material/raw_material-controller.js
+js/raw_material/raw_material-router.js
+js/raw_material/raw_material-service.js
+js/Order/Order-controller.js
+js/Order/Order-router.js
+js/Order/Order-service.js
+js/ProductionEntry/ProductionEntry-controller.js
+js/ProductionEntry/ProductionEntry-router.js
+js/ProductionEntry/ProductionEntry-service.js
+js/Machine/Machine-controller.js
+js/Machine/Machine-router.js
+js/Machine/Machine-service.js
+js/MachineMold/MachineMold-controller.js
+js/MachineMold/MachineMold-router.js
+js/MachineMold/MachineMold-service.js
+js/MachineQueue/MachineQueue-controller.js
+js/MachineQueue/MachineQueue-router.js
+js/MachineQueue/MachineQueue-service.js
+js/Shift/Shift-controller.js
+js/Shift/Shift-router.js
+js/Shift/Shift-service.js
+js/Schedule/Schedule-controller.js
+js/Schedule/Schedule-router.js
+js/Schedule/Schedule-service.js
+js/User/User-controller.js
+js/User/User-router.js
+js/User/User-service.js
+js/Color/Color-controller.js
+js/Color/Color-router.js
+js/Color/Color-service.js
+
+# -----------------------------------------------------------------------------
+#img/an-image.jpg
+#img/another-image.png
+#img/touch/apple-touch-icon.png
+#img/touch/chrome-touch-icon-192x192.png
+#img/touch/ms-touch-icon-144x144-precomposed.png
+#js/vendor/angular-1.2.26.min.js
+#js/vendor/ng-route.min.js
+#js/a-script.js
+#js/another-script.js
+#views/a.html
+#views/b.html
+#views/c.html
+#views/default.html
+# 
+# -----------------------------------------------------------------------------
+
+# Resources that must be retrieved from the network. The wild card ensures any
+# resource not listed in the cache above will instead be downloaded from the
+# network. Learn more:
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache#Network_entries
+
+NETWORK:
+*
+
+# -----------------------------------------------------------------------------
+
+# Fallbacks. In each row, if the first resource isn't available, the second
+# resource is requested. Uncomment and update as needed. Learn more:
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache#Fallback_entries

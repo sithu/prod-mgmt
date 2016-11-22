@@ -1,6 +1,7 @@
 from app import db
 
 class ProductionEntry(db.Model):
+    __tablename__ = 'production_entry'
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
 
     status = db.Column(db.Enum('PLANNED', ' IN_PROGRESS', ' COMPLETED', ' SHIPPED'))

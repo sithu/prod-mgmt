@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import raw_material
+from app.models import RawMaterial
 from flask import abort, jsonify, request
 import datetime
 import json

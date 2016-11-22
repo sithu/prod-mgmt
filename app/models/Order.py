@@ -2,6 +2,7 @@ from app import db
 
 
 class Order(db.Model):
+    __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     status = db.Column(db.Enum('PLANNED', 'IN_PROGRESS', 'COMPLETED', 'SHIPPED'))
@@ -22,6 +23,9 @@ class Order(db.Model):
 
     note = db.Column(db.String)
 
+    # 1-1 
+    machine_id = db.Column(db.Integer, db.ForeignKey('machine.id'))
+
     def to_dict(self):
         return dict(
             id=self.id,
@@ -33,6 +37,7 @@ class Order(db.Model):
             estimated_time_to_finish=self.estimated_time_to_finish,
             production_start_at=self.production_start_at.isoformat(),
             production_end_at=self.production_end_at.isoformat(),
+            machine_id=self.machine_id,
             note=self.note,
         )
 

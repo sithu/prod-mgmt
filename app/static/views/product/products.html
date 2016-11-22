@@ -162,6 +162,15 @@
                     </div>
 
                 </div>
+                <div class="form-group">
+                    <label>Mold Num:</label>
+
+                    <input type="text" class="form-control" name="mold-id"
+                           ng-model="product.mold_id" ng-required="true"
+                           ng-minlength=1 ng-maxlength=50 />
+                    <span class="error" ng-show="form.name.$error.minlength">Must be at least 1 characters.</span>
+                    <span class="error" ng-show="form.name.$error.maxlength">Must be at most 50 characters.</span>
+                </div>
                 
             </div>
             <div class="modal-footer">
@@ -182,17 +191,19 @@
             <tr>
                 <th>ID</th>
 
-                <th>name</th>
+                <th>Name</th>
 
-                <th>type</th>
+                <th>Type</th>
 
-                <th>weight</th>
+                <th>Weight</th>
 
-                <th>time_to_build</th>
+                <th>Time to build</th>
 
-                <th>selling_price</th>
+                <th>Selling price</th>
 
-                <th>color</th>
+                <th>Color</th>
+
+                <th>Mold Num</th>
 
                 <th>created_at</th>
 
@@ -215,6 +226,8 @@
                 <td>{{product.selling_price }}</td>
 
                 <td>{{product.color }}</td>
+
+                <td>{{product.mold_id }}</td>
 
                 <td>{{product.created_at  | date:'yyyy-MM-dd'}}</td>
 

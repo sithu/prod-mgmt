@@ -51,7 +51,7 @@ class Config(object):
             'func': '__main__:job1',
             'args': (1, 2),
             'trigger': 'interval',
-            'seconds': 10
+            'seconds': 36000
         }
     ]
 

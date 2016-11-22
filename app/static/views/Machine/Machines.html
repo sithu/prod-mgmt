@@ -25,23 +25,13 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Supervisor Attention</label>
+                    <label>Supervisor Effort (100% = 1 Person)</label>
                     
                     <input type="number" class="form-control" name="supported_mold_type"
                            ng-model="Machine.supervisor_attention" ng-required="false"
                            />
                     <span class="error" ng-show="form.supervisor_attention.$error.min">Must be greater than or equal to .</span>
                     <span class="error" ng-show="form.supervisor_attention.$error.max">Must be less than or equal to .</span>
-                </div>
-                
-                <div class="form-group">
-                    <label>Num of Workers Required</label>
-                    
-                    <input type="number" class="form-control" name="num_worker_needed"
-                           ng-model="Machine.num_worker_needed" ng-required="false"
-                           />
-                    <span class="error" ng-show="form.num_worker_needed.$error.min">Must be greater than or equal to .</span>
-                    <span class="error" ng-show="form.num_worker_needed.$error.max">Must be less than or equal to .</span>
                 </div>
                 
             </div>
@@ -81,23 +71,13 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Supervisor Attention</label>
+                    <label>Supervisor Effort (100% = 1 person)</label>
                     
                     <input type="number" class="form-control" name="supported_mold_type"
                            ng-model="Machine.supervisor_attention" ng-required="false"
                            />
                     <span class="error" ng-show="form.supervisor_attention.$error.min">Must be greater than or equal to .</span>
                     <span class="error" ng-show="form.supervisor_attention.$error.max">Must be less than or equal to .</span>
-                </div>
-                
-                <div class="form-group">
-                    <label>Num of Workers Needed</label>
-                    
-                    <input type="number" class="form-control" name="num_worker_needed"
-                           ng-model="Machine.num_worker_needed" ng-required="false"
-                           />
-                    <span class="error" ng-show="form.num_worker_needed.$error.min">Must be greater than or equal to .</span>
-                    <span class="error" ng-show="form.num_worker_needed.$error.max">Must be less than or equal to .</span>
                 </div>
                 
                 <div class="form-group">
@@ -134,9 +114,8 @@
                 
                 <th>Status</th>
                 
-                <th>Supervisor Attention</th>
+                <th>Supervisor Effort (%)</th>
                 
-                <th>Num of Workers Required</th>
             </tr>
             </thead>
             <tbody>
@@ -148,8 +127,6 @@
                 <td>{{Machine.status}}</td>
                 
                 <td>{{Machine.supervisor_attention }}</td>
-                
-                <td>{{Machine.num_worker_needed }}</td>
                 
                 <td>
                     <button type="submit"

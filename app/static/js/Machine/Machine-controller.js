@@ -46,7 +46,7 @@ angular.module('prodmgmt')
           
           "supervisor_attention": "",
           
-          "num_worker_needed": "",
+         // "num_worker_needed": "",
           
           "status": "",
           

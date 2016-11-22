@@ -2,26 +2,17 @@ from app import db
 from datetime import datetime
 from sqlalchemy import text
 from sqlalchemy import func
+from Base import Base
 
-class Raw_material(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    
+class RawMaterial(Base):
+    __tablename__ = 'raw_material'
     name = db.Column(db.String)
-    
     weight = db.Column(db.Integer)
-    
     count = db.Column(db.Integer)
-    
     purchase_price = db.Column(db.Integer)
-    
-    color = db.Column(db.Enum('white', 'red', 'green', 'blue', 'yellow', 'clear', 'grey', 'brown', 'other'))
-    
-    created_at = db.Column(db.DateTime, server_default=func.now())
-    
-    updated_at = db.Column(db.DateTime, server_default=func.now(), server_onupdate=func.now())
-    
+    color = db.Column(db.String)
     # 1-m relationship
-    products = db.relationship('Product', backref='raw_material', lazy='dynamic')
+    #products = db.relationship('product', backref='raw_material', lazy='dynamic')
 
     def to_dict(self):
         return dict(

@@ -3,12 +3,14 @@ from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 from app import app, db
 from app.models.User import User
+from app.models.Order import Order
+from app.models.Machine import Machine
 from datetime import datetime
 
 app.config.from_object(os.environ['APP_SETTINGS'])
 
-migrate = Migrate(app, db)
 manager = Manager(app)
+migrate = Migrate(app, db)
 
 # migrations
 manager.add_command('db', MigrateCommand)
@@ -18,6 +20,10 @@ SHIFTS = [ 'Morning', 'Evening', 'Night' ]
 @manager.command
 def hello():
     print "hello"
+
+@manager.shell
+def make_shell_context():
+    return dict(app=app, db=db, Order=Order, Machine=Machine)
 
 @manager.command
 def create_db():

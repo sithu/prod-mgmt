@@ -724,6 +724,41 @@
 					"required": false
 				}
 			]
+		},
+		{
+			"name": "Color",
+			"attrs": [
+				{
+					"attrName": "id",
+					"attrType": "Integer",
+					"min": "1",
+					"max": "1000",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "name",
+					"attrType": "String",
+					"minLength": "1",
+					"maxLength": "100",
+					"enumValues": [],
+					"required": true
+				},
+				{
+					"attrName": "created_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				},
+				{
+					"attrName": "updated_at",
+					"attrType": "Date",
+					"dateConstraint": "",
+					"enumValues": [],
+					"required": false
+				}
+			]
 		}
 	],
 	"resources": []

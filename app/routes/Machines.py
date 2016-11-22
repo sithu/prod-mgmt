@@ -33,7 +33,6 @@ def create_Machine():
         , created_at=datetime.datetime.now()
         , modified_at=datetime.datetime.now()
         , supervisor_attention=request.json['supervisor_attention']
-        , num_worker_needed=request.json['num_worker_needed']
     )
     db.session.add(entity)
     db.session.commit()
@@ -56,7 +55,6 @@ def update_Machine(id):
         #created_at=datetime.datetime.strptime(request.json['created_at'][:10], "%Y-%m-%d").date(),
         modified_at=datetime.datetime.now(),
         supervisor_attention=request.json['supervisor_attention'],
-        num_worker_needed=request.json['num_worker_needed'],
         id=id
     )
     db.session.merge(entity)

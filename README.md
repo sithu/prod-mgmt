@@ -1,7 +1,11 @@
 #### Run the App
 ```sh
 export APP_SETTINGS="config.DevelopmentConfig"
-
+# DB setup
+flask/bin/python manage.py db init
+flask/bin/python manage.py db migrate
+flask/bin/python manage.py db upgrade
+# Run the app
 ./flask/bin/python run.py 
 ```
 

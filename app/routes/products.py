@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import product
+from app.models import Product
 from flask import abort, jsonify, request
 import datetime
 import json
@@ -30,6 +30,7 @@ def create_product():
         , raw_material_id = request.json['raw_material_id']
         , created_at = now
         , updated_at = now
+        , mold_id = request.json['mold_id']
     )
     db.session.add(entity)
     db.session.commit()
@@ -49,6 +50,7 @@ def update_product(id):
         color = request.json['color'],
         created_at = datetime.datetime.strptime(request.json['created_at'], "%Y-%m-%d").date(),
         updated_at = datetime.datetime.strptime(request.json['updated_at'], "%Y-%m-%d").date(),
+        mold_id = request.json['mold_id'],
         id = id
     )
     db.session.merge(entity)

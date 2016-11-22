@@ -1,6 +1,7 @@
 from app import db
 
 class Machine(db.Model):
+    __tablename__ = 'machine'
     id = db.Column(db.Integer, primary_key = True)
     
     name = db.Column(db.String)
@@ -23,7 +24,12 @@ class Machine(db.Model):
     
     supervisor_attention = db.Column(db.Integer)
 
-    num_worker_needed = db.Column(db.Integer)
+    # 1-1 relationship
+    order = db.relationship(
+        'Order',
+        backref='machine',
+        uselist=False
+    )
 
     def to_dict(self):
         return dict(
@@ -37,8 +43,8 @@ class Machine(db.Model):
             created_at = str(self.created_at),
             modified_at = str(self.modified_at),
             supervisor_attention = self.supervisor_attention,
-            num_worker_needed = self.num_worker_needed,
-            id = self.id
+            id = self.id,
+            order = self.order
         )
 
     def __repr__(self):
