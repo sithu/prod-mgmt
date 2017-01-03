@@ -18,12 +18,7 @@ def get_Color(id):
 
 @app.route('/prodmgmt/Colors', methods = ['POST'])
 def create_Color():
-    entity = Color(
-        id = request.json['id']
-        , name = request.json['name']
-        , created_at = datetime.datetime.strptime(request.json['created_at'], "%Y-%m-%d").date()
-        , updated_at = datetime.datetime.strptime(request.json['updated_at'], "%Y-%m-%d").date()
-    )
+    entity = Color(name = request.json['name'])
     db.session.add(entity)
     db.session.commit()
     return jsonify(entity.to_dict()), 201

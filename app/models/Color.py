@@ -3,7 +3,7 @@ from app.models.Base import Base
 
 class Color(Base):
     __tablename__ = 'color'
-    name = db.Column(db.String)
+    name = db.Column(db.String, nullable=False, unique=True)
     
     def to_dict(self):
         return dict(
