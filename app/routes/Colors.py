@@ -28,12 +28,8 @@ def update_Color(id):
     entity = Color.query.get(id)
     if not entity:
         abort(404)
-    entity = Color(
-        id = request.json['id'],
-        name = request.json['name'],
-        created_at = datetime.datetime.strptime(request.json['created_at'], "%Y-%m-%d").date(),
-        updated_at = datetime.datetime.strptime(request.json['updated_at'], "%Y-%m-%d").date()
-    )
+    
+    entity.name = request.json['name']
     db.session.merge(entity)
     db.session.commit()
     return jsonify(entity.to_dict()), 200
