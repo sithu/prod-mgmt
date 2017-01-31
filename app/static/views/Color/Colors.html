@@ -14,11 +14,18 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Name:</label>
+                    <label>Color Code:</label>
+                    <input id="background-color" ng-model="Color.id" type="color" value="#008080" 
+                    onchange="$('#color-hex').val(this.value);$('#name').val(ntc.name(this.value)[1]);"/> 
+                    <input id="color-hex" type="text" ng-required="true" placeholder="Pick Color" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Color Name:</label>
                     
-                    <input type="text" class="form-control" name="name"
+                    <input type="text" id="name" class="form-control" name="name"
                            ng-model="Color.name" ng-required="true"
-                           ng-minlength=1 ng-maxlength=100/>
+                           ng-minlength="1" ng-maxlength="100"
+                           />
                     <span class="error" ng-show="form.name.$error.minlength">Must be at least 1 characters.</span>
                     <span class="error" ng-show="form.name.$error.maxlength">Must be at most 100 characters.</span>
                 </div>
@@ -82,7 +89,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="Color in Colors">
-                <td>{{Color.id}}</td>
+                <td bgcolor="{{Color.id}}">{{Color.id}}</td>
                 <td>{{Color.name }}</td>
                 <td>{{Color.created_at  | date:'yyyy-MM-dd'}}</td>
                 <td>{{Color.updated_at  | date:'yyyy-MM-dd'}}</td>

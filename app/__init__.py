@@ -13,7 +13,10 @@ app = Flask(__name__, static_url_path='')
 # Without multiple env support
 #app.config.from_object('config')
 # better per env setup
-app.config.from_object(os.environ['APP_SETTINGS'])
+app_setting = os.getenv('APP_SETTINGS', 'config.DevelopmentConfig')
+print "APP_SETTINGS=", app_setting
+
+app.config.from_object(app_setting)
 # TODO: disable in production
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 

@@ -1,10 +1,13 @@
 from app import db
-from app.models.Base import Base
+from app.models.StringPKBase import StringPKBase
 
-class Color(Base):
+class Color(StringPKBase):
+    """
+    class doc
+    """
     __tablename__ = 'color'
     name = db.Column(db.String, nullable=False, unique=True)
-    
+
     def to_dict(self):
         return dict(
             id=self.id,

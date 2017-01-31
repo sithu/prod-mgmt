@@ -9,7 +9,7 @@ def get_all_Colors():
     entities = Color.query.all()
     return json.dumps([entity.to_dict() for entity in entities])
 
-@app.route('/prodmgmt/Colors/<int:id>', methods = ['GET'])
+@app.route('/prodmgmt/Colors/<string:id>', methods = ['GET'])
 def get_Color(id):
     entity = Color.query.get(id)
     if not entity:
@@ -18,12 +18,12 @@ def get_Color(id):
 
 @app.route('/prodmgmt/Colors', methods = ['POST'])
 def create_Color():
-    entity = Color(name = request.json['name'])
+    entity = Color(id= request.json['id'], name = request.json['name'])
     db.session.add(entity)
     db.session.commit()
     return jsonify(entity.to_dict()), 201
 
-@app.route('/prodmgmt/Colors/<int:id>', methods = ['PUT'])
+@app.route('/prodmgmt/Colors/<string:id>', methods = ['PUT'])
 def update_Color(id):
     entity = Color.query.get(id)
     if not entity:
@@ -34,7 +34,7 @@ def update_Color(id):
     db.session.commit()
     return jsonify(entity.to_dict()), 200
 
-@app.route('/prodmgmt/Colors/<int:id>', methods = ['DELETE'])
+@app.route('/prodmgmt/Colors/<string:id>', methods = ['DELETE'])
 def delete_Color(id):
     entity = Color.query.get(id)
     if not entity:

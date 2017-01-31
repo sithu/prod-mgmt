@@ -10,7 +10,7 @@ CACHE MANIFEST
 # A common way to do this is by simply updating a commented-out string, like a
 # date or a version number, or both:
 
-2017-01-03:v0
+2017-01-22:v16
 
 # -----------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ lib/bootstrap-material-design/dist/css/bootstrap-material-design.css
 lib/bootstrap-material-design/dist/css/ripples.min.css
 lib/jquery-ui/themes/smoothness/jquery-ui.css
 css/snackbar.min.css
+lib/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css
 css/app.css
 lib/jquery/dist/jquery.js
 lib/bootstrap/dist/js/bootstrap.js
@@ -49,6 +50,8 @@ lib/bootstrap-material-design/dist/js/material.min.js
 lib/bootstrap-material-design/dist/js/ripples.min.js
 lib/angular-bootstrap/ui-bootstrap-tpls.js
 lib/angular-ui-date/src/date.js
+lib/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js
+js/ntc.js
 js/app.js
 js/home/home-controller.js
 js/auth/auth-controller.js
