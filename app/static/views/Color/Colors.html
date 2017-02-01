@@ -50,13 +50,13 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>ID</label>
-                    <input type="text" class="form-control" name="id"
-                           ng-model="Color.id" readonly>
+                    <label>Color Code:</label>
+                    <input id="background-color" ng-model="Color.id" type="color" disabled/> 
+                    <input type="text" ng-model="Color.id" ng-required="true" placeholder="Pick Color" readonly>
                 </div>
 
                 <div class="form-group">
-                    <label>Name:</label>
+                    <label>Color Name:</label>
                     
                     <input type="text" class="form-control" name="name"
                            ng-model="Color.name" ng-required="true"
@@ -81,7 +81,7 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>ID</th>
+                <th>Color Code</th>
                 <th>Color Name</th>
                 <th>Created At</th>
                 <th>Updated At</th>
@@ -89,21 +89,13 @@
             </thead>
             <tbody>
             <tr ng-repeat="Color in Colors">
-                <td bgcolor="{{Color.id}}">{{Color.id}}</td>
-                <td>{{Color.name }}</td>
-                <td>{{Color.created_at  | date:'yyyy-MM-dd'}}</td>
-                <td>{{Color.updated_at  | date:'yyyy-MM-dd'}}</td>
+                <td>{{Color.id}}</td>
+                <td bgcolor="{{Color.id}}">{{Color.name }}</td>
+                <td>{{Color.created_at  | date:'yyyy-MM-dd @ h:mma'}}</td>
+                <td>{{Color.updated_at  | date:'yyyy-MM-dd @ h:mma'}}</td>
                 <td>
-                    <button type="submit"
-                            ng-click="update(Color.id)"
-                            class="btn">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                    </button>
-                    <button type="submit"
-                            ng-click="delete(Color.id)"
-                            class="btn btn-danger">
-                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
-                    </button>
+                    <a ng-click="update(Color.id)" class="btn-sm btn-info">Edit</a>
+                    <a ng-click="delete(Color.id)" class="btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
             </tbody>
