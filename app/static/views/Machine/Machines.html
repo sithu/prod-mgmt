@@ -15,26 +15,35 @@
 
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Name</label>
+                    <label>ID</label>
                     
-                    <input type="text" class="form-control" name="name"
-                           ng-model="Machine.name" ng-required="false"
+                    <input type="text" class="form-control" name="id"
+                           ng-model="Machine.id" ng-required="true"
                            />
                     <span class="error" ng-show="form.name.$error.minlength">Must be at least  characters.</span>
                     <span class="error" ng-show="form.name.$error.maxlength">Must be at most  characters.</span>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Supervisor Effort (100% = 1 Person)</label>
+                    <label>Name</label>
                     
-                    <input type="number" class="form-control" name="supported_mold_type"
-                           ng-model="Machine.supervisor_attention" ng-required="false"
+                    <input type="text" class="form-control" name="name"
+                           ng-model="Machine.name" ng-required="true"
                            />
-                    <span class="error" ng-show="form.supervisor_attention.$error.min">Must be greater than or equal to .</span>
-                    <span class="error" ng-show="form.supervisor_attention.$error.max">Must be less than or equal to .</span>
+                    <span class="error" ng-show="form.name.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.name.$error.maxlength">Must be at most  characters.</span>
                 </div>
-                
+                <div class="form-group">
+                    <label>Status</label>
+                    
+                    <input type="text" class="form-control" name="status"
+                           ng-model="Machine.status" ng-required="true"
+                           />
+                    <span class="error" ng-show="form.name.$error.minlength">Must be at least  characters.</span>
+                    <span class="error" ng-show="form.name.$error.maxlength">Must be at most  characters.</span>
+                </div>
             </div>
+            
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
                 </button>
@@ -51,7 +60,7 @@
             <div class="modal-header">
                 <button type="button" class="close"
                         ng-click="cancel()">&times;</button>
-                <h4 class="modal-title" id="myMachineLabel">Edit Machine Info</h4>
+                <h4 class="modal-title" id="myMachineLabel">Edit Machine</h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -71,16 +80,6 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Supervisor Effort (100% = 1 person)</label>
-                    
-                    <input type="number" class="form-control" name="supported_mold_type"
-                           ng-model="Machine.supervisor_attention" ng-required="false"
-                           />
-                    <span class="error" ng-show="form.supervisor_attention.$error.min">Must be greater than or equal to .</span>
-                    <span class="error" ng-show="form.supervisor_attention.$error.max">Must be less than or equal to .</span>
-                </div>
-                
-                <div class="form-group">
                     <label>Status</label>
                     
                     <input type="text" class="form-control" name="status"
@@ -89,7 +88,6 @@
                     <span class="error" ng-show="form.status.$error.minlength">Must be at least  characters.</span>
                     <span class="error" ng-show="form.status.$error.maxlength">Must be at most  characters.</span>
                 </div>
-                
                 
             </div>
             <div class="modal-footer">
@@ -101,7 +99,7 @@
     </script>
 
     <button class="btn btn-primary btn-raised" ng-click="create()">
-        <i class="material-icons">add_circle</i> Add Machine
+        Add Machine
     </button>
 
     <div class="table-responsive">
@@ -114,8 +112,6 @@
                 
                 <th>Status</th>
                 
-                <th>Supervisor Effort (%)</th>
-                
             </tr>
             </thead>
             <tbody>
@@ -126,19 +122,9 @@
                 
                 <td>{{Machine.status}}</td>
                 
-                <td>{{Machine.supervisor_attention }}</td>
-                
                 <td>
-                    <button type="submit"
-                            ng-click="update(Machine.id)"
-                            class="btn">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                    </button>
-                    <button type="submit"
-                            ng-click="delete(Machine.id)"
-                            class="btn btn-danger">
-                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
-                    </button>
+                    <a ng-click="update(Machine.id)" class="btn-sm btn-info">Edit</a>
+                    <a ng-click="delete(Machine.id)" class="btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
             </tbody>
