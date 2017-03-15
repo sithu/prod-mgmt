@@ -107,21 +107,19 @@
             <thead>
             <tr>
                 <th>ID</th>
-                
                 <th>Name</th>
-                
                 <th>Status</th>
-                
+                <th>Created At</th>
+                <th>Updated At</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="Machine in Machines">
                 <td>{{Machine.id}}</td>
-                
                 <td>{{Machine.name }}</td>
-                
                 <td>{{Machine.status}}</td>
-                
+                <td>{{Machine.created_at  | date:'yyyy-MM-dd @ h:mma'}}</td>
+                <td>{{Machine.updated_at  | date:'yyyy-MM-dd @ h:mma'}}</td>
                 <td>
                     <a ng-click="update(Machine.id)" class="btn-sm btn-info">Edit</a>
                     <a ng-click="delete(Machine.id)" class="btn-sm btn-danger">Delete</a>

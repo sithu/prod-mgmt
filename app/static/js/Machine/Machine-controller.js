@@ -41,22 +41,11 @@ angular.module('prodmgmt')
 
       $scope.clear = function () {
         $scope.Machine = {
-          
           "name": "",
-          
-          "supervisor_attention": "",
-          
-         // "num_worker_needed": "",
-          
           "status": "",
-          
-          //"downtime_start": "",
-          
-          //"downtime_end": "",
-          
-          //"total_downtime": "",
-          
-          "id": ""
+          "id": "",
+          "created_at": "",
+          "updated_at": ""
         };
       };
 

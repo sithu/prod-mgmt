@@ -34,14 +34,14 @@ def create_Machine():
 
 @app.route('/prodmgmt/Machines/<string:id>', methods=['PUT'])
 def update_Machine(id):
+    print "updating machine id=", id
     entity = Machine.query.get(id)
     if not entity:
         abort(404)
-    entity = Machine(
-        name=request.json['name'],
-        status=request.json['status'],
-        id=id
-    )
+
+    entity.name = request.json['name']
+    entity.status = request.json['status']
+
     db.session.merge(entity)
     db.session.commit()
     return jsonify(entity.to_dict()), 200
