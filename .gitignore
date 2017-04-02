@@ -67,4 +67,4 @@ flask/
 
 # VS Code files
 .DS_Store 
-.vscode/
+#.vscode/ want to check in vscode settings
