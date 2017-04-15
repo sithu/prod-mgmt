@@ -41,7 +41,7 @@ from app.models import User
 from app.models import Color
 from app.routes import index
 
-from app.routes import products
+from app.routes import Products
 from app.routes import raw_materials
 from app.routes import Orders
 from app.routes import Productionentries

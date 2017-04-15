@@ -1,13 +1,13 @@
 'use strict';
 
 angular.module('prodmgmt')
-  .controller('ProductController', ['$scope', '$modal', 'resolvedProduct', 'Product', 'Raw_material',
-    function ($scope, $modal, resolvedProduct, Product, Raw_material) {
+  .controller('ProductController', ['$scope', '$modal', 'resolvedProduct', 'Product', 'Color',
+    function ($scope, $modal, resolvedProduct, Product, Color) {
       $scope.products = resolvedProduct;
-      $scope.raw_materials = [];
+      $scope.colors = [];
       
-      Raw_material.query().$promise.then(function (data){
-        $scope.raw_materials = data;
+      Color.query().$promise.then(function (data){
+        $scope.colors = data;
       });
 
       $scope.create = function () {
@@ -16,7 +16,7 @@ angular.module('prodmgmt')
       };
 
       $scope.update = function (id) {
-        $scope.raw_materials = Raw_material.query();
+        $scope.colors = Color.query();
         $scope.product = Product.get({id: id});
         $scope.open(id);
        };
@@ -76,8 +76,8 @@ angular.module('prodmgmt')
             product: function () {
               return $scope.product;
             },
-            raw_materials: function() {
-              return $scope.raw_materials;
+            colors: function() {
+              return $scope.colors;
             }
           }
         });
@@ -88,11 +88,11 @@ angular.module('prodmgmt')
         });
       };
     }])
-  .controller('ProductSaveController', ['$scope', '$modalInstance', 'product', 'raw_materials',
-    function ($scope, $modalInstance, product, raw_materials) {
+  .controller('ProductSaveController', ['$scope', '$modalInstance', 'product', 'colors',
+    function ($scope, $modalInstance, product, colors) {
       $scope.product = product;
-      $scope.raw_materials = raw_materials;
-      $scope.product.raw_material_id = raw_materials.length ? raw_materials[0].id : -1;
+      $scope.colors = colors;
+      //$scope.product.raw_material_id = raw_materials.length ? raw_materials[0].id : -1;
       
       $scope.created_atDateOptions = {
         dateFormat: 'yy-mm-dd',

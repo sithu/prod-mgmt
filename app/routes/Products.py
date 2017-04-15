@@ -1,18 +1,18 @@
 from app import app, db
-from app.models import Product
+from app.models.Product import Product
 from flask import abort, jsonify, request
 import datetime
 import json
 
 @app.route('/prodmgmt/products', methods = ['GET'])
 def get_all_products():
-    app.logger.debug('GET all products')
-    entities = product.Product.query.all()
+    app.logger.debug('GET all products from DB...')
+    entities = Product.query.all()
     return json.dumps([entity.to_dict() for entity in entities])
 
 @app.route('/prodmgmt/products/<int:id>', methods = ['GET'])
 def get_product(id):
-    entity = product.Product.query.get(id)
+    entity = Product.query.get(id)
     if not entity:
         abort(404)
     return jsonify(entity.to_dict())
@@ -20,7 +20,7 @@ def get_product(id):
 @app.route('/prodmgmt/products', methods = ['POST'])
 def create_product():
     now = datetime.datetime.utcnow()
-    entity = product.Product(
+    entity = Product(
         name = request.json['name']
         , type = request.json['type']
         , weight = request.json['weight']
@@ -38,10 +38,10 @@ def create_product():
 
 @app.route('/prodmgmt/products/<int:id>', methods = ['PUT'])
 def update_product(id):
-    entity = product.Product.query.get(id)
+    entity = Product.query.get(id)
     if not entity:
         abort(404)
-    entity = product.Product(
+    entity = Product(
         name = request.json['name'],
         type = request.json['type'],
         weight = request.json['weight'],
@@ -59,7 +59,7 @@ def update_product(id):
 
 @app.route('/prodmgmt/products/<int:id>', methods = ['DELETE'])
 def delete_product(id):
-    entity = product.Product.query.get(id)
+    entity = Product.query.get(id)
     if not entity:
         abort(404)
     db.session.delete(entity)

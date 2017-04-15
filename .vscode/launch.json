@@ -11,7 +11,7 @@
             "env": {
                 "APP_SETTINGS": "config.DevelopmentConfig"
             },
-            "args": ["--no-debugger"],
+            "args": [""],
             "debugOptions": [
                 "WaitOnAbnormalExit",
                 "WaitOnNormalExit",
