@@ -30,3 +30,6 @@ Werkzeug==0.10.4
 Whoosh==2.7.0
 WTForms==2.0.2
 Flask-APScheduler==1.4.0
+Flask-Bootstrap==3.2.0.2
+simplejson==3.6.0
+Pillow==2.5.1

@@ -31,6 +31,7 @@ def create_product():
         , created_at = now
         , updated_at = now
         , mold_id = request.json['mold_id']
+        , photo_url = None
     )
     db.session.add(entity)
     db.session.commit()

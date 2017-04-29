@@ -12,6 +12,7 @@ colors = db.Table(
 )
 
 class Product(StringPKBase):
+    '''Model for product table'''
     __tablename__ = 'product'
     name = db.Column(db.String)
     weight = db.Column(db.Integer)
@@ -19,6 +20,7 @@ class Product(StringPKBase):
     selling_price = db.Column(db.Integer)
     num_employee_required = db.Column(db.Integer)
     mold_id = db.Column(db.Integer)
+    photo_url = db.Column(db.String)
     # m-m
     colors = db.relationship(
         'Color',
@@ -27,9 +29,7 @@ class Product(StringPKBase):
     )
 
     def to_dict(self):
-        """
-        return a dict
-        """
+        """return a dict"""
         return dict(
             id=self.id,
             name=self.name,
@@ -41,7 +41,8 @@ class Product(StringPKBase):
             num_employee_required=self.num_employee_required,
             created_at=str(self.created_at),
             updated_at=str(self.updated_at),
-            mold_id=self.mold_id
+            mold_id=self.mold_id,
+            photo_url=self.photo_url
         )
 
     def __repr__(self):

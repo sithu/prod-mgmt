@@ -29,6 +29,7 @@ def upgrade():
         sa.Column('selling_price', sa.Integer(), nullable=True),
         sa.Column('num_employee_required', sa.Integer(), nullable=True),
         sa.Column('mold_id', sa.Integer(), nullable=True),
+        sa.Column('photo_url', sa.String()),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('name')
     )
