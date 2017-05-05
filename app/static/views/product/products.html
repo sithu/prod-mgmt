@@ -31,36 +31,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Type:</label>
-
-                    <div class="radio">
-                    <label class="radio"><input type="radio" name="type" value="chair"
-                           ng-model="product.type" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> chair </label>
-                    </div>
-                    <div class="radio">
-                    <label class="radio"><input type="radio" name="type" value="stool"
-                           ng-model="product.type" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> stool </label>
-                    </div>
-                    <div class="radio">
-                    <label class="radio"><input type="radio" name="type" value="basket"
-                           ng-model="product.type" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> basket </label>
-                    </div>
-                    <div class="radio">
-                    <label class="radio"><input type="radio" name="type" value="cup"
-                           ng-model="product.type" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> cup </label>
-                    </div>
-                    <div class="radio">
-                    <label class="radio"><input type="radio" name="type" value="bowl"
-                           ng-model="product.type" ng-required="true"/> 
-                           <span class="circle"></span><span class="check"></span>bowl </label>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label>Weight:</label>
 
                     <input type="number" class="form-control" name="weight"
@@ -90,78 +60,27 @@
                     <span class="error" ng-show="form.selling_price.$error.max">Must be less than or equal to .</span>
                 </div>
 
-                <!-- Raw Material Selection -->
+                <!-- Color Selection -->
                 <div class="form-group">
-                    <label>Raw Material:</label>
+                    <label>Colors Selection:</label>
 
                     <select 
-                        id="raw-material-select"
-                        name="raw_material"
-                        ng-model="product.raw_material_id"
-                        ng-options="rm.id as rm.name for rm in raw_materials"
+                        id="color-select"
+                        name="color"
+                        ng-model="product.colors"
+                        ng-options="c.id as c.name for c in colors"
                         ng-required="true">
                     </select>
                 </div>
                
                 <div class="form-group">
-                    <label>Color:</label>
+                    <label>Colors:</label>
 
-                    <div class="radio">
-                        <label>
-                        <input type="radio" name="color" value="white"
-                           ng-model="product.color" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> White 
-                        </label>
-                    </div>
-                    <div class="radio">
-                    <label><input type="radio" name="color" value="red"
-                           ng-model="product.color" ng-required="true"/> 
-                           <span class="circle"></span><span class="check"></span>red </label>
-                    </div>
+                    <input type="number" class="form-control" name="colors"
+                           ng-model="product.colors" ng-required="true"
+                           />
+               </div>
 
-                    <div class="radio">      
-                    <label><input type="radio" name="color" value="green"
-                           ng-model="product.color" ng-required="true"/> 
-                           <span class="circle"></span><span class="check"></span>green </label>
-                    </div>
-
-                    <div class="radio">      
-                    <label><input type="radio" name="color" value="blue"
-                           ng-model="product.color" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> blue </label>
-                    </div>
-
-                    <div class="radio">      
-                    <label><input type="radio" name="color" value="yellow"
-                           ng-model="product.color" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> yellow </label>
-                    </div>
-
-                    <div class="radio">      
-                    <label><input type="radio" name="color" value="clear"
-                           ng-model="product.color" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> clear </label>
-                    </div>
-
-                    <div class="radio">      
-                    <label><input type="radio" name="color" value="grey"
-                           ng-model="product.color" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> grey </label>
-                    </div>
-
-                    <div class="radio">      
-                    <label><input type="radio" name="color" value="brown"
-                           ng-model="product.color" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> brown </label>
-                    </div>
-
-                    <div class="radio">      
-                    <label><input type="radio" name="color" value="other"
-                           ng-model="product.color" ng-required="true"/>
-                           <span class="circle"></span><span class="check"></span> other </label>
-                    </div>
-
-                </div>
                 <div class="form-group">
                     <label>Mold Num:</label>
 
@@ -199,7 +118,7 @@
 
                 <th>Selling price</th>
 
-                <th>Color</th>
+                <th>Colors</th>
 
                 <th>Mold Num</th>
 
@@ -217,7 +136,7 @@
 
                 <td>{{product.selling_price }}</td>
 
-                <td>{{product.color }}</td>
+                <td>{{product.colors }}</td>
 
                 <td>{{product.mold_id }}</td>
 

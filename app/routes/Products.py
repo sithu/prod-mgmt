@@ -26,7 +26,7 @@ def create_product():
         , weight = request.json['weight']
         , time_to_build = request.json['time_to_build']
         , selling_price = request.json['selling_price']
-        , color = request.json['color']
+        , colors = request.json['colors']
         , raw_material_id = request.json['raw_material_id']
         , created_at = now
         , updated_at = now

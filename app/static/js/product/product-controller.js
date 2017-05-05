@@ -58,7 +58,7 @@ angular.module('prodmgmt')
 
           "selling_price": "",
 
-          "color": "",
+          "colors": "",
 
           "raw_material_id": 0,
 
