@@ -70,7 +70,7 @@ angular.module('prodmgmt')
 
       $scope.open = function (id) {
         var productSave = $modal.open({
-          templateUrl: 'product-save.html',
+          templateUrl: (id) ? 'product-edit.html' : 'product-new.html',
           controller: 'ProductSaveController',
           resolve: {
             product: function () {
