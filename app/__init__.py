@@ -14,7 +14,7 @@ app = Flask(__name__, static_url_path='')
 #app.config.from_object('config')
 # better per env setup
 app_setting = os.getenv('APP_SETTINGS', 'config.DevelopmentConfig')
-print "APP_SETTINGS=", app_setting
+print "APP_SETTINGS=%s" % app_setting
 
 app.config.from_object(app_setting)
 # TODO: disable in production

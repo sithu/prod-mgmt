@@ -33,11 +33,10 @@ class Product(StringPKBase):
         return dict(
             id=self.id,
             name=self.name,
-            type=self.type,
             weight=self.weight,
             time_to_build=self.time_to_build,
             selling_price=self.selling_price,
-            colors=self.colors,
+            colors=[c.id for c in self.colors],
             num_employee_required=self.num_employee_required,
             created_at=str(self.created_at),
             updated_at=str(self.updated_at),

@@ -1,5 +1,6 @@
 from app import app, db
 from app.models.Product import Product
+from app.models.Color import Color
 from flask import abort, jsonify, request
 import datetime
 import json
@@ -21,18 +22,17 @@ def get_product(id):
 def create_product():
     now = datetime.datetime.utcnow()
     entity = Product(
-        name = request.json['name']
-        , type = request.json['type']
-        , weight = request.json['weight']
-        , time_to_build = request.json['time_to_build']
-        , selling_price = request.json['selling_price']
-        , colors = request.json['colors']
-        , raw_material_id = request.json['raw_material_id']
-        , created_at = now
-        , updated_at = now
-        , mold_id = request.json['mold_id']
-        , photo_url = None
-    )
+        id=request.json['id']
+        , name=request.json['name']
+        , created_at=now
+        , updated_at=now
+        , weight=int(request.json['weight'])
+        , time_to_build=int(request.json['time_to_build'])
+        , selling_price=int(request.json['selling_price'])
+        , num_employee_required=int(request.json['num_employee_required'])
+        , mold_id=int(request.json['mold_id'])
+        , photo_url=None)
+    entity.colors = [Color.query.filter_by(id=c).first() for c in request.json['colors']]
     db.session.add(entity)
     db.session.commit()
     return jsonify(entity.to_dict()), 201

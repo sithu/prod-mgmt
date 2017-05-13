@@ -50,8 +50,6 @@ angular.module('prodmgmt')
 
           "name": "",
 
-          "type": "",
-
           "weight": "",
 
           "time_to_build": "",
@@ -60,7 +58,9 @@ angular.module('prodmgmt')
 
           "colors": "",
 
-          "raw_material_id": 0,
+          "raw_material_id": "",
+
+          "num_employee_required": "",
 
           "mold_id": "",
 
