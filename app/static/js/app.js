@@ -1,5 +1,5 @@
 // Declare app level module which depends on filters, and services
-var prodmgmt = angular.module('prodmgmt', ['ngResource','ngCookies','ngRoute', 'ui.bootstrap', 'ui.date', 'rt.select2'])
+var prodmgmt = angular.module('prodmgmt', ['ngResource','ngCookies','ngRoute', 'ui.bootstrap', 'ui.date', 'rt.select2', 'ngjsColorPicker'])
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
       .when('/home', {

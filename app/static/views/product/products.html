@@ -187,6 +187,7 @@
                 
             </div>
             <div class="modal-footer">
+                <button type="submit" ng-click="delete(product.id)" class="btn btn-danger left">Delete</button>
                 <button type="button" class="btn btn-default" ng-click="cancel()">Cancel
                 </button>
                 <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Save</button>
@@ -201,51 +202,40 @@
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
-            <tr>
+            <tr class="no-wrap">
                 <th>ID</th>
 
                 <th>Name</th>
 
-                <th>Weight</th>
-
-                <th>Time to build</th>
-
-                <th>Selling price</th>
-
-                <th>Colors</th>
-
                 <th>Mold Num</th>
 
+                <th><i class="fa fa-balance-scale fa-2x" aria-hidden="true"></i></th>
+
+                <th><i class="fa fa-clock-o fa-2x" aria-hidden="true"></i></th>
+
+                <th><i class="fa fa-male fa-2x" aria-hidden="true"></i></th>
+                
+                <th><i class="fa fa-paint-brush fa-lg" aria-hidden="true"></i></th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="product in products">
+            <tr class="no-wrap" ng-repeat="product in products">
                 <td>{{product.id}}</td>
 
-                <td>{{product.name }}</td>
-
-                <td>{{product.weight }}</td>
-
-                <td>{{product.time_to_build }}</td>
-
-                <td>{{product.selling_price }}</td>
-
-                <td>{{product.colors }}</td>
+                <td><a ng-click="update(product.id)">{{product.name}}</a></td>
 
                 <td>{{product.mold_id }}</td>
 
+                <td>{{product.weight }} lb</td>
+
+                <td>{{product.time_to_build}} sec</td>
+
+                <td>{{product.num_employee_required }}</td>
+
                 <td>
-                    <button type="submit"
-                            ng-click="update(product.id)"
-                            class="btn">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                    </button>
-                    <button type="submit"
-                            ng-click="delete(product.id)"
-                            class="btn btn-danger">
-                        <span class="glyphicon glyphicon-remove-circle"></span> Delete
-                    </button>
+                    <ngjs-color-picker custom-colors="product.colors" options="customOptions"></ngjs-color-picker>
                 </td>
+
             </tr>
             </tbody>
         </table>
