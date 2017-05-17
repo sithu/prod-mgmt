@@ -6,12 +6,13 @@ How to run: flask/bin/python run.py
 import os
 from flask import Flask, render_template
 from logging import Formatter, FileHandler
-from flask_admin.contrib.sqla import ModelView
+from app.view import MyModelView
 from app import app, admin, db
+from flask_admin.consts import ICON_TYPE_GLYPH
 
 ################ Flask Admin Setup #######################
 from app.model import Color
-admin.add_view(ModelView(Color, db.session))
+admin.add_view(MyModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 
 ################ Logger ######################
 #import logging

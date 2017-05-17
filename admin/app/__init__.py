@@ -13,7 +13,14 @@ LOG = getLogger(__name__)
 app = Flask(__name__, static_url_path='/static')
 db = SQLAlchemy(app)
 babel = Babel(app)
-admin = Admin(app, name='Popular Plastic', template_mode='bootstrap3')
+admin = Admin(
+    app, 
+    name='Popular Plastic', 
+    template_mode='bootstrap3',
+    category_icon_classes={
+        'color': 'glyphicon glyphicon-user',
+    }
+)
 
 
 @babel.localeselector
