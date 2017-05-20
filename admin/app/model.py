@@ -1,4 +1,6 @@
+import enum
 from app import db
+
 
 class StringPKBase(db.Model):
     """
@@ -23,13 +25,15 @@ class Base(db.Model):
 class Machine(Base):
     __tablename__ = 'machine'
     name = db.Column(db.String, nullable=False, unique=True)
-    status = db.Column(db.String, default='Available')
+    status = db.Column(db.Enum('OFF', 'ON', 'BUSY', 'BROKEN'), nullable=False)
+    power_in_kilowatt = db.Column(db.Integer) 
     
     def to_dict(self):
         return dict(
             id=self.id,
             name=self.name,
             status=self.status,
+            power_in_kilowatt=self.power_in_kilowatt,
             created_at=self.created_at.isoformat(),
             updated_at=self.updated_at.isoformat()
         )

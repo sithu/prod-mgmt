@@ -15,6 +15,7 @@ class ColorModelView(ModelView):
     #inline_models = (ColorInlineModelForm(Color),)
     column_display_pk = True
     #column_hide_backrefs = False
+    form_columns = (Color.name, Color.color_code)
     column_searchable_list = (Color.name, Color.color_code)
     #form_excluded_columns = (Color.name)
     #inline_models = (Color,)
@@ -35,7 +36,7 @@ class MachineModelView(ModelView):
     #column_select_related_list = (Machine.id, Machine.name, Machine.status)
     #form_edit_rules = form_create_rules
     #form_excluded_columns = (Color.name)
-    form_columns = (Machine.name, Machine.status)
+    form_columns = (Machine.name, Machine.status, Machine.power_in_kilowatt)
 
 class ProductModelView(ModelView):
     column_display_pk = True
