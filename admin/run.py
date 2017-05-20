@@ -6,13 +6,15 @@ How to run: flask/bin/python run.py
 import os
 from flask import Flask, render_template
 from logging import Formatter, FileHandler
-from app.view import MyModelView
+from app.view import ColorModelView, MachineModelView, ProductModelView
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
+from app.model import Color, Machine, Product
 
 ################ Flask Admin Setup #######################
-from app.model import Color
-admin.add_view(MyModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
+admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
+admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
+admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 
 ################ Logger ######################
 #import logging
@@ -42,6 +44,9 @@ admin.add_view(MyModelView(Color, db.session, menu_class_name='color', menu_icon
 # better per env setup
 app.config.from_object(os.environ['APP_SETTINGS'])
 
+# set flask admin swatch
+app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
+
 ################ DB ####################
 # TODO: disable in production
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
@@ -70,7 +75,8 @@ app.config.from_object(Config())
 scheduler.init_app(app)
 scheduler.start()
 
-# Create DB
+# Drop and create DB
+db.drop_all()
 db.create_all()
 
 if __name__ == '__main__':
