@@ -9,10 +9,11 @@ from flask_admin.contrib.sqla import ModelView
 
 LOG = getLogger(__name__)
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_folder='files')
 db = SQLAlchemy(app)
 admin = Admin(
     app, 
     name='Popular Plastic', 
     template_mode='bootstrap3'
 )
+
