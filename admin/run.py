@@ -42,7 +42,11 @@ admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', 
 # app.config.from_object('config')
 
 # better per env setup
-app.config.from_object(os.environ['APP_SETTINGS'])
+# app.config.from_object(os.environ['APP_SETTINGS'])
+
+app_setting = os.getenv('APP_SETTINGS', 'config.DevelopmentConfig')
+print "APP_SETTINGS=%s" % app_setting
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # set flask admin swatch
 app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
@@ -75,9 +79,8 @@ app.config.from_object(Config())
 scheduler.init_app(app)
 scheduler.start()
 
-# Drop and create DB
-db.drop_all()
-db.create_all()
+from app.build_db import build_sample_db
+build_sample_db()
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", debug = True)
