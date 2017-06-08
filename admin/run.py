@@ -47,6 +47,10 @@ admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', 
 app_setting = os.getenv('APP_SETTINGS', 'config.DevelopmentConfig')
 print "APP_SETTINGS=%s" % app_setting
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'my-secret'
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'admin.db')
+print "SQLALCHEMY_DATABASE_URI=%s" % app.config['SQLALCHEMY_DATABASE_URI']
 
 # set flask admin swatch
 app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'

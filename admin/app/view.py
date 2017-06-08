@@ -84,13 +84,12 @@ class ProductModelView(ModelView):
 
     form_columns = (
         'name',
-        'color_id',
-        'color',
+        'colors',
         'weight',
         'time_to_build',
         'selling_price',
         'num_employee_required',
-        'default_machine_id',
+        'machine',
         'mold_id',
         'photo_url'
     )

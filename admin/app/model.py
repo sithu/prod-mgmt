@@ -39,7 +39,7 @@ class Machine(Base):
         )
 
     def __repr__(self):
-        return 'Machine xxxx'
+        return '%d - %s' % (self.id, self.name)
 
 class Color(db.Model):
     """
@@ -55,7 +55,7 @@ class Color(db.Model):
         return '%d - %s' % (self.id, self.name)
 
 #m-m mapping
-colors = db.Table(
+product_colors_table = db.Table(
     'product_color',
     db.Model.metadata,
     db.Column('product_id', db.String, db.ForeignKey('product.id')),
@@ -82,10 +82,11 @@ class Product(Base):
     num_employee_required = db.Column(db.Integer)
     mold_id = db.Column(db.Integer)
     photo_url = db.Column(db.String)
-    color_id = db.Column(db.Integer(), db.ForeignKey(Color.id))
-    color = db.relationship(Color, backref='colors')
-    default_machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))
+    # color_id = db.Column(db.Integer(), db.ForeignKey(Color.id))
+    colors = db.relationship(Color, secondary=product_colors_table)
+    # default_machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))]
+    machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))
     machine = db.relationship(Machine, backref='machine')
 
     def __repr__(self):
-        return '%d - %s' % (self.id, self.name )
+        return '%d - %s' % (self.id, self.name)
