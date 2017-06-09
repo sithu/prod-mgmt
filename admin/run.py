@@ -4,17 +4,19 @@ New App startup file.
 How to run: flask/bin/python run.py
 """
 import os
+import os.path as op
 from flask import Flask, render_template
 from logging import Formatter, FileHandler
-from app.view import ColorModelView, MachineModelView, ProductModelView
+from app.view import ColorModelView, MachineModelView, ProductModelView, OrderModelView
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
-from app.model import Color, Machine, Product
+from app.model import Color, Machine, Product, Order
 
 ################ Flask Admin Setup #######################
-admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
+admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
+admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 
 ################ Logger ######################
 #import logging
@@ -49,6 +51,7 @@ print "APP_SETTINGS=%s" % app_setting
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'my-secret'
 basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['DATABASE_FILE'] = 'admin.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'admin.db')
 print "SQLALCHEMY_DATABASE_URI=%s" % app.config['SQLALCHEMY_DATABASE_URI']
 
@@ -83,8 +86,13 @@ app.config.from_object(Config())
 scheduler.init_app(app)
 scheduler.start()
 
-from app.build_db import build_sample_db
-build_sample_db()
+app_dir = op.realpath(os.path.dirname(__file__))
+database_path = op.join(app_dir, app.config['DATABASE_FILE'])
+if not os.path.exists(database_path):
+    from app.build_db import build_sample_db
+    print "No DB file found! Creating a new DB..."
+    build_sample_db()
+
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", debug = True)

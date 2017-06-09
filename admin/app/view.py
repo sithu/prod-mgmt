@@ -2,11 +2,12 @@ import os
 import os.path as op
 
 from flask_admin.contrib.sqla import ModelView
-from model import Color, Machine, Product
+from model import Color, Machine, Product, Order
 from flask_admin.form import rules
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin import form
 from jinja2 import Markup
+from flask import url_for
 from sqlalchemy.event import listens_for
 
 # Create directory for file fields to use
@@ -61,47 +62,78 @@ class MachineModelView(ModelView):
     column_display_pk = True
     column_exclude_list = ['created_at']
     #column_filters = ('id','name','status','updated_at')
-    column_list = [Machine.id, Machine.name, Machine.status, Machine.updated_at]
+    column_list = [Machine.id, Machine.name, Machine.photo, Machine.status, Machine.updated_at]
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
     #column_select_related_list = (Machine.id, Machine.name, Machine.status)
     #form_edit_rules = form_create_rules
     #form_excluded_columns = (Color.name)
-    form_columns = (Machine.name, Machine.status, Machine.power_in_kilowatt)
-
-class ProductModelView(ModelView):
-    column_display_pk = True
-    # column_hide_backrefs = False
     def _list_thumbnail(view, context, model, name):
-        if not model.photo_url:
+        if not model.photo:
             return ''
 
         return Markup('<img src="%s">' % url_for('static',
-                                                 filename=form.thumbgen_filename(model.photo_url)))
+                                                 filename=form.thumbgen_filename(model.photo)))
 
     column_formatters = {
-        'path': _list_thumbnail
+        'photo': _list_thumbnail
+    }
+    
+    form_columns = (Machine.name, Machine.status, Machine.power_in_kilowatt, 'photo')
+    form_extra_fields = {
+        'photo': form.ImageUploadField('Image',
+                                      base_path=file_path,
+                                      thumbnail_size=(100, 100, True))
+    }
+    
+
+class ProductModelView(ModelView):
+    column_display_pk = True
+    column_exclude_list = ['created_at', 'updated_at']
+    # Rename 'title' columns to 'Post Title' in list view
+    column_list = (
+        Product.id, Product.name, Product.photo, Product.weight, 
+        Product.time_to_build, Product.num_employee_required, 'machine',
+        Product.mold_id, 'colors'
+    )
+    column_labels = dict(selling_price='Price', num_employee_required='Employee Required', machine='Default Machine')
+    
+    # column_hide_backrefs = False
+    def _list_thumbnail(view, context, model, name):
+        if not model.photo:
+            return ''
+
+        return Markup('<img src="%s">' % url_for('static',
+                                                 filename=form.thumbgen_filename(model.photo)))
+
+    column_formatters = {
+        'photo': _list_thumbnail
     }
 
     form_columns = (
         'name',
+        'photo',
         'colors',
         'weight',
         'time_to_build',
         'selling_price',
         'num_employee_required',
         'machine',
-        'mold_id',
-        'photo_url'
+        'mold_id'
     )
 
     # Alternative way to contribute field is to override it completely.
     # In this case, Flask-Admin won't attempt to merge various parameters for the field.
     form_extra_fields = {
-        'photo_url': form.ImageUploadField('Image',
+        'photo': form.ImageUploadField('Image',
                                       base_path=file_path,
                                       thumbnail_size=(100, 100, True))
     }
     # Create form fields adjustment.
-   
 
 
+class OrderModelView(ModelView):
+    column_display_pk = True
+    column_hide_backrefs = False
+
+    def __init__(self, session, name=None, category=None, endpoint=None, url=None, static_folder=None, menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
+        super(OrderModelView, self).__init__(Order, session, name, category, endpoint, url, static_folder, menu_class_name, menu_icon_type, menu_icon_value)
