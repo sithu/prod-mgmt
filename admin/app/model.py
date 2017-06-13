@@ -1,6 +1,6 @@
 import enum
 from app import db
-
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Base(db.Model):
     """
@@ -73,10 +73,9 @@ class Product(Base):
     num_employee_required = db.Column(db.Integer, nullable=False)
     mold_id = db.Column(db.Integer)
     photo = db.Column(db.String)
-    # color_id = db.Column(db.Integer(), db.ForeignKey(Color.id))
+    multi_colors_ratio = db.Column(db.String)
     colors = db.relationship(Color, secondary=product_colors_table)
-    # default_machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))]
-    machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))
+    machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id), nullable=False)
     machine = db.relationship(Machine, backref='machine')
 
     def __repr__(self):
@@ -87,14 +86,14 @@ class Order(Base):
     """Order table ORM mapping"""
     __tablename__ = 'order'
     name = db.Column(db.String, nullable=False)
-    status = db.Column(db.Enum('AUTO', 'PLANNED', 'IN_PROGRESS', 'COMPLETED', 'SHIPPED'), nullable=False)
+    status = db.Column(db.Enum('AUTO_PLAN', 'MANUAL_PLAN', 'READY', 'IN_PROGRESS', 'COMPLETED', 'SHIPPED'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
+    quantity_completed = db.Column(db.Integer)
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
     product = db.relationship(Product, backref='product')
-    multi_colors_ratio = db.Column(db.String)
     raw_material_quantity = db.Column(db.Integer, nullable=False)
     is_raw_material_checkout = db.Column(db.Boolean, nullable=False, default=False)
-    estimated_time_to_complete = db.Column(db.Integer)
+    estimated_time_to_complete = db.Column(db.Integer, nullable=False)
     production_start_at = db.Column(db.DateTime)
     production_end_at = db.Column(db.DateTime)
     note = db.Column(db.String)
@@ -110,3 +109,54 @@ class Order(Base):
     def __repr__(self):
         return '%d - %s' % (self.id, self.name)
 
+
+    @hybrid_property
+    def photo(self):
+        return self.product.photo
+
+############ ORM Triggers #############
+from sqlalchemy.event import listens_for
+from decimal import *
+
+@listens_for(Order, 'before_insert')
+def del_image(mapper, connection, target):
+    print "%%%%%%%% before_insert_order %%%%%%%%%%"
+    # 1. Calculate number of raw material bags.
+    weight = Decimal(target.product.weight)
+    total_weight = Decimal(target.quantity) * weight
+    # TODO: need to define as constant
+    raw_weight_per_bag = 500
+    num_raw_bag = Decimal(total_weight) / raw_weight_per_bag
+    # round results to fixed number
+    target.raw_material_quantity = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
+    print "1. num_raw_bag = %d" % target.raw_material_quantity
+
+    # 2. Calculate estimated time to complete
+    target.estimated_time_to_complete = target.quantity * target.product.time_to_build
+    print "2. Estimated time to complete = %d sec" % target.estimated_time_to_complete
+    
+    # 3. Set the mode based on the machine id is default or not.
+    target.status = 'MANUAL_PLAN'
+    if not target.assigned_machine_id:
+        target.assigned_machine_id = target.product.machine_id
+        target.status = 'AUTO_PLAN'
+    
+
+@listens_for(Order, 'before_update')
+def del_image(mapper, connection, target):
+    print "%%%%%%%% before_update_order %%%%%%%%%%"
+    # 1. Calculate number of raw material bags.
+    
+    for s in ('IN_PROGRESS', 'COMPLETED', 'SHIPPED'):
+        if target.status == s:
+            print "Invalid state. Changes cannot be made."
+
+    if target.quantity_completed >= target.quantity:
+        target.status = 'COMPLETED'
+        print "Order completed"
+
+    if target.is_raw_material_checkout:
+        target.status = 'READY'
+    
+    if target.assigned_machine_id is not target.product.machine_id:
+        target.status = 'MANUAL_PLAN'

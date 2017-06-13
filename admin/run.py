@@ -17,7 +17,6 @@ admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_i
 admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
-
 ################ Logger ######################
 #import logging
 #file_handler = FileHandler('app.log')
