@@ -1,5 +1,6 @@
+import datetime
 from app import app, db
-from app.model import Color, Machine, Product
+from app.model import Color, Machine, Product, Shift
 
 def build_sample_db():
     db.drop_all()
@@ -7,6 +8,7 @@ def build_sample_db():
     print "Creating test data..."
     create_colors()
     create_machines()
+    create_shift()
     db.session.commit()
 
 
@@ -37,5 +39,14 @@ def create_machines():
         m.power_in_kilowatt = kw[i]
         db.session.add(m)
 
+def create_shift():
+    print "creating Shifts..."
+    shifts = [ ('Morning', 8, 16), ('Evening', 16, 24), ('Night', 24, 8)]
+    for t in shifts:
+        s = Shift()
+        s.shift_name = t[0]
+        s.start_hour = t[1]
+        s.end_hour = t[2]
+        db.session.add(s)
 
 

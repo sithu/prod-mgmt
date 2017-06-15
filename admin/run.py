@@ -7,16 +7,19 @@ import os
 import os.path as op
 from flask import Flask, render_template
 from logging import Formatter, FileHandler
-from app.view import ColorModelView, MachineModelView, ProductModelView, OrderModelView
+from app.view import ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
-from app.model import Color, Machine, Product, Order
+from flask_admin.contrib.sqla import ModelView
+from app.model import Color, Machine, Product, Order, Shift, ProductionEntry
 
 ################ Flask Admin Setup #######################
 admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
+admin.add_view(ModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
+admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-star'))
 ################ Logger ######################
 #import logging
 #file_handler = FileHandler('app.log')

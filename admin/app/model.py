@@ -114,6 +114,106 @@ class Order(Base):
     def photo(self):
         return self.product.photo
 
+
+class Shift(db.Model):
+    __tablename__ = 'shift'
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    shift_name = db.Column(db.String, nullable=False, unique=True)
+    start_hour = db.Column(db.Integer, nullable=False)
+    end_hour = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return '%s %s - %s' % (self.shift_name, self.toAM_PM(self.start_hour), self.toAM_PM(self.end_hour))
+
+    def toAM_PM(self, hour):
+        if hour == 12:
+            return "12P.M"
+        elif hour > 12:
+            return "%dP.M" % (hour-12)
+        else:
+            return "%dA.M" % (hour)
+
+
+class ProductionEntry(db.Model):
+    __tablename__ = 'production_entry'
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    shift_id = db.Column(db.Integer, db.ForeignKey(Shift.id), nullable=False)
+    shift = db.relationship(Shift, backref='production_entry_shift')
+    order_id = db.Column(db.Integer, db.ForeignKey(Order.id), nullable=False)
+    order = db.relationship(Order, backref='production_entry_order')
+    team_lead_name = db.Column(db.String)
+    start = db.Column(db.DateTime)
+    end = db.Column(db.DateTime)
+    h_1_am_num_good = db.Column(db.Integer)
+    _1_am_num_bad = db.Column(db.Integer)
+    _2_am_num_good = db.Column(db.Integer)
+    _2_am_num_bad = db.Column(db.Integer)
+    _3_am_num_good = db.Column(db.Integer)
+    _3_am_num_bad = db.Column(db.Integer)
+    _4_am_num_good = db.Column(db.Integer)
+    _4_am_num_bad = db.Column(db.Integer)
+    _5_am_num_good = db.Column(db.Integer)
+    _5_am_num_bad = db.Column(db.Integer)
+    _6_am_num_good = db.Column(db.Integer)
+    _6_am_num_bad = db.Column(db.Integer)
+    _7_am_num_good = db.Column(db.Integer)
+    _7_am_num_bad = db.Column(db.Integer)
+    _8_am_num_good = db.Column(db.Integer)
+    _8_am_num_bad = db.Column(db.Integer)
+    _9_am_num_good = db.Column(db.Integer)
+    _9_am_num_bad = db.Column(db.Integer)
+    _10_am_num_good = db.Column(db.Integer)
+    _10_am_num_bad = db.Column(db.Integer)
+    _11_am_num_good = db.Column(db.Integer)
+    _11_am_num_bad = db.Column(db.Integer)
+    _12_pm_num_good = db.Column(db.Integer)
+    _12_pm_num_bad = db.Column(db.Integer)
+    _1_pm_num_good = db.Column(db.Integer)
+    _1_pm_num_bad = db.Column(db.Integer)
+    _2_pm_num_good = db.Column(db.Integer)
+    _2_pm_num_bad = db.Column(db.Integer)
+    _3_pm_num_good = db.Column(db.Integer)
+    _3_pm_num_bad = db.Column(db.Integer)
+    _4_pm_num_good = db.Column(db.Integer)
+    _4_pm_num_bad = db.Column(db.Integer)
+    _5_pm_num_good = db.Column(db.Integer)
+    _5_pm_num_bad = db.Column(db.Integer)
+    _6_pm_num_good = db.Column(db.Integer)
+    _6_pm_num_bad = db.Column(db.Integer)
+    _7_pm_num_good = db.Column(db.Integer)
+    _7_pm_num_bad = db.Column(db.Integer)
+    _8_pm_num_good = db.Column(db.Integer)
+    _8_pm_num_bad = db.Column(db.Integer)
+    _9_pm_num_good = db.Column(db.Integer)
+    _9_pm_num_bad = db.Column(db.Integer)
+    _10_pm_num_good = db.Column(db.Integer)
+    _10_pm_num_bad = db.Column(db.Integer)
+    _11_pm_num_good = db.Column(db.Integer)
+    _11_pm_num_bad = db.Column(db.Integer)
+        
+    @hybrid_property
+    def total_good(self):
+        return (
+            self.h_1_am_num_good + self._2_am_num_good + self._3_am_num_good + self._4_am_num_good + 
+            self._5_am_num_good + self._6_am_num_good + self._7_am_num_good + self._8_am_num_good + 
+            self._9_am_num_good + self._10_am_num_good + self._11_am_num_good + self._12_pm_num_good +
+            self._1_pm_num_good + self._2_pm_num_good + self._3_pm_num_good + self._4_pm_num_good + 
+            self._5_pm_num_good + self._6_pm_num_good + self._7_pm_num_good + self._8_pm_num_good + 
+            self._9_pm_num_good + self._10_pm_num_good + self._11_pm_num_good
+        )
+
+    @hybrid_property
+    def total_bad(self):
+        return (
+            self._1_am_num_bad + self._2_am_num_bad + self._3_am_num_bad + self._4_am_num_bad + 
+            self._5_am_num_bad + self._6_am_num_bad + self._7_am_num_bad + self._8_am_num_bad + 
+            self._9_am_num_bad + self._10_am_num_bad + self._11_am_num_bad + self._12_pm_num_bad +
+            self._1_pm_num_bad + self._2_pm_num_bad + self._3_pm_num_bad + self._4_pm_num_bad + 
+            self._5_pm_num_bad + self._6_pm_num_bad + self._7_pm_num_bad + self._8_pm_num_bad + 
+            self._9_pm_num_bad + self._10_pm_num_bad + self._11_pm_num_bad
+        )
+    
+
 ############ ORM Triggers #############
 from sqlalchemy.event import listens_for
 from decimal import *

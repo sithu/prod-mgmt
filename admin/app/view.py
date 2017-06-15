@@ -2,7 +2,7 @@ import os
 import os.path as op
 
 from flask_admin.contrib.sqla import ModelView
-from model import Color, Machine, Product, Order
+from model import Color, Machine, Product, Order, Shift, ProductionEntry
 from flask_admin.form import rules
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin import form
@@ -178,3 +178,5 @@ class OrderModelView(ModelView):
     ]
 
 
+class ProductionEntryModelView(ModelView):
+    column_display_pk = True
