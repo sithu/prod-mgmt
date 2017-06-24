@@ -144,74 +144,16 @@ class ProductionEntry(db.Model):
     team_lead_name = db.Column(db.String)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
-    h_1_am_num_good = db.Column(db.Integer)
-    _1_am_num_bad = db.Column(db.Integer)
-    _2_am_num_good = db.Column(db.Integer)
-    _2_am_num_bad = db.Column(db.Integer)
-    _3_am_num_good = db.Column(db.Integer)
-    _3_am_num_bad = db.Column(db.Integer)
-    _4_am_num_good = db.Column(db.Integer)
-    _4_am_num_bad = db.Column(db.Integer)
-    _5_am_num_good = db.Column(db.Integer)
-    _5_am_num_bad = db.Column(db.Integer)
-    _6_am_num_good = db.Column(db.Integer)
-    _6_am_num_bad = db.Column(db.Integer)
-    _7_am_num_good = db.Column(db.Integer)
-    _7_am_num_bad = db.Column(db.Integer)
-    _8_am_num_good = db.Column(db.Integer)
-    _8_am_num_bad = db.Column(db.Integer)
-    _9_am_num_good = db.Column(db.Integer)
-    _9_am_num_bad = db.Column(db.Integer)
-    _10_am_num_good = db.Column(db.Integer)
-    _10_am_num_bad = db.Column(db.Integer)
-    _11_am_num_good = db.Column(db.Integer)
-    _11_am_num_bad = db.Column(db.Integer)
-    _12_pm_num_good = db.Column(db.Integer)
-    _12_pm_num_bad = db.Column(db.Integer)
-    _1_pm_num_good = db.Column(db.Integer)
-    _1_pm_num_bad = db.Column(db.Integer)
-    _2_pm_num_good = db.Column(db.Integer)
-    _2_pm_num_bad = db.Column(db.Integer)
-    _3_pm_num_good = db.Column(db.Integer)
-    _3_pm_num_bad = db.Column(db.Integer)
-    _4_pm_num_good = db.Column(db.Integer)
-    _4_pm_num_bad = db.Column(db.Integer)
-    _5_pm_num_good = db.Column(db.Integer)
-    _5_pm_num_bad = db.Column(db.Integer)
-    _6_pm_num_good = db.Column(db.Integer)
-    _6_pm_num_bad = db.Column(db.Integer)
-    _7_pm_num_good = db.Column(db.Integer)
-    _7_pm_num_bad = db.Column(db.Integer)
-    _8_pm_num_good = db.Column(db.Integer)
-    _8_pm_num_bad = db.Column(db.Integer)
-    _9_pm_num_good = db.Column(db.Integer)
-    _9_pm_num_bad = db.Column(db.Integer)
-    _10_pm_num_good = db.Column(db.Integer)
-    _10_pm_num_bad = db.Column(db.Integer)
-    _11_pm_num_good = db.Column(db.Integer)
-    _11_pm_num_bad = db.Column(db.Integer)
+    num_hourly_good = db.Column(db.String)
+    num_hourly_bad = db.Column(db.String)
+    num_good = db.Column(db.Integer, default=0)
+    num_bad = db.Column(db.Integer, default=0)
+    status = db.Column(db.Enum('OPEN', 'CLOSED'), nullable=False, default='OPEN')
+    
         
     @hybrid_property
-    def total_good(self):
-        return (
-            self.h_1_am_num_good + self._2_am_num_good + self._3_am_num_good + self._4_am_num_good + 
-            self._5_am_num_good + self._6_am_num_good + self._7_am_num_good + self._8_am_num_good + 
-            self._9_am_num_good + self._10_am_num_good + self._11_am_num_good + self._12_pm_num_good +
-            self._1_pm_num_good + self._2_pm_num_good + self._3_pm_num_good + self._4_pm_num_good + 
-            self._5_pm_num_good + self._6_pm_num_good + self._7_pm_num_good + self._8_pm_num_good + 
-            self._9_pm_num_good + self._10_pm_num_good + self._11_pm_num_good
-        )
-
-    @hybrid_property
-    def total_bad(self):
-        return (
-            self._1_am_num_bad + self._2_am_num_bad + self._3_am_num_bad + self._4_am_num_bad + 
-            self._5_am_num_bad + self._6_am_num_bad + self._7_am_num_bad + self._8_am_num_bad + 
-            self._9_am_num_bad + self._10_am_num_bad + self._11_am_num_bad + self._12_pm_num_bad +
-            self._1_pm_num_bad + self._2_pm_num_bad + self._3_pm_num_bad + self._4_pm_num_bad + 
-            self._5_pm_num_bad + self._6_pm_num_bad + self._7_pm_num_bad + self._8_pm_num_bad + 
-            self._9_pm_num_bad + self._10_pm_num_bad + self._11_pm_num_bad
-        )
+    def machine_id(self):
+        return self.order.assigned_machine_id
     
 
 ############ ORM Triggers #############
@@ -219,7 +161,7 @@ from sqlalchemy.event import listens_for
 from decimal import *
 
 @listens_for(Order, 'before_insert')
-def del_image(mapper, connection, target):
+def before_order_insert(mapper, connection, target):
     print "%%%%%%%% before_insert_order %%%%%%%%%%"
     # 1. Calculate number of raw material bags.
     weight = Decimal(target.product.weight)
@@ -243,7 +185,7 @@ def del_image(mapper, connection, target):
     
 
 @listens_for(Order, 'before_update')
-def del_image(mapper, connection, target):
+def before_order_update(mapper, connection, target):
     print "%%%%%%%% before_update_order %%%%%%%%%%"
     # 1. Calculate number of raw material bags.
     
@@ -260,3 +202,11 @@ def del_image(mapper, connection, target):
     
     if target.assigned_machine_id is not target.product.machine_id:
         target.status = 'MANUAL_PLAN'
+
+
+@listens_for(ProductionEntry, 'before_update')
+def before_productionentry_update(mapper, connection, target):
+    print "========== before production entry update ========="
+        
+
+    
