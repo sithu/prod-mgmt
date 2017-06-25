@@ -87,11 +87,12 @@ class Order(Base):
     __tablename__ = 'order'
     name = db.Column(db.String, nullable=False)
     status = db.Column(db.Enum('AUTO_PLAN', 'MANUAL_PLAN', 'READY', 'IN_PROGRESS', 'COMPLETED', 'SHIPPED'), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-    quantity_completed = db.Column(db.Integer)
+    quantity = db.Column(db.Integer, nullable=False, default=0)
+    quantity_completed = db.Column(db.Integer, default=0)
+    current_quantity_completed = db.Column(db.Integer, default=0)
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
     product = db.relationship(Product, backref='product')
-    raw_material_quantity = db.Column(db.Integer, nullable=False)
+    raw_material_quantity = db.Column(db.Integer, nullable=False, default=0)
     is_raw_material_checkout = db.Column(db.Boolean, nullable=False, default=False)
     estimated_time_to_complete = db.Column(db.Integer, nullable=False)
     production_start_at = db.Column(db.DateTime)
@@ -144,11 +145,11 @@ class ProductionEntry(db.Model):
     team_lead_name = db.Column(db.String)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
-    num_hourly_good = db.Column(db.String)
-    num_hourly_bad = db.Column(db.String)
+    num_hourly_good = db.Column(db.String, default='')
+    num_hourly_bad = db.Column(db.String, default='')
     num_good = db.Column(db.Integer, default=0)
     num_bad = db.Column(db.Integer, default=0)
-    status = db.Column(db.Enum('OPEN', 'CLOSED'), nullable=False, default='OPEN')
+    status = db.Column(db.Enum('NEW', 'IN_PROGRESS', 'CLOSED'), nullable=False, default='NEW')
     
         
     @hybrid_property
@@ -164,7 +165,8 @@ from decimal import *
 def before_order_insert(mapper, connection, target):
     print "%%%%%%%% before_insert_order %%%%%%%%%%"
     # 1. Calculate number of raw material bags.
-    weight = Decimal(target.product.weight)
+    product = Product.query.get(target.product_id)
+    weight = Decimal(product.weight)
     total_weight = Decimal(target.quantity) * weight
     # TODO: need to define as constant
     raw_weight_per_bag = 500
@@ -174,13 +176,13 @@ def before_order_insert(mapper, connection, target):
     print "1. num_raw_bag = %d" % target.raw_material_quantity
 
     # 2. Calculate estimated time to complete
-    target.estimated_time_to_complete = target.quantity * target.product.time_to_build
+    target.estimated_time_to_complete = target.quantity * product.time_to_build
     print "2. Estimated time to complete = %d sec" % target.estimated_time_to_complete
     
     # 3. Set the mode based on the machine id is default or not.
     target.status = 'MANUAL_PLAN'
     if not target.assigned_machine_id:
-        target.assigned_machine_id = target.product.machine_id
+        target.assigned_machine_id = product.machine_id
         target.status = 'AUTO_PLAN'
     
 
@@ -193,8 +195,9 @@ def before_order_update(mapper, connection, target):
         if target.status == s:
             print "Invalid state. Changes cannot be made."
 
-    if target.quantity_completed >= target.quantity:
+    if target.quantity_completed + target.current_quantity_completed >= target.quantity:
         target.status = 'COMPLETED'
+        target.production_end_at = db.func.current_timestamp()
         print "Order completed"
 
     if target.is_raw_material_checkout:
@@ -207,6 +210,48 @@ def before_order_update(mapper, connection, target):
 @listens_for(ProductionEntry, 'before_update')
 def before_productionentry_update(mapper, connection, target):
     print "========== before production entry update ========="
+    if target.num_hourly_good:
+        num_good = [int(x) for x in target.num_hourly_good.split(',')]
+        target.num_good = num_good
+    
+    if target.num_hourly_bad:
+        num_bad = [int(x) for x in target.num_hourly_bad.split(',')]
+        target.num_bad = num_bad
+
+    if target.status == 'IN_PROGRESS':
+        order = Order.query.get(target.order_id)
+        if target.num_hourly_good:
+            order.current_quantity_completed = num_good
+        
+        from datetime import datetime
+        now = datetime.now()
+
+        if target.start is None:
+            target.start = now
+
+        if order.status != 'IN_PROGRESS':
+            order.status = 'IN_PROGRESS'
+            order.production_start_at = now
+            print str(now)
+            Order.query.filter_by(id=target.order_id).update(
+                { 'status': 'IN_PROGRESS', 'production_start_at': now}
+            )
+            print "##### updated status..."
+
+        #target.order = order
+
+    elif target.status == 'CLOSED':
+        target.end = db.func.current_timestamp()
+        order = Order.query.get(target.order_id)
+        order.current_quantity_completed = 0
+        if target.num_hourly_good:
+            order.quantity_completed += num_good
+
+        target.order = order
+
+    else:
+        print "NEW status. Do nothing"
+
         
 
     
