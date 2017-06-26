@@ -156,6 +156,10 @@ class ProductionEntry(db.Model):
     def machine_id(self):
         return self.order.assigned_machine_id
     
+    @hybrid_property
+    def photo(self):
+        return self.order.photo
+
 
 ############ ORM Triggers #############
 from sqlalchemy.event import listens_for

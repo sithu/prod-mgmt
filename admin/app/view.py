@@ -180,3 +180,19 @@ class OrderModelView(ModelView):
 
 class ProductionEntryModelView(ModelView):
     column_display_pk = True
+    def _list_thumbnail(view, context, model, name):
+        if not model.photo:
+            return ''
+
+        return Markup('<img src="%s">' % url_for('static',
+                                                 filename=form.thumbgen_filename(model.photo)))
+
+    column_formatters = {
+        'Product Photo': _list_thumbnail
+    }
+
+    # List table columns
+    column_list = (
+        'id', 'shift', 'order', 'Product Photo', 'status',
+        'team_lead_name', 'num_good', 'num_bad', 'start', 'end'   
+    )
