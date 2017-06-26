@@ -1,6 +1,6 @@
 import datetime
 from app import app, db
-from app.model import Color, Machine, Product, Shift, Order
+from app.model import Color, Machine, Product, Shift, Order, ProductionEntry
 
 def build_sample_db():
     db.drop_all()
@@ -11,6 +11,7 @@ def build_sample_db():
     create_shift()
     create_product()
     create_order()
+    create_production_entry()
     db.session.commit()
 
 
@@ -57,8 +58,8 @@ def create_shift():
 def create_product():
     print "creating Products..."
     products = [
-        ('Chair', 'chair.jpg', '50%-50%', 1000, 15, 1000, 3, 100, 1, 1),
-        ('Round Table', 'round_table.jpg', '50%-50%', 2000, 25, 2000, 2, 101, 2, 2)    
+        ('Chair', 'chair.jpg', '50%-50%', 100, 15, 1000, 3, 1000, 1, 1),
+        ('Round Table', 'round_table.jpg', '50%-50%', 200, 25, 2000, 2, 1000, 2, 2)    
     ]
     for p in products:
         product = Product()
@@ -69,7 +70,7 @@ def create_product():
         product.time_to_build = p[4]
         product.selling_price = p[5]
         product.num_employee_required = p[6]
-        product.mold_id = p[7]
+        product.raw_material_weight_per_bag = p[7]
         machine = Machine.query.get(p[8])
         print "Machine Query:%s" % machine
         product.machine_id = machine.id
@@ -91,4 +92,18 @@ def create_order():
         order.product_id = o[1]
         order.quantity = o[2]
         db.session.add(order)
+
+
+def create_production_entry():
+    print "creating production entry..."
+    entries = [
+        (1, 1, 'Ko Maung'),
+        (1, 2, 'Ko Soe')      
+    ]
+    for e in entries:
+        pEntry = ProductionEntry()
+        pEntry.shift_id = e[0]
+        pEntry.order_id = e[1]
+        pEntry.team_lead_name = e[2]
+        db.session.add(pEntry)
 

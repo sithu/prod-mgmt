@@ -71,7 +71,7 @@ class Product(Base):
     time_to_build = db.Column(db.Integer, nullable=False)
     selling_price = db.Column(db.Integer)
     num_employee_required = db.Column(db.Integer, nullable=False)
-    mold_id = db.Column(db.Integer)
+    raw_material_weight_per_bag = db.Column(db.Integer, nullable=False)
     photo = db.Column(db.String)
     multi_colors_ratio = db.Column(db.String)
     colors = db.relationship(Color, secondary=product_colors_table)
@@ -93,7 +93,6 @@ class Order(Base):
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
     product = db.relationship(Product, backref='product')
     raw_material_quantity = db.Column(db.Integer, nullable=False, default=0)
-    is_raw_material_checkout = db.Column(db.Boolean, nullable=False, default=False)
     estimated_time_to_complete = db.Column(db.Integer, nullable=False)
     production_start_at = db.Column(db.DateTime)
     production_end_at = db.Column(db.DateTime)
@@ -103,10 +102,6 @@ class Order(Base):
     assigned_machine = db.relationship(Machine, backref='order_to_machine')
 
 
-    def __init__(self):
-        self.is_raw_material_checkout = False
-
-
     def __repr__(self):
         return '%d - %s' % (self.id, self.name)
 
@@ -114,6 +109,11 @@ class Order(Base):
     @hybrid_property
     def photo(self):
         return self.product.photo
+
+    
+    @hybrid_property
+    def completed(self):
+        return self.quantity_completed + self.current_quantity_completed
 
 
 class Shift(db.Model):
@@ -168,9 +168,7 @@ def before_order_insert(mapper, connection, target):
     product = Product.query.get(target.product_id)
     weight = Decimal(product.weight)
     total_weight = Decimal(target.quantity) * weight
-    # TODO: need to define as constant
-    raw_weight_per_bag = 500
-    num_raw_bag = Decimal(total_weight) / raw_weight_per_bag
+    num_raw_bag = Decimal(total_weight) / product.raw_material_weight_per_bag
     # round results to fixed number
     target.raw_material_quantity = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
     print "1. num_raw_bag = %d" % target.raw_material_quantity
@@ -200,9 +198,6 @@ def before_order_update(mapper, connection, target):
         target.production_end_at = db.func.current_timestamp()
         print "Order completed"
 
-    if target.is_raw_material_checkout:
-        target.status = 'READY'
-    
     if target.assigned_machine_id is not target.product.machine_id:
         target.status = 'MANUAL_PLAN'
 
@@ -210,45 +205,45 @@ def before_order_update(mapper, connection, target):
 @listens_for(ProductionEntry, 'before_update')
 def before_productionentry_update(mapper, connection, target):
     print "========== before production entry update ========="
+    from datetime import datetime
+    now = datetime.now()
+
     if target.num_hourly_good:
-        num_good = [int(x) for x in target.num_hourly_good.split(',')]
+        num_good = sum([int(x) for x in target.num_hourly_good.split(',')])
         target.num_good = num_good
     
     if target.num_hourly_bad:
-        num_bad = [int(x) for x in target.num_hourly_bad.split(',')]
+        num_bad = sum([int(x) for x in target.num_hourly_bad.split(',')])
         target.num_bad = num_bad
 
     if target.status == 'IN_PROGRESS':
-        order = Order.query.get(target.order_id)
-        if target.num_hourly_good:
-            order.current_quantity_completed = num_good
-        
-        from datetime import datetime
-        now = datetime.now()
-
         if target.start is None:
+            # Record start time if unset.
             target.start = now
 
+        order = Order.query.get(target.order_id)
         if order.status != 'IN_PROGRESS':
             order.status = 'IN_PROGRESS'
-            order.production_start_at = now
-            print str(now)
-            Order.query.filter_by(id=target.order_id).update(
-                { 'status': 'IN_PROGRESS', 'production_start_at': now}
-            )
-            print "##### updated status..."
-
-        #target.order = order
-
+            Order.query.filter_by(id=target.order_id).update({ 'status': 'IN_PROGRESS', 'production_start_at': now})
+        
+        if target.num_hourly_good:
+            order_update = {}
+            order_update['current_quantity_completed'] = num_good
+            num_completed = num_good + order.quantity_completed
+            if num_completed >= order.quantity:
+                target.status = 'CLOSED'
+                target.end = now
+                order_update['status'] = 'COMPLETED'
+                order_update['production_end_at'] = now
+                order_update['quantity_completed'] = num_completed
+                order_update['current_quantity_completed'] = 0
+            Order.query.filter_by(id=target.order_id).update(order_update)
     elif target.status == 'CLOSED':
         target.end = db.func.current_timestamp()
         order = Order.query.get(target.order_id)
         order.current_quantity_completed = 0
         if target.num_hourly_good:
             order.quantity_completed += num_good
-
-        target.order = order
-
     else:
         print "NEW status. Do nothing"
 

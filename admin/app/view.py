@@ -93,7 +93,7 @@ class ProductModelView(ModelView):
     column_list = (
         Product.id, Product.name, Product.photo, Product.weight, 
         Product.time_to_build, Product.num_employee_required, 'machine',
-        Product.mold_id, 'colors', Product.multi_colors_ratio
+        Product.raw_material_weight_per_bag, 'colors', Product.multi_colors_ratio
     )
     # List column renaming
     column_labels = dict(selling_price='Price', num_employee_required='Employee Required', machine='Default Machine')
@@ -120,7 +120,7 @@ class ProductModelView(ModelView):
         'time_to_build',
         'selling_price',
         'num_employee_required',
-        'mold_id',
+        'raw_material_weight_per_bag',
     )
 
     # Alternative way to contribute field is to override it completely.
@@ -164,16 +164,16 @@ class OrderModelView(ModelView):
     # List table columns
     column_list = (
         Order.id, Order.name, 'product', 'Product Photo', Order.status,
-        Order.quantity, Order.quantity_completed, Order.estimated_time_to_complete,
-        Order.raw_material_quantity, Order.is_raw_material_checkout,
+        Order.quantity, 'completed', Order.estimated_time_to_complete,
+        Order.raw_material_quantity,
         Order.assigned_machine_id,
         Order.production_start_at, Order.production_end_at,
         Order.note
     )
 
     column_sortable_list = [ 'id', 'name', 'product', 'status', 
-        'quantity', 'quantity_completed', 'estimated_time_to_complete',
-        'is_raw_material_checkout', 'assigned_machine_id',
+        'quantity', 'completed', 'estimated_time_to_complete',
+        'assigned_machine_id',
         'raw_material_quantity', 'production_start_at', 'production_end_at'
     ]
 
