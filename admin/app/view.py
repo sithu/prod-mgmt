@@ -62,7 +62,7 @@ class MachineModelView(ModelView):
     column_display_pk = True
     column_exclude_list = ['created_at']
     #column_filters = ('id','name','status','updated_at')
-    column_list = [Machine.id, Machine.name, Machine.photo, Machine.status, Machine.updated_at]
+    column_list = [Machine.id, Machine.name, Machine.status, Machine.updated_at]
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
     #column_select_related_list = (Machine.id, Machine.name, Machine.status)
     #form_edit_rules = form_create_rules
@@ -149,7 +149,6 @@ class OrderModelView(ModelView):
         'note'
     )
 
-    # column_hide_backrefs = False
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
@@ -176,10 +175,24 @@ class OrderModelView(ModelView):
         'assigned_machine_id',
         'raw_material_quantity', 'production_start_at', 'production_end_at'
     ]
+    column_searchable_list = (Order.id, Order.name)
+    column_filters = ('status',)
 
 
 class ProductionEntryModelView(ModelView):
     column_display_pk = True
+    column_hide_backrefs = True
+
+    # Create form fields
+    form_columns = (
+        ProductionEntry.status,
+        'shift',
+        'order',
+        ProductionEntry.team_lead_name,
+        ProductionEntry.num_hourly_good,
+        ProductionEntry.num_hourly_bad
+    )
+    
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
@@ -196,3 +209,9 @@ class ProductionEntryModelView(ModelView):
         'id', 'shift', 'order', 'Product Photo', 'status',
         'team_lead_name', 'num_good', 'num_bad', 'start', 'end'   
     )
+
+    def on_model_change(self, form, model, is_created=False):
+        if is_created:
+            print "created"
+        else:
+            print "update"

@@ -1,6 +1,9 @@
 import enum
 from app import db
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import column_property
+from sqlalchemy import select, func
 
 class Base(db.Model):
     """
@@ -33,6 +36,26 @@ class Machine(Base):
     def __repr__(self):
         return '%d - %s' % (self.id, self.name)
 
+
+class Shift(db.Model):
+    __tablename__ = 'shift'
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    shift_name = db.Column(db.String, nullable=False, unique=True)
+    start_hour = db.Column(db.Integer, nullable=False)
+    end_hour = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return '%s' % (self.shift_name)
+
+    def toAM_PM(self, hour):
+        if hour == 12:
+            return "12P.M"
+        elif hour > 12:
+            return "%dP.M" % (hour-12)
+        else:
+            return "%dA.M" % (hour)
+
+
 class Color(db.Model):
     """
     class doc
@@ -53,15 +76,6 @@ product_colors_table = db.Table(
     db.Column('color_id', db.String, db.ForeignKey('color.id'))
 )
 
-"""
-class Product(Base):
-# m-m
-    colors = db.relationship(
-        'Color',
-        secondary=colors,
-        backref=db.backref('products', lazy='dynamic')
-    )
-"""
 
 class Product(Base):
     '''Model for product table'''
@@ -82,66 +96,13 @@ class Product(Base):
         return '%d - %s' % (self.id, self.name)
 
 
-class Order(Base):
-    """Order table ORM mapping"""
-    __tablename__ = 'order'
-    name = db.Column(db.String, nullable=False)
-    status = db.Column(db.Enum('AUTO_PLAN', 'MANUAL_PLAN', 'READY', 'IN_PROGRESS', 'COMPLETED', 'SHIPPED'), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False, default=0)
-    quantity_completed = db.Column(db.Integer, default=0)
-    current_quantity_completed = db.Column(db.Integer, default=0)
-    product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
-    product = db.relationship(Product, backref='product')
-    raw_material_quantity = db.Column(db.Integer, nullable=False, default=0)
-    estimated_time_to_complete = db.Column(db.Integer, nullable=False)
-    production_start_at = db.Column(db.DateTime)
-    production_end_at = db.Column(db.DateTime)
-    note = db.Column(db.String)
-    assigned_machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))
-    # NOTE: backref name MUST be unique between relationships.
-    assigned_machine = db.relationship(Machine, backref='order_to_machine')
-
-
-    def __repr__(self):
-        return '%d - %s' % (self.id, self.name)
-
-
-    @hybrid_property
-    def photo(self):
-        return self.product.photo
-
-    
-    @hybrid_property
-    def completed(self):
-        return self.quantity_completed + self.current_quantity_completed
-
-
-class Shift(db.Model):
-    __tablename__ = 'shift'
-    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
-    shift_name = db.Column(db.String, nullable=False, unique=True)
-    start_hour = db.Column(db.Integer, nullable=False)
-    end_hour = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return '%s %s - %s' % (self.shift_name, self.toAM_PM(self.start_hour), self.toAM_PM(self.end_hour))
-
-    def toAM_PM(self, hour):
-        if hour == 12:
-            return "12P.M"
-        elif hour > 12:
-            return "%dP.M" % (hour-12)
-        else:
-            return "%dA.M" % (hour)
-
-
 class ProductionEntry(db.Model):
     __tablename__ = 'production_entry'
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     shift_id = db.Column(db.Integer, db.ForeignKey(Shift.id), nullable=False)
     shift = db.relationship(Shift, backref='production_entry_shift')
-    order_id = db.Column(db.Integer, db.ForeignKey(Order.id), nullable=False)
-    order = db.relationship(Order, backref='production_entry_order')
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    order = db.relationship('Order', backref='production_entry_orders')
     team_lead_name = db.Column(db.String)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
@@ -160,7 +121,52 @@ class ProductionEntry(db.Model):
     def photo(self):
         return self.order.photo
 
+    def save(self, *args, **kwargs):
+        print "override save method"
+        self.order.production_entries.append(self)
+        return super(ProductionEntry, self).save(*args, **kwargs)
 
+
+class Order(db.Model):
+    """Order table ORM mapping"""
+    __tablename__ = 'order'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    name = db.Column(db.String, nullable=False)
+    status = db.Column(db.Enum('AUTO_PLAN', 'MANUAL_PLAN', 'IN_PROGRESS', 'COMPLETED', 'SHIPPED'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=0)
+    quantity_completed = db.Column(db.Integer, default=0)
+    current_quantity_completed = db.Column(db.Integer, default=0)
+    product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
+    product = db.relationship(Product, backref='product')
+    raw_material_quantity = db.Column(db.Integer, nullable=False, default=0)
+    estimated_time_to_complete = db.Column(db.Integer, nullable=False)
+    production_start_at = db.Column(db.DateTime)
+    production_end_at = db.Column(db.DateTime)
+    note = db.Column(db.String)
+    assigned_machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))
+    # NOTE: backref name MUST be unique between relationships.
+    assigned_machine = db.relationship(Machine, backref='order_to_machine')
+    # 1-m mapping
+    production_entries = relationship(
+        'ProductionEntry', backref='order_to_production_entries'
+    )
+    completed = column_property(
+        select([func.sum(ProductionEntry.num_good)]).\
+            where(ProductionEntry.order_id==id).\
+            correlate_except(ProductionEntry)
+    )
+
+    def __repr__(self):
+        return '%d - %s' % (self.id, self.name)
+
+
+    @hybrid_property
+    def photo(self):
+        return self.product.photo
+
+ 
 ############ ORM Triggers #############
 from sqlalchemy.event import listens_for
 from decimal import *
@@ -204,6 +210,17 @@ def before_order_update(mapper, connection, target):
 
     if target.assigned_machine_id is not target.product.machine_id:
         target.status = 'MANUAL_PLAN'
+
+
+@listens_for(ProductionEntry, 'before_insert')
+def before_production_entry_insert(mapper, connection, target):
+    print "========== before_production_entry_insert ========="
+    print dir(target)
+    #order = Order.query.get(target.order_id)
+    #updated_entries = order.production_entries
+    #updated_entries.append(target)
+    #Order.query.filter_by(id=target.order_id).update({ 'production_entries': updated_entries })
+    print "appended new production entry"
 
 
 @listens_for(ProductionEntry, 'before_update')

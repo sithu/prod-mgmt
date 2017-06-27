@@ -72,10 +72,8 @@ def create_product():
         product.num_employee_required = p[6]
         product.raw_material_weight_per_bag = p[7]
         machine = Machine.query.get(p[8])
-        print "Machine Query:%s" % machine
         product.machine_id = machine.id
         color = Color.query.get(p[9])
-        print "Color Query:%s" % color
         product.colors = [color]
         db.session.add(product)
 
@@ -106,4 +104,8 @@ def create_production_entry():
         pEntry.order_id = e[1]
         pEntry.team_lead_name = e[2]
         db.session.add(pEntry)
-
+        
+        # Load the order
+        #order = Order.query.get(pEntry.order_id)
+        #order.production_entries.append(pEntry)
+        
