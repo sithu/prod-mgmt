@@ -14,12 +14,12 @@ from flask_admin.contrib.sqla import ModelView
 from app.model import Color, Machine, Product, Order, Shift, ProductionEntry
 
 ################ Flask Admin Setup #######################
+admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
+admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
+admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
 admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
 admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-wrench'))
-admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
-admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
 admin.add_view(ModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
-admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
 ################ Logger ######################
 #import logging
 #file_handler = FileHandler('app.log')
@@ -95,6 +95,12 @@ if not os.path.exists(database_path):
     print "No DB file found! Creating a new DB..."
     build_sample_db()
 
+
+from flask import send_from_directory
+
+@app.route('/static/<path:path>')
+def send_dist(path):
+    return send_from_directory(os.path.join(app.root_path, 'static'), path)
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", debug = True)

@@ -10,6 +10,7 @@ from jinja2 import Markup
 from flask import url_for
 from sqlalchemy.event import listens_for
 from datetime import datetime
+from util import display_time, color_boxes_html
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -57,8 +58,16 @@ class ColorModelView(ModelView):
 
     #create_template = 'rule_create.html'
     #edit_template = 'rule_edit.html'
+    column_list = [Color.id, Color.name, Color.color_code, 'color']
 
+    def _color_box(view, context, model, name):
+        html = '<div class="box" style="background: %s;"></div>' % model.color_code
+        return Markup(html)
     
+    column_formatters = {
+        'color': _color_box
+    }
+
 class MachineModelView(ModelView):
     column_display_pk = True
     column_exclude_list = ['created_at']
@@ -92,23 +101,28 @@ class ProductModelView(ModelView):
     column_exclude_list = ['created_at', 'updated_at']
     # Rename 'title' columns to 'Post Title' in list view
     column_list = (
-        Product.id, Product.name, Product.photo, Product.weight, 
+        Product.id, Product.name, Product.photo, 'colors', Product.weight, 
         Product.time_to_build, Product.num_employee_required, 'machine',
-        Product.raw_material_weight_per_bag, 'colors', Product.multi_colors_ratio
+        Product.raw_material_weight_per_bag, Product.multi_colors_ratio
     )
     # List column renaming
     column_labels = dict(selling_price='Price', num_employee_required='Employee Required', machine='Default Machine')
     
-    # column_hide_backrefs = False
+    def _colors(view, context, model, name):
+        html = color_boxes_html(model.colors)
+        return Markup(html)
+
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
 
-        return Markup('<img src="%s">' % url_for('static',
-                                                 filename=form.thumbgen_filename(model.photo)))
+        return Markup('<img src="%s">' % 
+                url_for('static', filename=form.thumbgen_filename(model.photo))
+            )
 
     column_formatters = {
-        'photo': _list_thumbnail
+        'photo': _list_thumbnail,
+        'colors': _colors
     }
 
     form_columns = (
@@ -123,6 +137,12 @@ class ProductModelView(ModelView):
         'num_employee_required',
         'raw_material_weight_per_bag',
     )
+
+    form_ajax_refs = {
+        'colors': {
+            'fields': (Color.name,)
+        }
+    }
 
     # Alternative way to contribute field is to override it completely.
     # In this case, Flask-Admin won't attempt to merge various parameters for the field.
@@ -150,6 +170,15 @@ class OrderModelView(ModelView):
         'note'
     )
 
+    form_ajax_refs = {
+        'product': {
+            'fields': (Product.name,)
+        }
+    }
+
+    def _time_to_complete(view, context, model, name):
+        return display_time(model.estimated_time_to_complete)
+
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
@@ -158,13 +187,14 @@ class OrderModelView(ModelView):
                                                  filename=form.thumbgen_filename(model.photo)))
 
     column_formatters = {
-        'Product Photo': _list_thumbnail
+        'Product Photo': _list_thumbnail,
+        'Time To Complete': _time_to_complete
     }
 
     # List table columns
     column_list = (
         Order.id, Order.name, 'product', 'Product Photo', Order.status,
-        Order.quantity, 'completed', 'progress', Order.estimated_time_to_complete,
+        Order.quantity, 'completed', 'Time To Complete',
         Order.raw_material_quantity,
         Order.assigned_machine_id,
         Order.production_start_at, Order.production_end_at,
@@ -194,23 +224,28 @@ class ProductionEntryModelView(ModelView):
         ProductionEntry.num_hourly_bad
     )
     
+    def _colors(view, context, model, name):
+        html = color_boxes_html(model.product_colors)
+        return Markup(html)
+
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
 
-        return Markup('<img src="%s">' % url_for('static',
-                                                 filename=form.thumbgen_filename(model.photo)))
+        return Markup('<img src="%s">' % 
+                url_for('static', filename=form.thumbgen_filename(model.photo))
+            )
 
     column_formatters = {
-        'Product Photo': _list_thumbnail
+        'Product Photo': _list_thumbnail,
+        'Colors': _colors
     }
 
     # List table columns
     column_list = (
-        'id', 'shift', 'date', 'order', 'Product Photo', 'status',
+        'id', 'shift', 'date', 'order', 'Product Photo', 'Colors', 'status',
         'team_lead_name', 'remaining', 'num_good', 'num_bad'  
     )
-    
     
     def on_model_change(self, form, model, is_created=False):
         if is_created:

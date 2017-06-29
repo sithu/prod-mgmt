@@ -122,6 +122,10 @@ class ProductionEntry(db.Model):
         return self.order.photo
 
     @hybrid_property
+    def product_colors(self):
+        return self.order.product_colors
+
+    @hybrid_property
     def status(self):
         return self.order.status
 
@@ -168,6 +172,10 @@ class Order(db.Model):
         return self.product.photo
 
     @hybrid_property
+    def product_colors(self):
+        return self.product.colors
+
+    @hybrid_property
     def remaining(self):
         return self.quantity - self.completed
 
@@ -176,9 +184,7 @@ class Order(db.Model):
 from sqlalchemy.event import listens_for
 from decimal import *
 
-@listens_for(Order, 'before_insert')
-def before_order_insert(mapper, connection, target):
-    print "%%%%%%%% before_insert_order %%%%%%%%%%"
+def calculate_order_details(target):
     # 1. Calculate number of raw material bags.
     product = Product.query.get(target.product_id)
     weight = Decimal(product.weight)
@@ -189,11 +195,21 @@ def before_order_insert(mapper, connection, target):
     
     # 2. Calculate estimated time to complete
     target.estimated_time_to_complete = target.quantity * product.time_to_build
-    
+
     # 3. Set the mode based on the machine id is default or not.
     if not target.assigned_machine_id:
         target.assigned_machine_id = product.machine_id
+
+
+@listens_for(Order, 'before_insert')
+def before_order_insert(mapper, connection, target):
+    calculate_order_details(target)    
     
+  
+@listens_for(Order, 'before_update')
+def before_order_update(mapper, connection, target):
+    calculate_order_details(target)
+
 
 @listens_for(ProductionEntry, 'before_update')
 def before_productionentry_update(mapper, connection, target):

@@ -21,7 +21,7 @@ def create_colors():
         'Green', 'Pink', 'Blue', 'Red'
     ]
     color_codes = [
-        '#100', '#101', '#102', '#103'
+        'green', 'DeepPink ', 'blue', 'Crimson'
     ]
 
     for i in range(len(color_names)):
