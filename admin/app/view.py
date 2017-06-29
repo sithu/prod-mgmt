@@ -9,6 +9,7 @@ from flask_admin import form
 from jinja2 import Markup
 from flask import url_for
 from sqlalchemy.event import listens_for
+from datetime import datetime
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -163,7 +164,7 @@ class OrderModelView(ModelView):
     # List table columns
     column_list = (
         Order.id, Order.name, 'product', 'Product Photo', Order.status,
-        Order.quantity, 'completed', Order.estimated_time_to_complete,
+        Order.quantity, 'completed', 'progress', Order.estimated_time_to_complete,
         Order.raw_material_quantity,
         Order.assigned_machine_id,
         Order.production_start_at, Order.production_end_at,
@@ -185,9 +186,9 @@ class ProductionEntryModelView(ModelView):
 
     # Create form fields
     form_columns = (
-        ProductionEntry.status,
         'shift',
         'order',
+        'date',
         ProductionEntry.team_lead_name,
         ProductionEntry.num_hourly_good,
         ProductionEntry.num_hourly_bad
@@ -206,12 +207,18 @@ class ProductionEntryModelView(ModelView):
 
     # List table columns
     column_list = (
-        'id', 'shift', 'order', 'Product Photo', 'status',
-        'team_lead_name', 'num_good', 'num_bad', 'start', 'end'   
+        'id', 'shift', 'date', 'order', 'Product Photo', 'status',
+        'team_lead_name', 'remaining', 'num_good', 'num_bad'  
     )
-
+    
+    
     def on_model_change(self, form, model, is_created=False):
         if is_created:
-            print "created"
+            print "======== creating ======="
         else:
-            print "update"
+            print "======== updating ======="
+            if model.num_hourly_good or model.num_hourly_bad:
+                print "progress"
+                model.order.status = 'IN_PROGRESS'
+                model.order.production_start_at = datetime.now()
+
