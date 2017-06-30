@@ -176,6 +176,10 @@ class OrderModelView(ModelView):
         }
     }
 
+    def _colors(view, context, model, name):
+        html = color_boxes_html(model.product_colors)
+        return Markup(html)
+
     def _time_to_complete(view, context, model, name):
         return display_time(model.estimated_time_to_complete)
 
@@ -188,12 +192,13 @@ class OrderModelView(ModelView):
 
     column_formatters = {
         'Product Photo': _list_thumbnail,
-        'Time To Complete': _time_to_complete
+        'Time To Complete': _time_to_complete,
+        'Colors': _colors
     }
 
     # List table columns
     column_list = (
-        Order.id, Order.name, 'product', 'Product Photo', Order.status,
+        Order.id, Order.name, 'product', 'Product Photo', 'Colors', Order.status,
         Order.quantity, 'completed', 'Time To Complete',
         Order.raw_material_quantity,
         Order.assigned_machine_id,
