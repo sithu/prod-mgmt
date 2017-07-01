@@ -21,7 +21,7 @@ class Base(db.Model):
 class Machine(Base):
     __tablename__ = 'machine'
     name = db.Column(db.String, nullable=False, unique=True)
-    status = db.Column(db.Enum('OFF', 'ON', 'BUSY', 'BROKEN'), nullable=False)
+    status = db.Column(db.Enum('OFF', 'ON', 'BROKEN'), nullable=False)
     power_in_kilowatt = db.Column(db.Integer) 
     photo = db.Column(db.String)
 
@@ -157,7 +157,7 @@ class Order(db.Model):
     note = db.Column(db.String)
     assigned_machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))
     # NOTE: backref name MUST be unique between relationships.
-    assigned_machine = db.relationship(Machine, backref='order_to_machine')
+    assigned_machine = db.relationship(Machine, backref=db.backref('order_to_machine', uselist=False))
     completed = column_property(
         select([func.sum(ProductionEntry.num_good)]).\
             where(ProductionEntry.order_id==id).\

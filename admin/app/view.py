@@ -71,8 +71,9 @@ class ColorModelView(ModelView):
 class MachineModelView(ModelView):
     column_display_pk = True
     column_exclude_list = ['created_at']
+    column_labels = dict(order_to_machine='Order')
     #column_filters = ('id','name','status','updated_at')
-    column_list = [Machine.id, Machine.name, Machine.status, Machine.updated_at]
+    column_list = [Machine.id, Machine.name, Machine.status, 'order_to_machine']
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
     #column_select_related_list = (Machine.id, Machine.name, Machine.status)
     #form_edit_rules = form_create_rules
@@ -86,13 +87,6 @@ class MachineModelView(ModelView):
 
     column_formatters = {
         'photo': _list_thumbnail
-    }
-    
-    form_columns = (Machine.name, Machine.status, Machine.power_in_kilowatt, 'photo')
-    form_extra_fields = {
-        'photo': form.ImageUploadField('Image',
-                                      base_path=file_path,
-                                      thumbnail_size=(100, 100, True))
     }
     
 
