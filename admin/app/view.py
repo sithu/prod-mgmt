@@ -1,6 +1,7 @@
 import os
 import os.path as op
 
+from app import app, db
 from flask_admin.contrib.sqla import ModelView
 from model import Color, Machine, Product, Order, Shift, ProductionEntry
 from flask_admin.form import rules
@@ -52,7 +53,6 @@ class ColorModelView(ModelView):
     column_searchable_list = (Color.name, Color.color_code)
     #form_excluded_columns = (Color.name)
     #inline_models = (Color,)
-
     # Use same rule set for edit page
     #form_edit_rules = form_create_rules
 
@@ -71,6 +71,7 @@ class ColorModelView(ModelView):
 class MachineModelView(ModelView):
     column_display_pk = True
     column_exclude_list = ['created_at']
+    # Rename columns
     column_labels = dict(order_to_machine='Order')
     #column_filters = ('id','name','status','updated_at')
     column_list = [Machine.id, Machine.name, Machine.status, 'order_to_machine']
@@ -211,9 +212,29 @@ class OrderModelView(ModelView):
 
 class ProductionEntryModelView(ModelView):
     column_display_pk = True
-    column_hide_backrefs = True
+    column_hide_backrefs = False
+
+    # List table columns
+    list_columns = (
+        'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
+        'team_lead_name', 'remaining', 'num_good', 'num_bad'
+    )
+
+    column_sortable_list = [ 
+        'id', 'shift', 'date', 'order', 'team_lead_name', 
+         'num_good', 'num_bad'
+    ]
+
+    column_filters = ('shift.shift_name', 'date', 'order.assigned_machine_id', 'order.status', 'order.remaining')
 
     # Create form fields
+    def order_status_filter():
+        return db.session.query(Order).filter(Order.status != 'COMPLETED')
+
+    form_args = dict(
+        order = dict(label='For Order', query_factory=order_status_filter)
+    )
+
     form_columns = (
         'shift',
         'order',
@@ -221,8 +242,8 @@ class ProductionEntryModelView(ModelView):
         ProductionEntry.team_lead_name,
         ProductionEntry.num_hourly_good,
         ProductionEntry.num_hourly_bad
-    )
-    
+    )    
+
     def _colors(view, context, model, name):
         html = color_boxes_html(model.product_colors)
         return Markup(html)
@@ -239,12 +260,64 @@ class ProductionEntryModelView(ModelView):
         'Product Photo': _list_thumbnail,
         'Colors': _colors
     }
+    
+    def on_model_change(self, form, model, is_created=False):
+        if is_created:
+            print "======== creating ======="
+        else:
+            print "======== updating ======="
+            if model.num_hourly_good or model.num_hourly_bad:
+                print "progress"
+                model.order.status = 'IN_PROGRESS'
+                model.order.production_start_at = datetime.now()
 
+
+class ProductionEntryWorkerModelView(ModelView):
+    column_display_pk = True
+    column_hide_backrefs = True
+
+    def get_query(self):
+        return self.session.query(self.model).filter(self.model.active == True)
+    
     # List table columns
-    column_list = (
-        'id', 'shift', 'date', 'order', 'Product Photo', 'Colors', 'status',
-        'team_lead_name', 'remaining', 'num_good', 'num_bad'  
+    list_columns = (
+        'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
+        'team_lead_name', 'remaining', 'num_good', 'num_bad'
     )
+
+    column_sortable_list = [ 
+        'id', 'shift', 'date', 'order', 'team_lead_name', 
+         'num_good', 'num_bad'
+    ]
+
+    column_filters = ('shift.shift_name', 'date', 'order.assigned_machine_id', 'order.status', 'order.remaining')
+
+    # Create form fields
+    form_columns = (
+        'shift',
+        'order',
+        'date',
+        ProductionEntry.team_lead_name,
+        ProductionEntry.num_hourly_good,
+        ProductionEntry.num_hourly_bad
+    )    
+
+    def _colors(view, context, model, name):
+        html = color_boxes_html(model.product_colors)
+        return Markup(html)
+
+    def _list_thumbnail(view, context, model, name):
+        if not model.photo:
+            return ''
+
+        return Markup('<img src="%s">' % 
+                url_for('static', filename=form.thumbgen_filename(model.photo))
+            )
+
+    column_formatters = {
+        'Product Photo': _list_thumbnail,
+        'Colors': _colors
+    }
     
     def on_model_change(self, form, model, is_created=False):
         if is_created:

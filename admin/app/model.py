@@ -112,7 +112,7 @@ class ProductionEntry(db.Model):
     num_good = db.Column(db.Integer, default=0)
     num_bad = db.Column(db.Integer, default=0)
     date = Column(Date, default=date.today())
-
+    
     @hybrid_property
     def machine_id(self):
         return self.order.assigned_machine_id
@@ -157,7 +157,7 @@ class Order(db.Model):
     note = db.Column(db.String)
     assigned_machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id))
     # NOTE: backref name MUST be unique between relationships.
-    assigned_machine = db.relationship(Machine, backref=db.backref('order_to_machine', uselist=False))
+    assigned_machine = db.relationship(Machine, backref=db.backref('order_to_machine'))
     completed = column_property(
         select([func.sum(ProductionEntry.num_good)]).\
             where(ProductionEntry.order_id==id).\
@@ -165,7 +165,7 @@ class Order(db.Model):
     )
 
     def __repr__(self):
-        return '%d - %s' % (self.id, self.name)
+        return '%d - %s - %s' % (self.id, self.name, self.status)
 
     @hybrid_property
     def photo(self):
