@@ -7,7 +7,9 @@ import os
 import os.path as op
 from flask import Flask, render_template
 from logging import Formatter, FileHandler
-from app.view import ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView
+from app.view import (
+    ShiftModelView, ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView
+)
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
 from flask_admin.contrib.sqla import ModelView
@@ -19,7 +21,7 @@ admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_typ
 admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
 admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
 admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
-admin.add_view(ModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
+admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
 ################ Logger ######################
 #import logging
 #file_handler = FileHandler('app.log')

@@ -40,9 +40,10 @@ def del_image(mapper, connection, target):
             pass
 
 
-class MyModelView(ModelView):
+class ShiftModelView(ModelView):
     column_display_pk = True
-    column_hide_backrefs = False
+    form_columns = (Shift.shift_name, Shift.start_hour, Shift.end_hour)
+
 
 class ColorInlineModelForm(InlineFormAdmin):
     form_columns = ('name', 'color_code')
