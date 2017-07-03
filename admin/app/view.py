@@ -6,14 +6,13 @@ from flask_admin.contrib.sqla import ModelView
 from model import Color, Machine, Product, Order, Shift, ProductionEntry
 from flask_admin.form import rules
 from flask_admin.model.form import InlineFormAdmin
-from flask_admin import form
+from flask_admin.form import thumbgen_filename, ImageUploadField
 from jinja2 import Markup
 from flask import url_for
 from sqlalchemy.event import listens_for
 from datetime import datetime
 from util import display_time, color_boxes_html
 from wtforms import validators, RadioField, TextField
-from flask_wtf import Form
 from wtforms_components import ColorField
 
 # Create directory for file fields to use
@@ -45,10 +44,6 @@ class ShiftModelView(ModelView):
     form_columns = (Shift.shift_name, Shift.start_hour, Shift.end_hour)
 
 
-class ColorInlineModelForm(InlineFormAdmin):
-    form_columns = ('name', 'color_code')
-
-
 class ColorModelView(ModelView):
     #inline_models = (ColorInlineModelForm(Color),)
     column_display_pk = True
@@ -65,7 +60,7 @@ class ColorModelView(ModelView):
         'color_code': ColorField,
     }
 
-    form_columns = (Color.name, Color.color_code)
+    form_columns = (Color.color_code, Color.name)
     
     #create_template = 'rule_create.html'
     #edit_template = 'rule_edit.html'
@@ -95,7 +90,7 @@ class MachineModelView(ModelView):
             return ''
 
         return Markup('<img src="%s">' % url_for('static',
-                                                 filename=form.thumbgen_filename(model.photo)))
+                                                 filename=thumbgen_filename(model.photo)))
 
     column_formatters = {
         'photo': _list_thumbnail
@@ -124,7 +119,7 @@ class ProductModelView(ModelView):
             return ''
 
         return Markup('<img src="%s">' % 
-                url_for('static', filename=form.thumbgen_filename(model.photo))
+                url_for('static', filename=thumbgen_filename(model.photo))
             )
 
     column_formatters = {
@@ -157,7 +152,7 @@ class ProductModelView(ModelView):
     # Alternative way to contribute field is to override it completely.
     # In this case, Flask-Admin won't attempt to merge various parameters for the field.
     form_extra_fields = {
-        'photo': form.ImageUploadField('Image',
+        'photo': ImageUploadField('Image',
                                       base_path=file_path,
                                       thumbnail_size=(100, 100, True))
     }
@@ -201,7 +196,7 @@ class OrderModelView(ModelView):
             return ''
 
         return Markup('<img src="%s">' % url_for('static',
-                                                 filename=form.thumbgen_filename(model.photo)))
+                                                 filename=thumbgen_filename(model.photo)))
 
     column_formatters = {
         'Product Photo': _list_thumbnail,
@@ -271,7 +266,7 @@ class ProductionEntryModelView(ModelView):
             return ''
 
         return Markup('<img src="%s">' % 
-                url_for('static', filename=form.thumbgen_filename(model.photo))
+                url_for('static', filename=thumbgen_filename(model.photo))
             )
 
     column_formatters = {
@@ -329,7 +324,7 @@ class ProductionEntryWorkerModelView(ModelView):
             return ''
 
         return Markup('<img src="%s">' % 
-                url_for('static', filename=form.thumbgen_filename(model.photo))
+                url_for('static', filename=thumbgen_filename(model.photo))
             )
 
     column_formatters = {
