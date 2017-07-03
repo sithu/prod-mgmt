@@ -12,6 +12,8 @@ from flask import url_for
 from sqlalchemy.event import listens_for
 from datetime import datetime
 from util import display_time, color_boxes_html
+from wtforms import validators, RadioField
+from flask_wtf import Form
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -90,6 +92,8 @@ class MachineModelView(ModelView):
         'photo': _list_thumbnail
     }
     
+    form_columns = ('name','status', 'power_in_kilowatt')
+    
 
 class ProductModelView(ModelView):
     column_display_pk = True
@@ -136,6 +140,9 @@ class ProductModelView(ModelView):
     form_ajax_refs = {
         'colors': {
             'fields': (Color.name,)
+        },
+        'machine': {
+            'fields': (Machine.id, Machine.name,)
         }
     }
 
@@ -168,6 +175,9 @@ class OrderModelView(ModelView):
     form_ajax_refs = {
         'product': {
             'fields': (Product.name,)
+        },
+        'assigned_machine': {
+            'fields': (Machine.id, Machine.name,)
         }
     }
 
@@ -215,7 +225,7 @@ class ProductionEntryModelView(ModelView):
     column_hide_backrefs = False
 
     # List table columns
-    list_columns = (
+    column_list = (
         'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
         'team_lead_name', 'remaining', 'num_good', 'num_bad'
     )
