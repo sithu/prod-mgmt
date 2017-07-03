@@ -1,6 +1,7 @@
 import datetime
 from app import app, db
 from app.model import Color, Machine, Product, Shift, Order, ProductionEntry
+from colour import Color as HtmlColor
 
 def build_sample_db():
     db.drop_all()
@@ -18,15 +19,15 @@ def build_sample_db():
 def create_colors():
     print "Creating Color..."
     color_names = [
-        'Green', 'Pink', 'Blue', 'Red'
+        'Smoke White', 'Salmon', 'Green', 'Teal'
     ]
     color_codes = [
-        'green', 'DeepPink ', 'blue', 'Crimson'
+        '#F5F5F5', '#FA8072', '#008000', '#008080'
     ]
 
     for i in range(len(color_names)):
         color = Color()
-        color.color_code = color_codes[i]
+        color.color_code = HtmlColor(color_codes[i])
         color.name = color_names[i]
         db.session.add(color)
 

@@ -12,8 +12,9 @@ from flask import url_for
 from sqlalchemy.event import listens_for
 from datetime import datetime
 from util import display_time, color_boxes_html
-from wtforms import validators, RadioField
+from wtforms import validators, RadioField, TextField
 from flask_wtf import Form
+from wtforms_components import ColorField
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -51,13 +52,20 @@ class ColorModelView(ModelView):
     #inline_models = (ColorInlineModelForm(Color),)
     column_display_pk = True
     column_hide_backrefs = False
-    form_columns = (Color.name, Color.color_code)
     column_searchable_list = (Color.name, Color.color_code)
     #form_excluded_columns = (Color.name)
     #inline_models = (Color,)
     # Use same rule set for edit page
     #form_edit_rules = form_create_rules
+    # form_extra_fields = {
+    #     'extra': ColorField()
+    # }
+    form_overrides = {
+        'color_code': ColorField,
+    }
 
+    form_columns = (Color.name, Color.color_code)
+    
     #create_template = 'rule_create.html'
     #edit_template = 'rule_edit.html'
     column_list = [Color.id, Color.name, Color.color_code, 'color']
@@ -91,7 +99,6 @@ class MachineModelView(ModelView):
     column_formatters = {
         'photo': _list_thumbnail
     }
-    
     form_columns = ('name','status', 'power_in_kilowatt')
     
 

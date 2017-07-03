@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import column_property
 from sqlalchemy import select, func
 from datetime import datetime, date
-
+from sqlalchemy_utils import ColorType
     
 class Base(db.Model):
     """
@@ -66,7 +66,7 @@ class Color(db.Model):
     __tablename__ = 'color'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)    
     name = db.Column(db.String, nullable=False, unique=True)
-    color_code = db.Column(db.String, nullable=False, unique=True)
+    color_code = Column(ColorType, nullable=False, unique=True)
 
     def __repr__(self):
         return '%d - %s' % (self.id, self.name)

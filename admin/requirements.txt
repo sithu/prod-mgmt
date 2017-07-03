@@ -35,3 +35,6 @@ simplejson==3.6.0
 Pillow==2.5.1
 Flask-Admin==1.5.0
 Flask-BabelEx==0.9.3
+colour==0.1.4
+sqlalchemy-utils==0.32.14
+WTForms-Components==0.10.3
