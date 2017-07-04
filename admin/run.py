@@ -45,22 +45,22 @@ admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_i
 
 ################ config.py ####################
 # Without multiple env support
-# app.config.from_object('config')
+app.config.from_object('config')
 
 # better per env setup
 # app.config.from_object(os.environ['APP_SETTINGS'])
 
-app_setting = os.getenv('APP_SETTINGS', 'config.DevelopmentConfig')
-print "APP_SETTINGS=%s" % app_setting
-app.config['SECRET_KEY'] = 'my-secret'
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['DATABASE_FILE'] = 'admin.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'admin.db')
-print "SQLALCHEMY_DATABASE_URI=%s" % app.config['SQLALCHEMY_DATABASE_URI']
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+#app_setting = os.getenv('APP_SETTINGS', 'config.DevelopmentConfig')
+#print "APP_SETTINGS=%s" % app_setting
+#app.config['SECRET_KEY'] = 'my-secret'
+#basedir = os.path.abspath(os.path.dirname(__file__))
+#app.config['DATABASE_FILE'] = 'admin.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'admin.db')
+#print "SQLALCHEMY_DATABASE_URI=%s" % app.config['SQLALCHEMY_DATABASE_URI']
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 # set flask admin swatch
-app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
+#app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
 
 ################ DB ####################
 # TODO: disable in production
