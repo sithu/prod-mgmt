@@ -4,7 +4,6 @@ import os.path as op
 from app import app, db
 from flask_admin.contrib.sqla import ModelView
 from model import Color, Machine, Product, Order, Shift, ProductionEntry
-from flask_admin.form import rules
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.form import thumbgen_filename, ImageUploadField
 from jinja2 import Markup
@@ -12,7 +11,7 @@ from flask import url_for
 from sqlalchemy.event import listens_for
 from datetime import datetime
 from util import display_time, color_boxes_html
-from wtforms import validators, RadioField, TextField
+from wtforms import Form
 from wtforms_components import ColorField
 
 # Create directory for file fields to use

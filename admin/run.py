@@ -7,9 +7,7 @@ import os
 import os.path as op
 from flask import Flask, render_template
 from logging import Formatter, FileHandler
-from app.view import (
-    ShiftModelView, ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView
-)
+from app.view import ShiftModelView, ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
 from flask_admin.contrib.sqla import ModelView
