@@ -5,21 +5,50 @@ How to run: flask/bin/python run.py
 """
 import os
 import os.path as op
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 from logging import Formatter, FileHandler
-from app.view import ShiftModelView, ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView
+from app.view import ShiftModelView, ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView, SuperUserModelView
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
 from flask_admin.contrib.sqla import ModelView
-from app.model import Color, Machine, Product, Order, Shift, ProductionEntry
+from app.model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role
+from flask_security import Security, SQLAlchemyUserDatastore
+from flask_admin import helpers as admin_helpers
+from flask_apscheduler import APScheduler
+from flask import send_from_directory
+from app.build_db import build_sample_db
 
-################ Flask Admin Setup #######################
-admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-wrench'))
-admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
-admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
-admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
-admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
-admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
+################ config.py ####################
+app.config.from_object('config')
+
+
+admin.add_view(SuperUserModelView(Role, db.session))
+admin.add_view(SuperUserModelView(User, db.session))
+################ Flask Admin View Setup #######################
+# admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-wrench'))
+# admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
+# admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
+# admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
+# admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
+# admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
+
+
+####################### Flask Security ####################
+# Initialize the SQLAlchemy data store and Flask-Security.
+print "############# Setting Security #############"
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+
+# define a context processor for merging flask-admin's template context into the
+# flask-security views.
+@security.context_processor
+def security_context_processor():
+    return dict(
+        admin_base_template=admin.base_template,
+        admin_view=admin.index_view,
+        h=admin_helpers,
+        get_url=url_for
+    )
 ################ Logger ######################
 #import logging
 #file_handler = FileHandler('app.log')
@@ -41,30 +70,6 @@ admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_i
 #app.register_blueprint(auth_blueprint, url_prefix='/auth')
 #login_manager.init_app(app)
 
-################ config.py ####################
-# Without multiple env support
-app.config.from_object('config')
-
-# better per env setup
-# app.config.from_object(os.environ['APP_SETTINGS'])
-
-#app_setting = os.getenv('APP_SETTINGS', 'config.DevelopmentConfig')
-#print "APP_SETTINGS=%s" % app_setting
-#app.config['SECRET_KEY'] = 'my-secret'
-#basedir = os.path.abspath(os.path.dirname(__file__))
-#app.config['DATABASE_FILE'] = 'admin.db'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'admin.db')
-#print "SQLALCHEMY_DATABASE_URI=%s" % app.config['SQLALCHEMY_DATABASE_URI']
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-
-# set flask admin swatch
-#app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
-
-################ DB ####################
-# TODO: disable in production
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-# db = SQLAlchemy(app)
-
 ################ Flask-APScheduler #################
 class Config(object):
     JOBS = [
@@ -82,25 +87,29 @@ class Config(object):
 def job1(a, b):
     print(str(a) + ' ' + str(b))
 
-from flask_apscheduler import APScheduler
 scheduler = APScheduler()
 app.config.from_object(Config())
 scheduler.init_app(app)
 scheduler.start()
 
-app_dir = op.realpath(os.path.dirname(__file__))
-database_path = op.join(app_dir, app.config['DATABASE_FILE'])
-if not os.path.exists(database_path):
-    from app.build_db import build_sample_db
-    print "No DB file found! Creating a new DB..."
-    build_sample_db()
-
-
-from flask import send_from_directory
-
+###################### Routes ######################
 @app.route('/static/<path:path>')
 def send_dist(path):
     return send_from_directory(os.path.join(app.root_path, 'static'), path)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+def init_db_data():
+    app_dir = op.realpath(os.path.dirname(__file__))
+    database_path = op.join(app_dir, app.config['DATABASE_FILE'])
+    if not os.path.exists(database_path):
+        print "No DB file found! Creating a new DB..."
+        build_sample_db(user_datastore)
+
+
 if __name__ == '__main__':
-	app.run(host="0.0.0.0", debug = True)
+    init_db_data()
+    app.run(host="0.0.0.0", debug = True)

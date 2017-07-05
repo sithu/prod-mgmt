@@ -11,6 +11,8 @@ LOG = getLogger(__name__)
 
 app = Flask(__name__, static_folder='files')
 db = SQLAlchemy(app)
+
+####################### Flask Admin #######################
 admin = Admin(
     app, 
     name='Popular Plastic', 

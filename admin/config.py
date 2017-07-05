@@ -29,3 +29,14 @@ SECURITY_SEND_REGISTER_EMAIL = False
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 FLASK_ADMIN_SWATCH = 'cosmo'
+
+# APScheduler
+JOBS = [
+    {
+        'id': 'job1',
+        'func': '__main__:job1',
+        'args': (1, 2),
+        'trigger': 'interval',
+        'seconds': 36000
+    }
+]

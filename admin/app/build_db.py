@@ -1,12 +1,13 @@
 import datetime
 from app import app, db
-from app.model import Color, Machine, Product, Shift, Order, ProductionEntry
+from app.model import Color, Machine, Product, Shift, Order, ProductionEntry, Role, User
 from colour import Color as HtmlColor
+from flask_security.utils import encrypt_password
 
-def build_sample_db():
+def build_sample_db(user_datastore):
     db.drop_all()
     db.create_all()
-    print "Creating test data..."
+    print "####### Creating test data ########"
     create_colors()
     create_machines()
     create_shift()
@@ -14,6 +15,7 @@ def build_sample_db():
     create_order()
     create_production_entry()
     db.session.commit()
+    create_role_and_user(user_datastore)
 
 
 def create_colors():
@@ -106,7 +108,43 @@ def create_production_entry():
         pEntry.team_lead_name = e[2]
         db.session.add(pEntry)
         
-        # Load the order
-        #order = Order.query.get(pEntry.order_id)
-        #order.production_entries.append(pEntry)
-        
+
+def create_role_and_user(user_datastore):
+    with app.app_context():
+        print "creating role..."
+        user_role = Role(name='user')
+        super_user_role = Role(name='superuser')
+        db.session.add(user_role)
+        db.session.add(super_user_role)   
+
+        print "creating user..."
+        test_user = user_datastore.create_user(
+            name='Admin',
+            email='admin@gmail.com',
+            password=encrypt_password('admin'),
+            roles=[user_role, super_user_role]
+        )
+
+        first_names = [
+            'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie', 'Sophie', 'Mia',
+            'Jacob', 'Thomas', 'Emily', 'Lily', 'Ava', 'Isla', 'Alfie', 'Olivia', 'Jessica',
+            'Riley', 'William', 'James', 'Geoffrey', 'Lisa', 'Benjamin', 'Stacey', 'Lucy'
+        ]
+        last_names = [
+            'Brown', 'Smith', 'Patel', 'Jones', 'Williams', 'Johnson', 'Taylor', 'Thomas',
+            'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
+            'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
+        ]
+
+        for i in range(len(first_names)):
+            tmp_email = first_names[i].lower() + "." + last_names[i].lower() + "@example.com"
+            user_datastore.create_user(
+                name=first_names[i] + " " + last_names[i],
+                email=tmp_email,
+                password=encrypt_password('user'),
+                roles=[user_role, ]
+            )
+
+        db.session.commit()
+    return
+

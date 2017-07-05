@@ -7,9 +7,7 @@ from sqlalchemy.orm import column_property
 from sqlalchemy import select, func
 from datetime import datetime, date
 from sqlalchemy_utils import ColorType
-from flask_security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required, current_user
-from flask_security.utils import encrypt_password
+from flask_security import UserMixin, RoleMixin
 
 ########################### Flask Security Models ######################
 roles_users = db.Table(
@@ -19,6 +17,7 @@ roles_users = db.Table(
 )
 
 class Role(db.Model, RoleMixin):
+    __tablename__ = 'role'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
@@ -27,9 +26,9 @@ class Role(db.Model, RoleMixin):
         return self.name
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(255))
-    last_name = db.Column(db.String(255))
+    name = db.Column(db.String(255))
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
@@ -38,7 +37,7 @@ class User(db.Model, UserMixin):
                             backref=db.backref('users', lazy='dynamic'))
 
     def __str__(self):
-        return self.email
+        return self.name
 
 ############################ Cedar Models ##########################    
 class Base(db.Model):

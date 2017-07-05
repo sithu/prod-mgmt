@@ -13,6 +13,7 @@ from datetime import datetime
 from util import display_time, color_boxes_html
 from wtforms import Form
 from wtforms_components import ColorField
+from flask_security import login_required, current_user
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -37,7 +38,31 @@ def del_image(mapper, connection, target):
         except OSError:
             pass
 
+####################### Login Required View ###################
+class SuperUserModelView(ModelView):
 
+    def is_accessible(self):
+        if not current_user.is_active or not current_user.is_authenticated:
+            return False
+
+        if current_user.has_role('superuser'):
+            return True
+
+        return False
+
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            if current_user.is_authenticated:
+                # permission denied
+                abort(403)
+            else:
+                # login
+                return redirect(url_for('security.login', next=request.url))
+
+####################### Custom Model View ######################
 class ShiftModelView(ModelView):
     column_display_pk = True
     form_columns = (Shift.shift_name, Shift.start_hour, Shift.end_hour)
