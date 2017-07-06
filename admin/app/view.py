@@ -3,7 +3,7 @@ import os.path as op
 
 from app import app, db
 from flask_admin.contrib.sqla import ModelView
-from model import Color, Machine, Product, Order, Shift, ProductionEntry
+from model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.form import thumbgen_filename, ImageUploadField
 from jinja2 import Markup
@@ -53,18 +53,23 @@ class RoleBasedModelView(ModelView):
             self.can_edit = True
             self.can_delete = True
             self.can_export = True
-        elif current_user.has_role('create_and_edit'):
+        elif current_user.has_role('manager'):
             self.can_create = True
             self.can_edit = True
             self.can_delete = False
-        elif current_user.has_role('edit'):
+            self.can_export = False
+        elif current_user.has_role('lead'):
             self.can_create = False
             self.can_edit = True
             self.can_delete = False
-        else:
+            self.can_export = False
+        elif current_user.has_role('assembler'):
             self.can_create = False # read-only
             self.can_edit = False
             self.can_delete = False
+            self.can_export = False
+        else:
+            return False
         
         return True
 
@@ -74,13 +79,37 @@ class RoleBasedModelView(ModelView):
         """
         if not self.is_accessible():
             if current_user.is_authenticated:
-                # permission denied
-                abort(403)
+                # permission denied abort(403)
+                # Admin home
+                flash("You don't have permission to access the page!", 'warning')
+                return redirect(url_for('admin.index'))
             else:
                 # login
+                flash('You were successfully logged in', 'info')
                 return redirect(url_for('security.login', next=request.url))
 
 ####################### Custom Model View ######################
+class UserModelView(RoleBasedModelView):
+    column_list = [User.id, User.name, User.email, User.active, 'roles']
+    
+    def _list_thumbnail(view, context, model, name):
+        if not model.photo:
+            return ''
+
+        return Markup('<img src="%s">' % url_for('static',
+                                                 filename=thumbgen_filename(model.photo)))
+
+    column_formatters = {
+        'photo': _list_thumbnail
+    }
+
+    form_extra_fields = {
+        'photo': ImageUploadField('Image',
+                                      base_path=file_path,
+                                      thumbnail_size=(100, 100, True))
+    }
+
+
 class ShiftModelView(RoleBasedModelView):
     form_columns = (Shift.shift_name, Shift.start_hour, Shift.end_hour)
 
@@ -134,7 +163,13 @@ class MachineModelView(RoleBasedModelView):
     column_formatters = {
         'photo': _list_thumbnail
     }
-    form_columns = ('name','status', 'power_in_kilowatt')
+
+    form_extra_fields = {
+        'photo': ImageUploadField('Image',
+                                      base_path=file_path,
+                                      thumbnail_size=(100, 100, True))
+    }
+    form_columns = ('name','status', 'power_in_kilowatt', 'photo')
     
 
 class ProductModelView(RoleBasedModelView):
@@ -260,16 +295,17 @@ class ProductionEntryModelView(RoleBasedModelView):
     # List table columns
     column_list = (
         'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
-        'team_lead_name', 'remaining', 'num_good', 'num_bad'
+        'user', 'remaining', 'num_good', 'num_bad'
     )
 
     column_sortable_list = [ 
-        'id', 'shift', 'date', 'order', 'team_lead_name', 
+        'id', 'shift', 'date', 'order', 'user', 
          'num_good', 'num_bad'
     ]
 
     column_filters = ('shift.shift_name', 'date', 'order.assigned_machine_id', 'order.status', 'order.remaining')
-
+    column_labels = dict(user='Team Lead Name')
+    
     # Create form fields
     def order_status_filter():
         return db.session.query(Order).filter(Order.status != 'COMPLETED')
@@ -282,66 +318,15 @@ class ProductionEntryModelView(RoleBasedModelView):
         'shift',
         'order',
         'date',
-        ProductionEntry.team_lead_name,
+        'user',
         ProductionEntry.num_hourly_good,
         ProductionEntry.num_hourly_bad
     )    
-
-    def _colors(view, context, model, name):
-        html = color_boxes_html(model.product_colors)
-        return Markup(html)
-
-    def _list_thumbnail(view, context, model, name):
-        if not model.photo:
-            return ''
-
-        return Markup('<img src="%s">' % 
-                url_for('static', filename=thumbgen_filename(model.photo))
-            )
-
-    column_formatters = {
-        'Product Photo': _list_thumbnail,
-        'Colors': _colors
+    form_ajax_refs = {
+        'user': {
+            'fields': (User.name, User.id,)
+        }
     }
-    
-    def on_model_change(self, form, model, is_created=False):
-        if is_created:
-            print "======== creating ======="
-        else:
-            print "======== updating ======="
-            if model.num_hourly_good or model.num_hourly_bad:
-                print "progress"
-                model.order.status = 'IN_PROGRESS'
-                model.order.production_start_at = datetime.now()
-
-
-class ProductionEntryWorkerModelView(RoleBasedModelView):
-    
-    def get_query(self):
-        return self.session.query(self.model).filter(self.model.active == True)
-    
-    # List table columns
-    list_columns = (
-        'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
-        'team_lead_name', 'remaining', 'num_good', 'num_bad'
-    )
-
-    column_sortable_list = [ 
-        'id', 'shift', 'date', 'order', 'team_lead_name', 
-         'num_good', 'num_bad'
-    ]
-
-    column_filters = ('shift.shift_name', 'date', 'order.assigned_machine_id', 'order.status', 'order.remaining')
-
-    # Create form fields
-    form_columns = (
-        'shift',
-        'order',
-        'date',
-        ProductionEntry.team_lead_name,
-        ProductionEntry.num_hourly_good,
-        ProductionEntry.num_hourly_bad
-    )    
 
     def _colors(view, context, model, name):
         html = color_boxes_html(model.product_colors)

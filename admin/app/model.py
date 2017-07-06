@@ -30,14 +30,16 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
+    password = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
+    photo = db.Column(db.String)
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
     def __str__(self):
         return self.name
+
 
 ############################ Cedar Models ##########################    
 class Base(db.Model):
@@ -138,7 +140,8 @@ class ProductionEntry(db.Model):
     shift = db.relationship(Shift, backref='production_entry_shift')
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
     order = db.relationship('Order', backref='production_entry_orders')
-    team_lead_name = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User')
     num_hourly_good = db.Column(db.String, default='')
     num_hourly_bad = db.Column(db.String, default='')
     num_good = db.Column(db.Integer, default=0)

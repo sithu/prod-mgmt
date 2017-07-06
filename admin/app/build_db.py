@@ -8,6 +8,7 @@ def build_sample_db(user_datastore):
     db.drop_all()
     db.create_all()
     print "####### Creating test data ########"
+    create_role_and_user(user_datastore)
     create_colors()
     create_machines()
     create_shift()
@@ -15,8 +16,7 @@ def build_sample_db(user_datastore):
     create_order()
     create_production_entry()
     db.session.commit()
-    create_role_and_user(user_datastore)
-
+    
 
 def create_colors():
     print "Creating Color..."
@@ -98,14 +98,14 @@ def create_order():
 def create_production_entry():
     print "creating production entry..."
     entries = [
-        (1, 1, 'Ko Maung'),
-        (1, 2, 'Ko Soe')      
+        (1, 1, 2),
+        (1, 2, 3)      
     ]
     for e in entries:
         pEntry = ProductionEntry()
         pEntry.shift_id = e[0]
         pEntry.order_id = e[1]
-        pEntry.team_lead_name = e[2]
+        pEntry.user_id = e[2]
         db.session.add(pEntry)
         
 
@@ -113,13 +113,13 @@ def create_role_and_user(user_datastore):
     with app.app_context():
         print "creating role..."
         admin_role = Role(name='admin')
-        create_and_edit_role = Role(name='create_and_edit')
-        edit_role = Role(name='edit')
-        read_role = Role(name='read')
+        manager_role = Role(name='manager')
+        lead_role = Role(name='lead')
+        assembler_role = Role(name='assembler')
         db.session.add(admin_role)
-        db.session.add(create_and_edit_role)
-        db.session.add(edit_role)
-        db.session.add(read_role)
+        db.session.add(manager_role)
+        db.session.add(lead_role)
+        db.session.add(assembler_role)
         
         print "creating user..."
         admin_user = user_datastore.create_user(
@@ -130,17 +130,17 @@ def create_role_and_user(user_datastore):
         )
 
         user_datastore.create_user(
-            name='Create Edit',
-            email='create_edit@gmail.com',
-            password=encrypt_password('createedit'),
-            roles=[create_and_edit_role]
+            name='Manager',
+            email='manager@gmail.com',
+            password=encrypt_password('manager'),
+            roles=[manager_role]
         )
 
         user_datastore.create_user(
-            name='Edit',
-            email='edit@gmail.com',
-            password=encrypt_password('edit'),
-            roles=[edit_role]
+            name='Team Lead',
+            email='lead@gmail.com',
+            password=encrypt_password('lead'),
+            roles=[lead_role]
         )
 
         first_names = [
@@ -160,7 +160,7 @@ def create_role_and_user(user_datastore):
                 name=first_names[i] + " " + last_names[i],
                 email=tmp_email,
                 password=encrypt_password('user'),
-                roles=[read_role,]
+                roles=[assembler_role,]
             )
 
         db.session.commit()
