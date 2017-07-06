@@ -7,7 +7,7 @@ from model import Color, Machine, Product, Order, Shift, ProductionEntry
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.form import thumbgen_filename, ImageUploadField
 from jinja2 import Markup
-from flask import url_for
+from flask import url_for, redirect, render_template, request, abort
 from sqlalchemy.event import listens_for
 from datetime import datetime
 from util import display_time, color_boxes_html
@@ -40,6 +40,8 @@ def del_image(mapper, connection, target):
 
 ####################### Login Required View ###################
 class SuperUserModelView(ModelView):
+
+    can_view_details = True
 
     def is_accessible(self):
         if not current_user.is_active or not current_user.is_authenticated:

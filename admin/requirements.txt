@@ -8,3 +8,4 @@ WTForms-Components==0.10.3
 Flask-APScheduler==1.4.0
 # Need 0.9.6 and above to fix TypeError: 'unicode' does not have the buffer interface
 Werkzeug==0.12.2
+enum==0.4.6
