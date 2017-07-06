@@ -14,6 +14,9 @@ from util import display_time, color_boxes_html
 from wtforms import Form
 from wtforms_components import ColorField
 from flask_security import login_required, current_user
+from sqlalchemy.sql.expression import true
+from sqlalchemy import and_
+from flask.ext.admin.contrib.sqla.ajax import QueryAjaxModelLoader
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -89,6 +92,10 @@ class RoleBasedModelView(ModelView):
                 return redirect(url_for('security.login', next=request.url))
 
 ####################### Custom Model View ######################
+class RoleModelView(RoleBasedModelView):
+    form_columns = (Role.name, Role.description)
+    
+
 class UserModelView(RoleBasedModelView):
     column_list = [User.id, User.name, User.email, User.active, 'roles']
     
@@ -108,6 +115,8 @@ class UserModelView(RoleBasedModelView):
                                       base_path=file_path,
                                       thumbnail_size=(100, 100, True))
     }
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
 
 
 class ShiftModelView(RoleBasedModelView):
@@ -142,6 +151,8 @@ class ColorModelView(RoleBasedModelView):
     column_formatters = {
         'color': _color_box
     }
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
 
 class MachineModelView(RoleBasedModelView):
     column_exclude_list = ['created_at']
@@ -170,7 +181,9 @@ class MachineModelView(RoleBasedModelView):
                                       thumbnail_size=(100, 100, True))
     }
     form_columns = ('name','status', 'power_in_kilowatt', 'photo')
-    
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
+
 
 class ProductModelView(RoleBasedModelView):
     column_exclude_list = ['created_at', 'updated_at']
@@ -230,6 +243,8 @@ class ProductModelView(RoleBasedModelView):
                                       thumbnail_size=(100, 100, True))
     }
     # Create form fields adjustment.
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
 
 
 class OrderModelView(RoleBasedModelView):
@@ -289,6 +304,17 @@ class OrderModelView(RoleBasedModelView):
     ]
     column_searchable_list = (Order.id, Order.name)
     column_filters = ('status',)
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
+
+
+class UserAjaxModelLoader(QueryAjaxModelLoader):
+    # Overrides Team lead name loader
+    def get_list(self, term, offset=0, limit=10):
+        return (
+            db.session.query(User).filter(and_(User.active == true())).all()
+        )
+
 
 
 class ProductionEntryModelView(RoleBasedModelView):
@@ -305,10 +331,15 @@ class ProductionEntryModelView(RoleBasedModelView):
 
     column_filters = ('shift.shift_name', 'date', 'order.assigned_machine_id', 'order.status', 'order.remaining')
     column_labels = dict(user='Team Lead Name')
-    
+    # Sort entry by id descending order.
+    column_default_sort = ('id', True)
+
     # Create form fields
     def order_status_filter():
         return db.session.query(Order).filter(Order.status != 'COMPLETED')
+
+    def team_lead_filter():
+        return db.session.query(User).filter(and_(User.active == true(), User.roles.contains(Role(name='lead')) ))
 
     form_args = dict(
         order = dict(label='For Order', query_factory=order_status_filter)
@@ -323,9 +354,9 @@ class ProductionEntryModelView(RoleBasedModelView):
         ProductionEntry.num_hourly_bad
     )    
     form_ajax_refs = {
-        'user': {
-            'fields': (User.name, User.id,)
-        }
+        'user': UserAjaxModelLoader(
+            "user", db.session, User, fields=['name']
+        )
     }
 
     def _colors(view, context, model, name):

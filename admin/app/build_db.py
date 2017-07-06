@@ -160,7 +160,7 @@ def create_role_and_user(user_datastore):
                 name=first_names[i] + " " + last_names[i],
                 email=tmp_email,
                 password=encrypt_password('user'),
-                roles=[assembler_role,]
+                roles=[lead_role,]
             )
 
         db.session.commit()

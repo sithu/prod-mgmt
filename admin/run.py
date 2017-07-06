@@ -10,7 +10,7 @@ from logging import Formatter, FileHandler
 from app.view import (
     ShiftModelView, ColorModelView, MachineModelView, 
     ProductModelView, OrderModelView, ProductionEntryModelView, 
-    RoleBasedModelView, UserModelView
+    RoleBasedModelView, UserModelView, RoleModelView
 )
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
@@ -33,7 +33,7 @@ admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_
 admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
 admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
 admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
-admin.add_view(RoleBasedModelView(Role, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-lock'))
+admin.add_view(RoleModelView(Role, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-lock'))
 admin.add_view(UserModelView(User, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-user'))
 ####################### Flask Security ####################
 # Initialize the SQLAlchemy data store and Flask-Security.
