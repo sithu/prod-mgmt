@@ -7,7 +7,7 @@ import os
 import os.path as op
 from flask import Flask, render_template, url_for
 from logging import Formatter, FileHandler
-from app.view import ShiftModelView, ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView, SuperUserModelView
+from app.view import ShiftModelView, ColorModelView, MachineModelView, ProductModelView, OrderModelView, ProductionEntryModelView, RoleBasedModelView
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
 from flask_admin.contrib.sqla import ModelView
@@ -22,15 +22,15 @@ from app.build_db import build_sample_db
 app.config.from_object('config')
 
 
-admin.add_view(SuperUserModelView(Role, db.session))
-admin.add_view(SuperUserModelView(User, db.session))
 ################ Flask Admin View Setup #######################
-# admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-wrench'))
-# admin.add_view(OrderModelView(db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
-# admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
-# admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
-# admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
-# admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
+admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-wrench'))
+admin.add_view(OrderModelView(Order, db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
+admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
+admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
+admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
+admin.add_view(ShiftModelView(Shift, db.session, menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
+admin.add_view(RoleBasedModelView(Role, db.session))
+admin.add_view(RoleBasedModelView(User, db.session))
 
 
 ####################### Flask Security ####################

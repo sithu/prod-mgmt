@@ -112,17 +112,35 @@ def create_production_entry():
 def create_role_and_user(user_datastore):
     with app.app_context():
         print "creating role..."
-        user_role = Role(name='user')
-        super_user_role = Role(name='superuser')
-        db.session.add(user_role)
-        db.session.add(super_user_role)   
-
+        admin_role = Role(name='admin')
+        create_and_edit_role = Role(name='create_and_edit')
+        edit_role = Role(name='edit')
+        read_role = Role(name='read')
+        db.session.add(admin_role)
+        db.session.add(create_and_edit_role)
+        db.session.add(edit_role)
+        db.session.add(read_role)
+        
         print "creating user..."
-        test_user = user_datastore.create_user(
+        admin_user = user_datastore.create_user(
             name='Admin',
             email='admin@gmail.com',
             password=encrypt_password('admin'),
-            roles=[user_role, super_user_role]
+            roles=[admin_role]
+        )
+
+        user_datastore.create_user(
+            name='Create Edit',
+            email='create_edit@gmail.com',
+            password=encrypt_password('createedit'),
+            roles=[create_and_edit_role]
+        )
+
+        user_datastore.create_user(
+            name='Edit',
+            email='edit@gmail.com',
+            password=encrypt_password('edit'),
+            roles=[edit_role]
         )
 
         first_names = [
@@ -142,7 +160,7 @@ def create_role_and_user(user_datastore):
                 name=first_names[i] + " " + last_names[i],
                 email=tmp_email,
                 password=encrypt_password('user'),
-                roles=[user_role, ]
+                roles=[read_role,]
             )
 
         db.session.commit()

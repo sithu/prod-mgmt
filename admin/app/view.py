@@ -39,18 +39,34 @@ def del_image(mapper, connection, target):
             pass
 
 ####################### Login Required View ###################
-class SuperUserModelView(ModelView):
-
+class RoleBasedModelView(ModelView):
+    column_display_pk = True
     can_view_details = True
+    page_size = 20
 
     def is_accessible(self):
         if not current_user.is_active or not current_user.is_authenticated:
             return False
 
-        if current_user.has_role('superuser'):
-            return True
-
-        return False
+        if current_user.has_role('admin'):
+            self.can_create = True
+            self.can_edit = True
+            self.can_delete = True
+            self.can_export = True
+        elif current_user.has_role('create_and_edit'):
+            self.can_create = True
+            self.can_edit = True
+            self.can_delete = False
+        elif current_user.has_role('edit'):
+            self.can_create = False
+            self.can_edit = True
+            self.can_delete = False
+        else:
+            self.can_create = False # read-only
+            self.can_edit = False
+            self.can_delete = False
+        
+        return True
 
     def _handle_view(self, name, **kwargs):
         """
@@ -65,14 +81,12 @@ class SuperUserModelView(ModelView):
                 return redirect(url_for('security.login', next=request.url))
 
 ####################### Custom Model View ######################
-class ShiftModelView(ModelView):
-    column_display_pk = True
+class ShiftModelView(RoleBasedModelView):
     form_columns = (Shift.shift_name, Shift.start_hour, Shift.end_hour)
 
 
-class ColorModelView(ModelView):
+class ColorModelView(RoleBasedModelView):
     #inline_models = (ColorInlineModelForm(Color),)
-    column_display_pk = True
     column_hide_backrefs = False
     column_searchable_list = (Color.name, Color.color_code)
     #form_excluded_columns = (Color.name)
@@ -100,8 +114,7 @@ class ColorModelView(ModelView):
         'color': _color_box
     }
 
-class MachineModelView(ModelView):
-    column_display_pk = True
+class MachineModelView(RoleBasedModelView):
     column_exclude_list = ['created_at']
     # Rename columns
     column_labels = dict(order_to_machine='Order')
@@ -124,8 +137,7 @@ class MachineModelView(ModelView):
     form_columns = ('name','status', 'power_in_kilowatt')
     
 
-class ProductModelView(ModelView):
-    column_display_pk = True
+class ProductModelView(RoleBasedModelView):
     column_exclude_list = ['created_at', 'updated_at']
     # Rename 'title' columns to 'Post Title' in list view
     column_list = (
@@ -185,13 +197,8 @@ class ProductModelView(ModelView):
     # Create form fields adjustment.
 
 
-class OrderModelView(ModelView):
-    column_display_pk = True
-    column_hide_backrefs = False
-
-    def __init__(self, session, name=None, category=None, endpoint=None, url=None, static_folder=None, menu_class_name=None, menu_icon_type=None, menu_icon_value=None):
-        super(OrderModelView, self).__init__(Order, session, name, category, endpoint, url, static_folder, menu_class_name, menu_icon_type, menu_icon_value)
-
+class OrderModelView(RoleBasedModelView):
+    
     # Create form fields
     form_columns = (
         'name',
@@ -249,10 +256,7 @@ class OrderModelView(ModelView):
     column_filters = ('status',)
 
 
-class ProductionEntryModelView(ModelView):
-    column_display_pk = True
-    column_hide_backrefs = False
-
+class ProductionEntryModelView(RoleBasedModelView):
     # List table columns
     column_list = (
         'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
@@ -311,10 +315,8 @@ class ProductionEntryModelView(ModelView):
                 model.order.production_start_at = datetime.now()
 
 
-class ProductionEntryWorkerModelView(ModelView):
-    column_display_pk = True
-    column_hide_backrefs = True
-
+class ProductionEntryWorkerModelView(RoleBasedModelView):
+    
     def get_query(self):
         return self.session.query(self.model).filter(self.model.active == True)
     
