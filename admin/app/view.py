@@ -10,7 +10,7 @@ from jinja2 import Markup
 from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
 from datetime import datetime
-from util import display_time, color_boxes_html
+from util import display_time, color_boxes_html, image_icon_html
 from wtforms import Form
 from wtforms_components import ColorField
 from flask_security import login_required, current_user
@@ -226,14 +226,9 @@ class ColorModelView(RoleBasedModelView):
 
 class MachineModelView(RoleBasedModelView):
     column_exclude_list = ['created_at']
-    # Rename columns
-    column_labels = dict(order_to_machine='Order')
-    #column_filters = ('id','name','status','updated_at')
-    column_list = [Machine.id, Machine.name, Machine.status, 'order_to_machine']
+    column_list = [Machine.id, Machine.name, Machine.status, 'orders']
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
-    #column_select_related_list = (Machine.id, Machine.name, Machine.status)
-    #form_edit_rules = form_create_rules
-    #form_excluded_columns = (Color.name)
+    
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
@@ -241,8 +236,18 @@ class MachineModelView(RoleBasedModelView):
         return Markup('<img src="%s">' % url_for('static',
                                                  filename=thumbgen_filename(model.photo)))
 
+    def _all_orders(view, context, model, name):
+        html = ''
+        for o in model.order_to_machine:
+            if o.status != 'COMPLETED':
+                html += image_icon_html(o)
+
+        return Markup(html)
+
+
     column_formatters = {
-        'photo': _list_thumbnail
+        'photo': _list_thumbnail,
+        'orders': _all_orders
     }
 
     form_extra_fields = {
