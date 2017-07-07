@@ -1,6 +1,6 @@
 import enum
 from app import db
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, Time
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import column_property
@@ -40,6 +40,7 @@ class User(db.Model, UserMixin):
     def __str__(self):
         return self.name
 
+
 ############################ Cedar Models ##########################    
 class Base(db.Model):
     """
@@ -54,7 +55,7 @@ class Base(db.Model):
 class Machine(Base):
     __tablename__ = 'machine'
     name = db.Column(db.String, nullable=False, unique=True)
-    status = db.Column(db.Enum('OFF', 'ON', 'BROKEN'), nullable=False)
+    status = db.Column(db.Enum('OFF', 'ON', 'BROKEN'), default='ON', nullable=False)
     power_in_kilowatt = db.Column(db.Integer) 
     photo = db.Column(db.String)
 
@@ -77,8 +78,9 @@ class Shift(db.Model):
     __tablename__ = 'shift'
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     shift_name = db.Column(db.String, nullable=False, unique=True)
-    start_hour = db.Column(db.Integer, nullable=False)
-    end_hour = db.Column(db.Integer, nullable=False)
+    start = Column(Time, nullable=False)
+    end = Column(Time, nullable=False)
+    total_hours = Column(Integer, nullable=False)
 
     def __repr__(self):
         return '%s' % (self.shift_name)

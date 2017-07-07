@@ -7,7 +7,7 @@ from model import Color, Machine, Product, Order, Shift, ProductionEntry, User, 
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.form import thumbgen_filename, ImageUploadField
 from jinja2 import Markup
-from flask import url_for, redirect, render_template, request, abort
+from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
 from datetime import datetime
 from util import display_time, color_boxes_html
@@ -17,6 +17,9 @@ from flask_security import login_required, current_user
 from sqlalchemy.sql.expression import true
 from sqlalchemy import and_
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
+from flask_admin.actions import action
+from flask_admin.babel import gettext, ngettext
+
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -44,7 +47,6 @@ def del_image(mapper, connection, target):
 ####################### Login Required View ###################
 class RoleBasedModelView(ModelView):
     column_display_pk = True
-    can_view_details = True
     page_size = 20
 
     def is_accessible(self):
@@ -56,21 +58,25 @@ class RoleBasedModelView(ModelView):
             self.can_edit = True
             self.can_delete = True
             self.can_export = True
+            self.can_view_details = True
         elif current_user.has_role('manager'):
             self.can_create = True
             self.can_edit = True
             self.can_delete = False
             self.can_export = False
+            elf.can_view_details = True
         elif current_user.has_role('lead'):
             self.can_create = False
             self.can_edit = True
             self.can_delete = False
             self.can_export = False
+            self.can_view_details = False
         elif current_user.has_role('assembler'):
             self.can_create = False # read-only
             self.can_edit = False
             self.can_delete = False
             self.can_export = False
+            self.can_view_details = False
         else:
             return False
         
@@ -92,13 +98,41 @@ class RoleBasedModelView(ModelView):
                 return redirect(url_for('security.login', next=request.url))
 
 ####################### Custom Model View ######################
-class RoleModelView(RoleBasedModelView):
+class RoleModelView(ModelView):
     form_columns = (Role.name, Role.description)
-    # Sort the data by id in descending order.
-    column_default_sort = ('id', True)
+    can_create = False
+    can_edit = False
+    can_delete = False
+    column_display_pk = True
+    page_size = 20
+
+    def is_accessible(self):
+        if not current_user.is_active or not current_user.is_authenticated:
+            return False
+        else:
+            if current_user.has_role('admin'):
+                self.can_create = True
+            
+            return True
+
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            if current_user.is_authenticated:
+                # permission denied abort(403)
+                # Admin home
+                flash("You don't have permission to access the page!", 'warning')
+                return redirect(url_for('admin.index'))
+            else:
+                # login
+                flash('You were successfully logged in', 'info')
+                return redirect(url_for('security.login', next=request.url))
+
 
 class UserModelView(RoleBasedModelView):
-    column_list = [User.id, User.name, User.email, User.active, 'roles']
+    column_list = ['photo', User.id, User.name, User.email, User.active, 'roles']
     
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
@@ -118,12 +152,45 @@ class UserModelView(RoleBasedModelView):
     }
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
+    column_sortable_list = [ 'id', 'name', 'email', 'active']
+
+    @action('enable', 'Enable', 'Are you sure you want to enable selected users?')
+    def action_enable(self, ids):
+        self.toggle_user_status(ids, True)
+
+    @action('disable', 'Disable', 'Are you sure you want to disable selected users?')
+    def action_disable(self, ids):
+        self.toggle_user_status(ids, False)
+    
+    def toggle_user_status(self, ids, flag=False):
+        try:
+            query = User.query.filter(User.id.in_(ids))
+            count = 0
+            for user in query.all():
+                if user.active != flag:
+                    user.active = flag
+                    count += 1
+            
+            if count > 0:
+                self.session.commit()
+
+            flash(ngettext('User was successfully disabled',
+                '%(count)s users were successfully disabled',
+                count,
+                count=count))
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+            
+            flash(gettext('Failed to update user status. %(error)s',
+            error=str(ex)), 'error')
 
 
 class ShiftModelView(RoleBasedModelView):
-    form_columns = (Shift.shift_name, Shift.start_hour, Shift.end_hour)
+    form_columns = (Shift.shift_name, Shift.start, Shift.end, Shift.total_hours)
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
+    column_list = [Shift.id, Shift.shift_name, Shift.start, Shift.end, Shift.total_hours]
 
 class ColorModelView(RoleBasedModelView):
     #inline_models = (ColorInlineModelForm(Color),)
@@ -312,7 +379,7 @@ class OrderModelView(RoleBasedModelView):
 
 class UserAjaxModelLoader(QueryAjaxModelLoader):
     # Overrides Team lead name loader
-    def get_list(self, term, offset=0, limit=10):
+    def get_list(self, term, offset=0, limit=20):
         return (
             db.session.query(User).filter(and_(User.active == true(), User.roles.any(name='lead'))).all()
         )

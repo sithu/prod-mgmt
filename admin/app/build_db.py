@@ -3,6 +3,8 @@ from app import app, db
 from app.model import Color, Machine, Product, Shift, Order, ProductionEntry, Role, User
 from colour import Color as HtmlColor
 from flask_security.utils import encrypt_password
+from datetime import time
+
 
 def build_sample_db(user_datastore):
     db.drop_all()
@@ -42,19 +44,20 @@ def create_machines():
     for i in range(len(names)):
         m = Machine()
         m.name = names[i]
-        m.status = 'OFF'
+        m.status = 'ON'
         m.power_in_kilowatt = kw[i]
         db.session.add(m)
 
 
 def create_shift():
     print "creating Shifts..."
-    shifts = [ ('Morning', 8, 16), ('Evening', 16, 24), ('Night', 24, 8)]
+    shifts = [ ('Morning', 8, 16), ('Evening', 16, 0), ('Night', 0, 8)]
     for t in shifts:
         s = Shift()
         s.shift_name = t[0]
-        s.start_hour = t[1]
-        s.end_hour = t[2]
+        s.start = time(t[1], 0, 0)
+        s.end = time(t[2], 0, 0)
+        s.total_hours = 8
         db.session.add(s)
 
 
