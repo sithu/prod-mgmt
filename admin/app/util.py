@@ -35,7 +35,10 @@ def image_icon_html(model):
     if not model.photo:
         return ''
 
-    html = '<img src="%s" width="50" height="50">' % url_for('static', filename=thumbgen_filename(model.photo))
+    html = '<a href="%s"><img src="%s" width="50" height="50"></a>' % (
+        url_for('order.edit_view', id=model.id, url=url_for('order.index_view')),    
+        url_for('static', filename=thumbgen_filename(model.photo))
+    )
     
     return html
 

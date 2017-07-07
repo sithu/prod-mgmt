@@ -237,7 +237,7 @@ class MachineModelView(RoleBasedModelView):
                                                  filename=thumbgen_filename(model.photo)))
 
     def _all_orders(view, context, model, name):
-        non_completed_orders = db.session.query(Order).filter(and_(Order.status != 'COMPLETED', Order.assigned_machine_id == model.id)).all()
+        non_completed_orders = db.session.query(Order).filter(and_(Order.assigned_machine_id == model.id, Order.status != 'COMPLETED')).all()
         html = ''
         for o in non_completed_orders:
             html += image_icon_html(o)
