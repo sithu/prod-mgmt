@@ -9,7 +9,7 @@ from flask_admin.form import thumbgen_filename, ImageUploadField
 from jinja2 import Markup
 from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
-from datetime import datetime
+from datetime import datetime, timedelta
 from util import display_time, color_boxes_html, image_icon_html
 from wtforms import Form
 from wtforms_components import ColorField
@@ -19,7 +19,7 @@ from sqlalchemy import and_
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin.actions import action
 from flask_admin.babel import gettext, ngettext
-
+from flask.ext.admin.model.typefmt import BASE_FORMATTERS, list_formatter
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -44,11 +44,30 @@ def del_image(mapper, connection, target):
         except OSError:
             pass
 
+####################### Formatters ############################
+def date_format(view, value):
+    return value.strftime('%d.%m.%Y %H:%M:%S')
+
+def timestamp_formatter(view, context, model, name):
+    field = getattr(model, name, None)
+    if field and field.strftime("%Y-%m-%d %I:%M:%S"):
+        d = datetime.now() - field
+        return display_time(int(d.total_seconds())) + " ago"
+    else:
+        return ''
+
+# MY_DEFAULT_FORMATTERS = dict(BASE_FORMATTERS)
+# MY_DEFAULT_FORMATTERS.update({
+#     date: date_format
+# })
+
+
 ####################### Login Required View ###################
 class RoleBasedModelView(ModelView):
     column_display_pk = True
     page_size = 20
     can_view_details = True
+    # column_type_formatters = MY_DEFAULT_FORMATTERS
 
     def is_accessible(self):
         if not current_user.is_active or not current_user.is_authenticated:
@@ -244,7 +263,6 @@ class MachineModelView(RoleBasedModelView):
 
         return Markup(html)
 
-
     column_formatters = {
         'photo': _list_thumbnail,
         'orders': _all_orders
@@ -359,7 +377,9 @@ class OrderModelView(RoleBasedModelView):
     column_formatters = {
         'Product Photo': _list_thumbnail,
         'Time To Complete': _time_to_complete,
-        'Colors': _colors
+        'Colors': _colors,
+        'production_start_at': timestamp_formatter,
+        'production_end_at': timestamp_formatter
     }
 
     # List table columns
@@ -454,7 +474,7 @@ class ProductionEntryModelView(RoleBasedModelView):
         else:
             print "======== updating ======="
             if model.num_hourly_good or model.num_hourly_bad:
-                print "progress"
                 model.order.status = 'IN_PROGRESS'
-                model.order.production_start_at = datetime.now()
+                if not model.order.production_start_at:
+                    model.order.production_start_at = datetime.now()
 
