@@ -16,7 +16,7 @@ from wtforms_components import ColorField
 from flask_security import login_required, current_user
 from sqlalchemy.sql.expression import true
 from sqlalchemy import and_
-from flask.ext.admin.contrib.sqla.ajax import QueryAjaxModelLoader
+from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -94,7 +94,8 @@ class RoleBasedModelView(ModelView):
 ####################### Custom Model View ######################
 class RoleModelView(RoleBasedModelView):
     form_columns = (Role.name, Role.description)
-    
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
 
 class UserModelView(RoleBasedModelView):
     column_list = [User.id, User.name, User.email, User.active, 'roles']
@@ -121,7 +122,8 @@ class UserModelView(RoleBasedModelView):
 
 class ShiftModelView(RoleBasedModelView):
     form_columns = (Shift.shift_name, Shift.start_hour, Shift.end_hour)
-
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
 
 class ColorModelView(RoleBasedModelView):
     #inline_models = (ColorInlineModelForm(Color),)
@@ -312,7 +314,7 @@ class UserAjaxModelLoader(QueryAjaxModelLoader):
     # Overrides Team lead name loader
     def get_list(self, term, offset=0, limit=10):
         return (
-            db.session.query(User).filter(and_(User.active == true())).all()
+            db.session.query(User).filter(and_(User.active == true(), User.roles.any(name='lead'))).all()
         )
 
 
@@ -337,9 +339,6 @@ class ProductionEntryModelView(RoleBasedModelView):
     # Create form fields
     def order_status_filter():
         return db.session.query(Order).filter(Order.status != 'COMPLETED')
-
-    def team_lead_filter():
-        return db.session.query(User).filter(and_(User.active == true(), User.roles.contains(Role(name='lead')) ))
 
     form_args = dict(
         order = dict(label='For Order', query_factory=order_status_filter)

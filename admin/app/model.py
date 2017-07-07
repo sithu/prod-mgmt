@@ -40,7 +40,6 @@ class User(db.Model, UserMixin):
     def __str__(self):
         return self.name
 
-
 ############################ Cedar Models ##########################    
 class Base(db.Model):
     """
