@@ -1,3 +1,6 @@
+from flask_admin.form import thumbgen_filename
+from jinja2 import Markup
+from flask import url_for
 
 intervals = (
     ('weeks', 604800),  # 60 * 60 * 24 * 7
@@ -24,6 +27,15 @@ def color_boxes_html(colors):
     html = ''
     for color in colors:
         html += '<div class="box" style="background: %s;"></div>' % color.color_code
+    
+    return html
+
+
+def image_icon_html(model):
+    if not model.photo:
+        return ''
+
+    html = '<img src="%s" width="50" height="50">' % url_for('static', filename=thumbgen_filename(model.photo))
     
     return html
 

@@ -48,6 +48,7 @@ def del_image(mapper, connection, target):
 class RoleBasedModelView(ModelView):
     column_display_pk = True
     page_size = 20
+    can_view_details = True
 
     def is_accessible(self):
         if not current_user.is_active or not current_user.is_authenticated:
