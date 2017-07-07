@@ -9,3 +9,9 @@
 .blue {
   background: #13b4ff;
 }
+
+.carousel-inner > .item > img {
+    margin: 0 auto;
+}
+
+/* modified again */

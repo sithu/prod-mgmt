@@ -10,3 +10,4 @@ Flask-APScheduler==1.4.0
 Werkzeug==0.12.2
 enum==0.4.6
 Pillow==2.5.1
+gunicorn==19.7.1
