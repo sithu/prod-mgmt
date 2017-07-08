@@ -407,10 +407,10 @@ class OrderModelView(RoleBasedModelView):
     column_list = (
         Order.id, Order.name, 'product', 'Product Photo', 'Colors', Order.status,
         Order.quantity, 'completed', 'Time To Complete',
+        'production_entry_orders',
         Order.raw_material_quantity,
         Order.assigned_machine_id,
-        Order.production_start_at, Order.production_end_at,
-        'production_entry_orders'
+        Order.production_start_at, Order.production_end_at
     )
 
     column_sortable_list = [ 'id', 'name', 'product', 'status', 
@@ -418,6 +418,16 @@ class OrderModelView(RoleBasedModelView):
         'assigned_machine_id',
         'raw_material_quantity', 'production_start_at', 'production_end_at'
     ]
+    
+    # List column renaming
+    column_labels = dict(
+        production_entry_orders='Production Entries', 
+        estimated_time_to_complete='Estimated Time', 
+        production_start_at='Production Start',
+        production_end_at='Production End',
+        assigned_machine_id='Machine Id'
+    )
+    
     column_searchable_list = (Order.id, Order.name)
     column_filters = ('status',)
     # Sort the data by id in descending order.
