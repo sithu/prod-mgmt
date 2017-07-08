@@ -42,3 +42,14 @@ def image_icon_html(model):
     
     return html
 
+
+def href_link_html(model_id, model_name):
+    if not model_id or not model_name:
+        return ''
+
+    html = '<a href="%s">%d</a>' % (
+        url_for(model_name + '.edit_view', id=model_id, url=url_for(model_name + '.index_view')),
+        model_id 
+    )
+    
+    return html

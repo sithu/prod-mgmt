@@ -10,7 +10,7 @@ from jinja2 import Markup
 from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
 from datetime import datetime, timedelta
-from util import display_time, color_boxes_html, image_icon_html
+from util import display_time, color_boxes_html, image_icon_html, href_link_html
 from wtforms import Form
 from wtforms_components import ColorField
 from flask_security import login_required, current_user
@@ -19,7 +19,7 @@ from sqlalchemy import and_
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin.actions import action
 from flask_admin.babel import gettext, ngettext
-from flask.ext.admin.model.typefmt import BASE_FORMATTERS, list_formatter
+from flask_admin.model.typefmt import BASE_FORMATTERS, list_formatter
 
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
@@ -125,6 +125,7 @@ class RoleModelView(ModelView):
     can_delete = False
     column_display_pk = True
     page_size = 20
+    details_modal = True
 
     def is_accessible(self):
         if not current_user.is_active or not current_user.is_authenticated:
@@ -152,6 +153,8 @@ class RoleModelView(ModelView):
 
 
 class UserModelView(RoleBasedModelView):
+    details_modal = True
+    edit_modal = True
     column_list = ['photo', User.id, User.name, User.email, User.active, 'roles']
     
     def _list_thumbnail(view, context, model, name):
@@ -207,12 +210,16 @@ class UserModelView(RoleBasedModelView):
 
 
 class ShiftModelView(RoleBasedModelView):
+    details_modal = True
+    edit_modal = True
     form_columns = (Shift.shift_name, Shift.start, Shift.end, Shift.total_hours)
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
     column_list = [Shift.id, Shift.shift_name, Shift.start, Shift.end, Shift.total_hours]
 
 class ColorModelView(RoleBasedModelView):
+    details_modal = True
+    edit_modal = True
     #inline_models = (ColorInlineModelForm(Color),)
     column_hide_backrefs = False
     column_searchable_list = (Color.name, Color.color_code)
@@ -244,6 +251,8 @@ class ColorModelView(RoleBasedModelView):
     column_default_sort = ('id', True)
 
 class MachineModelView(RoleBasedModelView):
+    details_modal = True
+    edit_modal = True
     column_exclude_list = ['created_at']
     column_list = [Machine.id, Machine.name, Machine.status, 'orders']
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
@@ -279,6 +288,8 @@ class MachineModelView(RoleBasedModelView):
 
 
 class ProductModelView(RoleBasedModelView):
+    details_modal = True
+    edit_modal = False
     column_exclude_list = ['created_at', 'updated_at']
     # Rename 'title' columns to 'Post Title' in list view
     column_list = (
@@ -341,7 +352,8 @@ class ProductModelView(RoleBasedModelView):
 
 
 class OrderModelView(RoleBasedModelView):
-    
+    details_modal = True
+    edit_modal = True
     # Create form fields
     form_columns = (
         'name',
@@ -367,6 +379,14 @@ class OrderModelView(RoleBasedModelView):
     def _time_to_complete(view, context, model, name):
         return display_time(model.estimated_time_to_complete)
 
+    def _production_entries(view, context, model, name):
+        html = ''
+        for entry in model.production_entry_orders:
+            html += href_link_html(entry.id, 'productionentry')
+        
+        return Markup(html)
+
+
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
@@ -379,7 +399,8 @@ class OrderModelView(RoleBasedModelView):
         'Time To Complete': _time_to_complete,
         'Colors': _colors,
         'production_start_at': timestamp_formatter,
-        'production_end_at': timestamp_formatter
+        'production_end_at': timestamp_formatter,
+        'production_entry_orders': _production_entries
     }
 
     # List table columns
@@ -389,7 +410,7 @@ class OrderModelView(RoleBasedModelView):
         Order.raw_material_quantity,
         Order.assigned_machine_id,
         Order.production_start_at, Order.production_end_at,
-        Order.note
+        'production_entry_orders'
     )
 
     column_sortable_list = [ 'id', 'name', 'product', 'status', 
@@ -413,6 +434,7 @@ class UserAjaxModelLoader(QueryAjaxModelLoader):
 
 
 class ProductionEntryModelView(RoleBasedModelView):
+    details_modal = True
     # List table columns
     column_list = (
         'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
