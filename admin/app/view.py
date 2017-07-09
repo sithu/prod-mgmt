@@ -21,6 +21,7 @@ from flask_admin.actions import action
 from flask_admin.babel import gettext, ngettext
 from flask_admin.model.typefmt import BASE_FORMATTERS, list_formatter
 
+
 # Create directory for file fields to use
 file_path = op.join(op.dirname(__file__), 'files')
 try:
@@ -293,12 +294,17 @@ class ProductModelView(RoleBasedModelView):
     column_exclude_list = ['created_at', 'updated_at']
     # Rename 'title' columns to 'Post Title' in list view
     column_list = (
-        Product.id, Product.name, Product.photo, 'colors', Product.weight, 
+        Product.id, Product.name, Product.photo, 'colors', 'weight', 
         Product.time_to_build, Product.num_employee_required, 'machine',
         Product.raw_material_weight_per_bag, Product.multi_colors_ratio
     )
     # List column renaming
-    column_labels = dict(selling_price='Price', num_employee_required='Employee Required', machine='Default Machine')
+    column_labels = dict(
+        selling_price='Price', num_employee_required='Employee Required', 
+        machine='Default Machine', weight='Weight (g)',
+        time_to_build='Time To Build (sec)', 
+        raw_material_weight_per_bag='Raw Material Unit Weight (g)'
+    )
     
     def _colors(view, context, model, name):
         html = color_boxes_html(model.colors)
@@ -434,30 +440,36 @@ class OrderModelView(RoleBasedModelView):
     column_default_sort = ('id', True)
 
 
-class UserAjaxModelLoader(QueryAjaxModelLoader):
+class UserLeadAjaxModelLoader(QueryAjaxModelLoader):
     # Overrides Team lead name loader
     def get_list(self, term, offset=0, limit=20):
         return (
             db.session.query(User).filter(and_(User.active == true(), User.roles.any(name='lead'))).all()
         )
 
+class UserAssemblerAjaxModelLoader(QueryAjaxModelLoader):
+    # Overrides Team assember name loader
+    def get_list(self, term, offset=0, limit=20):
+        return (
+            db.session.query(User).filter(and_(User.active == true(), User.roles.any(name='assembler'))).all()
+        )
 
 
 class ProductionEntryModelView(RoleBasedModelView):
     details_modal = True
+    #column_labels = dict(user='Lead', users='Members')
     # List table columns
     column_list = (
         'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
-        'user', 'remaining', 'num_good', 'num_bad'
+        'lead', 'members', 'remaining', 'num_good', 'num_bad'
     )
 
     column_sortable_list = [ 
-        'id', 'shift', 'date', 'order', 'user', 
+        'id', 'shift', 'date', 'order',
          'num_good', 'num_bad'
     ]
 
-    column_filters = ('shift.shift_name', 'date', 'order.assigned_machine_id', 'order.status', 'order.remaining')
-    column_labels = dict(user='Team Lead Name')
+    column_filters = ('shift.shift_name', 'date', 'lead.name', 'order.assigned_machine_id', 'order.status', 'order.remaining')
     # Sort entry by id descending order.
     column_default_sort = ('id', True)
 
@@ -473,13 +485,17 @@ class ProductionEntryModelView(RoleBasedModelView):
         'shift',
         'order',
         'date',
-        'user',
+        'lead',
+        'members',
         ProductionEntry.num_hourly_good,
         ProductionEntry.num_hourly_bad
     )    
     form_ajax_refs = {
-        'user': UserAjaxModelLoader(
-            "user", db.session, User, fields=['name']
+        'lead': UserLeadAjaxModelLoader(
+            "lead", db.session, User, fields=['name']
+        ),
+        'members': UserAssemblerAjaxModelLoader(
+            "members", db.session, User, fields=['name']
         )
     }
 
@@ -510,3 +526,4 @@ class ProductionEntryModelView(RoleBasedModelView):
                 if not model.order.production_start_at:
                     model.order.production_start_at = datetime.now()
 
+    

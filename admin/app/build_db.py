@@ -101,14 +101,15 @@ def create_order():
 def create_production_entry():
     print "creating production entry..."
     entries = [
-        (1, 1, 2),
-        (1, 2, 3)      
+        (1, 1, 3, (7, 8)),
+        (1, 2, 4, (9, 10, 11))      
     ]
     for e in entries:
         pEntry = ProductionEntry()
         pEntry.shift_id = e[0]
         pEntry.order_id = e[1]
         pEntry.user_id = e[2]
+        pEntry.members = [User.query.get(u) for u in e[3]]
         db.session.add(pEntry)
         
 
@@ -125,26 +126,21 @@ def create_role_and_user(user_datastore):
         db.session.add(assembler_role)
         
         print "creating user..."
-        admin_user = user_datastore.create_user(
-            name='Admin',
-            email='admin@gmail.com',
-            password=encrypt_password('admin'),
-            roles=[admin_role]
-        )
-
-        user_datastore.create_user(
-            name='Manager',
-            email='manager@gmail.com',
-            password=encrypt_password('manager'),
-            roles=[manager_role]
-        )
-
-        user_datastore.create_user(
-            name='Team Lead',
-            email='lead@gmail.com',
-            password=encrypt_password('lead'),
-            roles=[lead_role]
-        )
+        special_users = [
+            ('Admin', 'admin@gmail.com', 'admin', admin_role),
+            ('Manager', 'manager@gmail.com', 'manager', manager_role),
+            ('Lead 1', 'lead1@gmail.com', 'lead', lead_role),
+            ('Lead 2', 'lead2@gmail.com', 'lead', lead_role),
+            ('Lead 3', 'lead3@gmail.com', 'lead', lead_role),
+            ('Lead 4', 'lead4@gmail.com', 'lead', lead_role)    
+        ]
+        for u in special_users:
+            admin_user = user_datastore.create_user(
+                name=u[0],
+                email=u[1],
+                password=encrypt_password(u[2]),
+                roles=[u[3]]
+            )
 
         first_names = [
             'Harry', 'Amelia', 'Oliver', 'Jack', 'Isabella', 'Charlie', 'Sophie', 'Mia',
@@ -163,7 +159,7 @@ def create_role_and_user(user_datastore):
                 name=first_names[i] + " " + last_names[i],
                 email=tmp_email,
                 password=encrypt_password('user'),
-                roles=[lead_role,]
+                roles=[assembler_role,]
             )
 
         db.session.commit()

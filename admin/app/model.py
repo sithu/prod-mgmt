@@ -16,22 +16,29 @@ roles_users = db.Table(
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
 
+# m-m User-to-ProductionEntry mapping for assembler role only
+users_production_entries_table = db.Table(
+    'users_production_entries',
+    Column('user_id', Integer, db.ForeignKey('user.id')),
+    Column('production_entry_id', Integer, db.ForeignKey('production_entry.id'))
+)
+
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.String(255))
-
+    
     def __str__(self):
         return self.name
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+    name = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255), nullable=False)
-    active = db.Column(db.Boolean())
+    active = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
     photo = db.Column(db.String)
     roles = db.relationship('Role', secondary=roles_users,
@@ -142,12 +149,13 @@ class ProductionEntry(db.Model):
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
     order = db.relationship('Order', backref='production_entry_orders')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User')
+    lead = db.relationship(User)
     num_hourly_good = db.Column(db.String, default='')
     num_hourly_bad = db.Column(db.String, default='')
     num_good = db.Column(db.Integer, default=0)
     num_bad = db.Column(db.Integer, default=0)
     date = Column(Date, default=date.today())
+    members = db.relationship(User, secondary=users_production_entries_table)
     
     @hybrid_property
     def machine_id(self):
@@ -171,8 +179,8 @@ class ProductionEntry(db.Model):
 
     def save(self, *args, **kwargs):
         print "FIXME: override save method"
-        self.order.production_entries.append(self)
-        return super(ProductionEntry, self).save(*args, **kwargs)
+        # self.order.production_entries.append(self)
+        # return super(ProductionEntry, self).save(*args, **kwargs)
 
 
 class Order(db.Model):
