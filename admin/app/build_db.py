@@ -10,10 +10,11 @@ def build_sample_db(user_datastore):
     db.drop_all()
     db.create_all()
     print "####### Creating test data ########"
+    create_shift()
+    db.session.commit()
     create_role_and_user(user_datastore)
     create_colors()
     create_machines()
-    create_shift()
     create_product()
     create_order()
     create_production_entry()
@@ -127,19 +128,20 @@ def create_role_and_user(user_datastore):
         
         print "creating user..."
         special_users = [
-            ('Admin', 'admin@gmail.com', 'admin', admin_role),
-            ('Manager', 'manager@gmail.com', 'manager', manager_role),
-            ('Lead 1', 'lead1@gmail.com', 'lead', lead_role),
-            ('Lead 2', 'lead2@gmail.com', 'lead', lead_role),
-            ('Lead 3', 'lead3@gmail.com', 'lead', lead_role),
-            ('Lead 4', 'lead4@gmail.com', 'lead', lead_role)    
+            ('Admin', 'admin@gmail.com', 'admin', admin_role, 1),
+            ('Manager', 'manager@gmail.com', 'manager', manager_role, 1),
+            ('Lead 1', 'lead1@gmail.com', 'lead', lead_role, 1),
+            ('Lead 2', 'lead2@gmail.com', 'lead', lead_role, 1),
+            ('Lead 3', 'lead3@gmail.com', 'lead', lead_role, 2),
+            ('Lead 4', 'lead4@gmail.com', 'lead', lead_role, 3)    
         ]
         for u in special_users:
             admin_user = user_datastore.create_user(
                 name=u[0],
                 email=u[1],
                 password=encrypt_password(u[2]),
-                roles=[u[3]]
+                roles=[u[3]],
+                shift_id=u[4]
             )
 
         first_names = [
@@ -159,7 +161,8 @@ def create_role_and_user(user_datastore):
                 name=first_names[i] + " " + last_names[i],
                 email=tmp_email,
                 password=encrypt_password('user'),
-                roles=[assembler_role,]
+                roles=[assembler_role,],
+                shift_id=1
             )
 
         db.session.commit()

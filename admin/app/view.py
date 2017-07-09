@@ -156,7 +156,7 @@ class RoleModelView(ModelView):
 class UserModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
-    column_list = ['photo', User.id, User.name, User.email, User.active, 'roles']
+    column_list = ['photo', User.id, User.name, User.active, 'shift', 'roles', User.email]
     
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
@@ -373,9 +373,9 @@ class OrderModelView(RoleBasedModelView):
         'product': {
             'fields': (Product.name,)
         },
-        'assigned_machine': {
-            'fields': (Machine.id, Machine.name,)
-        }
+        'assigned_machine': QueryAjaxModelLoader('assigned_machine', db.session, Machine,
+        filters=["status!='NOT_IN_USE'"],
+        fields=['id', 'name'], page_size=10)
     }
 
     def _colors(view, context, model, name):

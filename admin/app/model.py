@@ -38,11 +38,14 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255), nullable=False)
+    phone = Column(String(15))
     active = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
     photo = db.Column(db.String)
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+    shift_id = db.Column(db.Integer, db.ForeignKey('shift.id'), nullable=False)
+    shift = db.relationship('Shift', backref=db.backref('user_shift', lazy='dynamic'))
 
     def __str__(self):
         return self.name
@@ -62,7 +65,7 @@ class Base(db.Model):
 class Machine(Base):
     __tablename__ = 'machine'
     name = db.Column(db.String, nullable=False, unique=True)
-    status = db.Column(db.Enum('OFF', 'ON', 'BROKEN'), default='ON', nullable=False)
+    status = db.Column(db.Enum('OFF', 'ON', 'BROKEN', 'NOT_IN_USE'), default='ON', nullable=False)
     power_in_kilowatt = db.Column(db.Integer) 
     photo = db.Column(db.String)
 
@@ -222,6 +225,36 @@ class Order(db.Model):
     @hybrid_property
     def remaining(self):
         return self.quantity - self.completed
+
+# m-m User-to-Team mapping
+user_team_table = db.Table(
+    'user_team',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('team_id', db.Integer, db.ForeignKey('team.id'))
+)
+
+class Team(Base):
+    __tablename__ = 'team'
+    date = Column(Date, default=date.today(), nullable=False)
+    shift_id = db.Column(db.Integer, db.ForeignKey('shift.id'), nullable=False)
+    shift = db.relationship(Shift, backref=db.backref('team_shift', lazy='dynamic'))
+    create_teams_for = db.Column(db.Enum('day', 'week', 'month'), nullable=False)
+    machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id), nullable=False)
+    machine = db.relationship(Machine, backref=db.backref('team_machine', lazy='dynamic'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    lead = db.relationship(User)
+    planned_team_size = db.Column(db.Integer, nullable=False)
+    members = db.relationship(User, secondary=user_team_table)
+    
+    def __repr__(self):
+        return '%s - %s' % (self.date, self.shift.shift_name)
+
+    @hybrid_property
+    def current_team_size(self):
+        if self.members:
+            return len(self.members)
+        else:
+            return 0
 
 
 ############ ORM Triggers #############
