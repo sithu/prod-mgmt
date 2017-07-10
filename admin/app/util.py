@@ -31,13 +31,18 @@ def color_boxes_html(colors):
     return html
 
 
-def image_icon_html(model):
+def image_icon_html(model, count=None):
     if not model.photo:
         return ''
+    
+    num_worker = ''
+    if count:
+        num_worker = '<i class="glyphicon glyphicon-user">x%s</i>' % str(count)
 
-    html = '<a href="%s"><img src="%s" width="50" height="50"></a>' % (
+    html = '<a href="%s"><img src="%s" width="50" height="50">%s</a>' % (
         url_for('order.edit_view', id=model.id, url=url_for('order.index_view')),    
-        url_for('static', filename=thumbgen_filename(model.photo))
+        url_for('static', filename=thumbgen_filename(model.photo)),
+        num_worker
     )
     
     return html

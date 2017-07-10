@@ -35,11 +35,14 @@ class Role(db.Model, RoleMixin):
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), unique=True, nullable=False)
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(40), unique=True, nullable=False)
+    email = db.Column(db.String(30), unique=True)
+    password = db.Column(db.String(30), nullable=False)
     phone = Column(String(15))
+    gender = db.Column(db.Enum('M', 'F'), default='M', nullable=False)
+    NFC_tag_id = db.Column(db.String(25))
     active = db.Column(db.Boolean(), default=True)
+    is_in = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
     photo = db.Column(db.String)
     roles = db.relationship('Role', secondary=roles_users,
@@ -64,11 +67,13 @@ class Base(db.Model):
 ########################## Models ################################
 class Machine(Base):
     __tablename__ = 'machine'
-    name = db.Column(db.String, nullable=False, unique=True)
-    status = db.Column(db.Enum('OFF', 'ON', 'BROKEN', 'NOT_IN_USE'), default='ON', nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True, index=True)
+    status = db.Column(db.Enum('OFF', 'ON', 'BROKEN', 'NOT_IN_USE'), default='ON', nullable=False, index=True)
     power_in_kilowatt = db.Column(db.Integer) 
     photo = db.Column(db.String)
-
+    average_num_workers = Column(db.Enum('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'), default=1)
+    machine_to_lead_ratio = db.Column(db.Enum('1-1', '1-2', '1-3', '1-4', '1-5'), default='1-1', nullable=False)
+    
     def to_dict(self):
         return dict(
             id=self.id,
@@ -76,6 +81,8 @@ class Machine(Base):
             status=self.status,
             power_in_kilowatt=self.power_in_kilowatt,
             photo=self.photo,
+            average_num_workers=self.average_num_workers,
+            machine_to_lead_ratio=self.machine_to_lead_ratio,
             created_at=self.created_at.isoformat(),
             updated_at=self.updated_at.isoformat()
         )
@@ -238,19 +245,17 @@ class Team(Base):
     date = Column(Date, default=date.today(), nullable=False)
     shift_id = db.Column(db.Integer, db.ForeignKey('shift.id'), nullable=False)
     shift = db.relationship(Shift, backref=db.backref('team_shift', lazy='dynamic'))
-    create_teams_for = db.Column(db.Enum('day', 'week', 'month'), nullable=False)
     machine_id = db.Column(db.Integer, db.ForeignKey(Machine.id), nullable=False)
     machine = db.relationship(Machine, backref=db.backref('team_machine', lazy='dynamic'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     lead = db.relationship(User)
-    planned_team_size = db.Column(db.Integer, nullable=False)
     members = db.relationship(User, secondary=user_team_table)
     
     def __repr__(self):
         return '%s - %s' % (self.date, self.shift.shift_name)
 
     @hybrid_property
-    def current_team_size(self):
+    def member_size(self):
         if self.members:
             return len(self.members)
         else:

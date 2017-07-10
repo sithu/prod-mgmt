@@ -16,6 +16,9 @@ db = SQLAlchemy(app)
 admin = Admin(
     app, 
     name='Popular Plastic', 
-    template_mode='bootstrap3'
+    template_mode='bootstrap3',
+    category_icon_classes={
+        'Employee': 'glyphicon glyphicon-user',
+    }
 )
 

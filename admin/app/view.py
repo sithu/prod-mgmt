@@ -5,13 +5,13 @@ from app import app, db
 from flask_admin.contrib.sqla import ModelView
 from model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role
 from flask_admin.model.form import InlineFormAdmin
-from flask_admin.form import thumbgen_filename, ImageUploadField
+from flask_admin.form import thumbgen_filename, ImageUploadField, rules, DateTimeField, Select2Field
 from jinja2 import Markup
 from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
 from datetime import datetime, timedelta
 from util import display_time, color_boxes_html, image_icon_html, href_link_html
-from wtforms import Form
+from wtforms import Form, SelectMultipleField
 from wtforms_components import ColorField
 from flask_security import login_required, current_user
 from sqlalchemy.sql.expression import true
@@ -29,6 +29,8 @@ try:
 except OSError:
     pass
 
+# TODO - handle for other models with photo
+# https://github.com/flask-admin/flask-admin/blob/master/examples/forms/app.py#L67
 @listens_for(Machine, 'after_delete')
 def del_image(mapper, connection, target):
     if target.path:
@@ -156,7 +158,7 @@ class RoleModelView(ModelView):
 class UserModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
-    column_list = ['photo', User.id, User.name, User.active, 'shift', 'roles', User.email]
+    column_list = ['photo', User.id, User.name, User.gender, User.is_in, 'shift', 'roles', User.active, User.email]
     
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
@@ -176,7 +178,7 @@ class UserModelView(RoleBasedModelView):
     }
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
-    column_sortable_list = [ 'id', 'name', 'email', 'active']
+    column_sortable_list = [ 'id', 'name', 'email', 'active', 'is_in', 'gender']
 
     @action('enable', 'Enable', 'Are you sure you want to enable selected users?')
     def action_enable(self, ids):
@@ -255,9 +257,10 @@ class MachineModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
     column_exclude_list = ['created_at']
-    column_list = [Machine.id, Machine.name, Machine.status, 'orders']
+    column_list = [Machine.id, Machine.name, Machine.status, Machine.average_num_workers, 'orders']
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
-    
+    column_labels = dict(average_num_workers='Planned Workers')
+
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
             return ''
@@ -268,14 +271,25 @@ class MachineModelView(RoleBasedModelView):
     def _all_orders(view, context, model, name):
         non_completed_orders = db.session.query(Order).filter(and_(Order.assigned_machine_id == model.id, Order.status != 'COMPLETED')).all()
         html = ''
+        is_first = True
         for o in non_completed_orders:
-            html += image_icon_html(o)
+            if is_first:
+                is_first = False
+                html += image_icon_html(o, o.product.num_employee_required)
+            else:
+                html += image_icon_html(o)
 
         return Markup(html)
 
+    def _planned_workers(view, context, model, name):
+        html = '<i class="glyphicon glyphicon-user">x%s</i>' % str(model.average_num_workers)
+        return Markup(html)
+
+
     column_formatters = {
         'photo': _list_thumbnail,
-        'orders': _all_orders
+        'orders': _all_orders,
+        'average_num_workers': _planned_workers
     }
 
     form_extra_fields = {
@@ -283,7 +297,7 @@ class MachineModelView(RoleBasedModelView):
                                       base_path=file_path,
                                       thumbnail_size=(100, 100, True))
     }
-    form_columns = ('name','status', 'power_in_kilowatt', 'photo')
+    form_columns = ('name','status', 'power_in_kilowatt', 'photo', 'average_num_workers', 'machine_to_lead_ratio')
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
 
@@ -442,14 +456,14 @@ class OrderModelView(RoleBasedModelView):
 
 class UserLeadAjaxModelLoader(QueryAjaxModelLoader):
     # Overrides Team lead name loader
-    def get_list(self, term, offset=0, limit=20):
+    def get_list(self, term, offset=0, limit=10):
         return (
             db.session.query(User).filter(and_(User.active == true(), User.roles.any(name='lead'))).all()
         )
 
 class UserAssemblerAjaxModelLoader(QueryAjaxModelLoader):
     # Overrides Team assember name loader
-    def get_list(self, term, offset=0, limit=20):
+    def get_list(self, term, offset=0, limit=10):
         return (
             db.session.query(User).filter(and_(User.active == true(), User.roles.any(name='assembler'))).all()
         )
@@ -480,7 +494,7 @@ class ProductionEntryModelView(RoleBasedModelView):
     form_args = dict(
         order = dict(label='For Order', query_factory=order_status_filter)
     )
-
+    form_create_rules = ('shift', 'order', 'date', 'lead', 'members')
     form_columns = (
         'shift',
         'order',
@@ -526,4 +540,48 @@ class ProductionEntryModelView(RoleBasedModelView):
                 if not model.order.production_start_at:
                     model.order.production_start_at = datetime.now()
 
-    
+
+class TeamModelView(RoleBasedModelView):
+    details_modal = True
+    edit_modal = True
+    column_exclude_list = ['created_at', 'updated_at']
+    #form_columns = (Shift.shift_name, Shift.start, Shift.end, Shift.total_hours)
+    # Sort the data by id in descending order.
+    column_default_sort = ('id', True)
+    #column_list = [Shift.id, Shift.shift_name, Shift.start, Shift.end, Shift.total_hours]
+
+    #form_create_rules = []
+    #form_edit_rules = []
+    #create_template = 'team_create.html'
+    #edit_template = 'rule_edit.html'
+    form_extra_fields = {
+        'start_date': DateTimeField(label='Start Date'),
+        'end_date': DateTimeField(label='End Date'),
+        'day_off': SelectMultipleField('Day Off',
+            choices=[ 
+                ('Saturday', 'Saturday'), ('Sunday', 'Sunday'), ('Monday', 'Monday'), ('Tuesday', 'Tuesday'),
+                ('Wednesday', 'Wednesday'), ('Thursday', 'Thursday'), ('Friday', 'Friday')
+            ],
+            default = [ 'Sunday' ]
+        )
+    }
+
+    def create_form(self, obj=None):
+        form = super(ModelView, self).create_form(obj)
+        # add fields
+        form.start = DateTimeField(lable='Start')
+        
+        # delete fields
+        delattr(form, 'shift')
+        delattr(form, 'machine')
+        delattr(form, 'lead')
+        delattr(form, 'date')
+        delattr(form, 'members')
+        delattr(form, 'created_at')
+        delattr(form, 'updated_at')
+        
+        return form
+
+    def on_model_change(self, form, model, is_created=False):
+        if is_created:
+            print "________create_team", form.day_off.data 

@@ -5,17 +5,18 @@ How to run: flask/bin/python run.py
 """
 import os
 import os.path as op
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, redirect
 from logging import Formatter, FileHandler
 from app.view import (
     ShiftModelView, ColorModelView, MachineModelView, 
     ProductModelView, OrderModelView, ProductionEntryModelView, 
-    RoleBasedModelView, UserModelView, RoleModelView
+    RoleBasedModelView, UserModelView, RoleModelView,
+    TeamModelView
 )
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
 from flask_admin.contrib.sqla import ModelView
-from app.model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role
+from app.model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role, Team
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_admin import helpers as admin_helpers
 from flask_apscheduler import APScheduler
@@ -35,6 +36,7 @@ admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_i
 admin.add_view(ShiftModelView(Shift, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
 admin.add_view(RoleModelView(Role, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-lock'))
 admin.add_view(UserModelView(User, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-user'))
+admin.add_view(TeamModelView(Team, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-calendar'))
 ####################### Flask Security ####################
 # Initialize the SQLAlchemy data store and Flask-Security.
 print "############# Setting Security #############"
@@ -101,7 +103,7 @@ def send_dist(path):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('admin.index'))
 
 
 def init_db_data():
