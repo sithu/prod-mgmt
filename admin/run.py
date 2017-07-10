@@ -5,8 +5,9 @@ How to run: flask/bin/python run.py
 """
 import os
 import os.path as op
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, url_for, redirect
-from logging import Formatter, FileHandler
 from app.view import (
     ShiftModelView, ColorModelView, MachineModelView, 
     ProductModelView, OrderModelView, ProductionEntryModelView, 
@@ -75,26 +76,10 @@ def security_context_processor():
 #login_manager.init_app(app)
 
 ################ Flask-APScheduler #################
-class Config(object):
-    JOBS = [
-        {
-            'id': 'job1',
-            'func': '__main__:job1',
-            'args': (1, 2),
-            'trigger': 'interval',
-            'seconds': 36000
-        }
-    ]
-
-    SCHEDULER_VIEWS_ENABLED = True
-
 def job1(a, b):
     print(str(a) + ' ' + str(b))
+    app.logger.info('Scheduler Running:' + str(a) + ' ' + str(b))
 
-scheduler = APScheduler()
-app.config.from_object(Config())
-scheduler.init_app(app)
-scheduler.start()
 
 ###################### Routes ######################
 @app.route('/static/<path:path>')
@@ -103,6 +88,7 @@ def send_dist(path):
 
 @app.route('/')
 def index():
+    app.logger.info('Redirect to admin home')
     return redirect(url_for('admin.index'))
 
 
@@ -113,7 +99,28 @@ def init_db_data():
         print "No DB file found! Creating a new DB..."
         build_sample_db(user_datastore)
 
+def init_logger():
+    handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    #app.logger.addHandler(handler)
+    gunicorn_access_handlers = logging.getLogger('gunicorn.access').handlers
+    app.logger.handlers.extend(gunicorn_access_handlers)
+    app.logger.addHandler(handler)
+
+
+@app.before_first_request
+def setup_logging():
+    if not app.debug:
+        # In production mode, add log handler to sys.stderr.
+        gunicorn_access_handlers = logging.getLogger('gunicorn.access').handlers
+        app.logger.handlers.extend(gunicorn_access_handlers)
+        app.logger.addHandler(logging.StreamHandler())
+        app.logger.setLevel(logging.INFO)
+        scheduler = APScheduler()
+        scheduler.init_app(app)
+        scheduler.start()
 
 if __name__ == '__main__':
+    #init_logger()    
     init_db_data()
     app.run(host="0.0.0.0", debug = True)

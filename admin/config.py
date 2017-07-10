@@ -39,9 +39,9 @@ SCHEDULER_VIEWS_ENABLED = True
 JOBS = [
     {
         'id': 'job1',
-        'func': '__main__:job1',
+        'func': 'run:job1',
         'args': (1, 2),
         'trigger': 'interval',
-        'seconds': 5
+        'seconds': 600
     }
 ]
