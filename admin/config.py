@@ -35,12 +35,13 @@ FLASK_ADMIN_SWATCH = 'cosmo'
 PRODUCTION_TIME_SHIFT_BUFFER_IN_SEC = 600
 
 # APScheduler
+SCHEDULER_VIEWS_ENABLED = True
 JOBS = [
     {
         'id': 'job1',
         'func': '__main__:job1',
         'args': (1, 2),
         'trigger': 'interval',
-        'seconds': 36000
+        'seconds': 5
     }
 ]
