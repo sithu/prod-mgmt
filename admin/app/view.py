@@ -11,8 +11,9 @@ from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
 from datetime import datetime, timedelta
 from util import display_time, color_boxes_html, image_icon_html, href_link_html
-from wtforms import Form, SelectMultipleField
-from wtforms_components import ColorField
+from wtforms import Form, SelectMultipleField, RadioField
+from wtforms_components import ColorField, DateField
+from wtforms.validators import Required
 from flask_security import login_required, current_user
 from sqlalchemy.sql.expression import true
 from sqlalchemy import and_
@@ -555,8 +556,8 @@ class TeamModelView(RoleBasedModelView):
     #create_template = 'team_create.html'
     #edit_template = 'rule_edit.html'
     form_extra_fields = {
-        'start_date': DateTimeField(label='Start Date'),
-        'end_date': DateTimeField(label='End Date'),
+        'start_date': DateField(label='Start Date', validators=[Required()]),
+        'end_date': DateField(label='End Date', validators=[Required()]),
         'day_off': SelectMultipleField('Day Off',
             choices=[ 
                 ('Saturday', 'Saturday'), ('Sunday', 'Sunday'), ('Monday', 'Monday'), ('Tuesday', 'Tuesday'),
@@ -568,10 +569,11 @@ class TeamModelView(RoleBasedModelView):
 
     def create_form(self, obj=None):
         form = super(ModelView, self).create_form(obj)
-        # add fields
-        form.start = DateTimeField(lable='Start')
-        
-        # delete fields
+        # Custom fields
+        # form.start = DateField(label='Start')
+        # form.end = DateField(label='End')
+
+        # Delete Model fields
         delattr(form, 'shift')
         delattr(form, 'machine')
         delattr(form, 'lead')
@@ -585,3 +587,6 @@ class TeamModelView(RoleBasedModelView):
     def on_model_change(self, form, model, is_created=False):
         if is_created:
             print "________create_team", form.day_off.data 
+            print "________create_team", form.start_date.data 
+            print "________create_team", form.end_date.data 
+            
