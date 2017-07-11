@@ -568,8 +568,6 @@ class TeamRequestModelView(RoleBasedModelView):
         start = form.start_date.data
         end = form.end_date.data
         
-        print "-------- %s" % form.day_off.data
-
         if start <= today:
             raise validators.ValidationError("'Start Date' must be a future date!")
         if end < start:
@@ -584,8 +582,8 @@ class TeamRequestModelView(RoleBasedModelView):
 class TeamModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
-    column_default_sort = ('id', True)
-    column_list = ('date', 'shift', 'machine', 'lead', 'members', 'standbys')
+    column_default_sort = ('date', False)
+    column_list = ('id', 'date', 'week_day','shift', 'machine', 'lead', 'members', 'standbys')
     form_columns = ('date', 'shift', 'machine', 'lead', 'members', 'standbys')
 
     form_ajax_refs = {

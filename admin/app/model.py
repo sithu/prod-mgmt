@@ -1,5 +1,6 @@
 import enum
 import random
+import calendar
 
 from app import db
 from sqlalchemy import Column, Integer, String, Date, Time
@@ -283,6 +284,13 @@ class Team(Base):
         else:
             return 0
 
+    @hybrid_property
+    def week_day(self):
+        if self.date:
+            return calendar.day_name[self.date.weekday()]
+        else:
+            return ''
+
 
 ############ ORM Triggers #############
 from sqlalchemy.event import listens_for
@@ -358,7 +366,7 @@ def after_teamrequest_insert(mapper, connection, target):
             a = assemblers.pop()
             assembler_map[a.shift_id].append(a)
         
-        teams = from_start_to_end_date(target.start_date, target.end_date, shifts, machines, assembler_map)
+        teams = from_start_to_end_date(target.start_date, target.end_date, target.day_off, shifts, machines, assembler_map)
         if len(teams) > 0:
             session.add_all(teams)
             session.commit()
@@ -373,11 +381,20 @@ def after_teamrequest_insert(mapper, connection, target):
 
 
 
-def from_start_to_end_date(start, end, shifts, machines, assembler_map):
+def from_start_to_end_date(start, end, day_off_str, shifts, machines, assembler_map):
+    day_offs = []
+    if day_off_str and len(day_off_str.strip()) > 0:
+        day_offs = [ int(x) for x in day_off_str.split(',') ]
     team_lead_id = 3
     teams = []
     while start <= end:
-        print "Creating teams for day = %s" % start
+        print "Creating teams for day = %s [%s]" % (start, start.weekday())
+        # check current date is in the day offs list
+        if start.weekday() in day_offs:
+            print "current day is part of day offs: %d. Skipping..." % start.weekday()
+            start += timedelta(days=1) 
+            continue
+
         for s in shifts:
             print "current shift = %s" % s
             m_copy = machines[:]
