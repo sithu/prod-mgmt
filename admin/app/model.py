@@ -347,9 +347,7 @@ def after_teamrequest_insert(mapper, connection, target):
     session = Session(bind=connection)
     teams = []
     try:
-        print "$$$$$$ Before $$$$$$$"
         machines = session.query(Machine).filter(Machine.status != 'NOT_IN_USE').all()
-        print "########## After #######", machines
         assemblers = session.query(User).filter(and_(User.active == true(), User.roles.any(name='assembler'))).all()
         random.shuffle(assemblers)
         shifts = session.query(Shift).all()
@@ -364,7 +362,7 @@ def after_teamrequest_insert(mapper, connection, target):
         if len(teams) > 0:
             session.add_all(teams)
             session.commit()
-            txn.commit()
+        txn.commit()
     except Exception as ex:
         txn.rollback()
         flash(gettext('Failed to create teams. %(error)s', error=str(ex)), 'error')
@@ -381,36 +379,35 @@ def from_start_to_end_date(start, end, shifts, machines, assembler_map):
     while start <= end:
         print "Creating teams for day = %s" % start
         for s in shifts:
+            print "current shift = %s" % s
             m_copy = machines[:]
             m = m_copy.pop()
-            count = int(m.average_num_workers)
             members = []
             standbys = []
             for a in assembler_map[s.id]:
-                if count > 0:
+                if len(members) < int(m.average_num_workers):
                     members.append(a)
-                    count -= 1
                     continue
+                elif len(m_copy) > 0:
+                    # Save a team to DB.
+                    t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=members, standbys=[])
+                    print "members = %s" % t.members
+                    teams.append(t)
+                    m = m_copy.pop()
+                    print "next machine = %s" % m
+                    print "is last machine = %d" % len(m_copy), a
+                    members = [a]
                 else:
-                    if m_copy:
-                        # Save a team to DB.
-                        t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=members, standbys=[])
-                        print ">>>>>>>>>>>>> Team=", dir(t)
-                        teams.append(t)
-                        print "saved regular team"
-                        m = m_copy.pop()
-                        count = int(m.average_num_workers) - 1
-                        members = [a]
-                    else:
-                        standbys.append(a)
+                    standbys.append(a)
             
             if len(standbys) > 0:
                 # Save the last team with standbys 
                 print "saving standbys...." 
-                t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=[], standbys=standbys)
+                t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=members, standbys=standbys)
                 teams.append(t)
             
-        start += timedelta(days=1) # end of while loop
+        start += timedelta(days=1) 
+        # end of while loop
 
-        return teams
+    return teams
             

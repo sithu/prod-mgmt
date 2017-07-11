@@ -47,7 +47,7 @@ def create_machines():
         m.name = names[i]
         m.status = 'ON'
         m.power_in_kilowatt = kw[i]
-        m.average_num_workers = '1'
+        m.average_num_workers = '2'
         m.machine_to_lead_ratio = '1-1'
         db.session.add(m)
 
@@ -156,6 +156,11 @@ def create_role_and_user(user_datastore):
             'Roberts', 'Khan', 'Lewis', 'Jackson', 'Clarke', 'James', 'Phillips', 'Wilson',
             'Ali', 'Mason', 'Mitchell', 'Rose', 'Davis', 'Davies', 'Rodriguez', 'Cox', 'Alexander'
         ]
+        shifts = [
+            '1', '1', '1', '1', '1', '1', '1', '1',
+            '1', '1', '2', '2', '2', '2', '2', '2',
+            '2', '2', '2', '3', '3', '3', '3', '3', '3'
+        ]
 
         for i in range(len(first_names)):
             tmp_email = first_names[i].lower() + "." + last_names[i].lower() + "@example.com"
@@ -164,7 +169,7 @@ def create_role_and_user(user_datastore):
                 email=tmp_email,
                 password=encrypt_password('user'),
                 roles=[assembler_role,],
-                shift_id=1
+                shift_id=shifts[i]
             )
 
         db.session.commit()

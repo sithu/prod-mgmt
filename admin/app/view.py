@@ -584,8 +584,8 @@ class TeamRequestModelView(RoleBasedModelView):
 class TeamModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
-    column_exclude_list = ['created_at', 'updated_at']
     column_default_sort = ('id', True)
+    column_list = ('date', 'shift', 'machine', 'lead', 'members', 'standbys')
     form_columns = ('date', 'shift', 'machine', 'lead', 'members', 'standbys')
 
     form_ajax_refs = {
@@ -600,4 +600,15 @@ class TeamModelView(RoleBasedModelView):
         )
     }
        
+    def _standbys_count(view, context, model, name):
+        if len(model.standbys) < 1:
+            return ''
+
+        html = '<i class="glyphicon glyphicon-user">x%s</i>' % str(len(model.standbys))
+        return Markup(html)
+
+
+    column_formatters = {
+        'standbys': _standbys_count
+    }
     
