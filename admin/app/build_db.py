@@ -47,6 +47,8 @@ def create_machines():
         m.name = names[i]
         m.status = 'ON'
         m.power_in_kilowatt = kw[i]
+        m.average_num_workers = '1'
+        m.machine_to_lead_ratio = '1-1'
         db.session.add(m)
 
 

@@ -12,12 +12,12 @@ from app.view import (
     ShiftModelView, ColorModelView, MachineModelView, 
     ProductModelView, OrderModelView, ProductionEntryModelView, 
     RoleBasedModelView, UserModelView, RoleModelView,
-    TeamModelView
+    TeamRequestModelView, TeamModelView
 )
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
 from flask_admin.contrib.sqla import ModelView
-from app.model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role, Team
+from app.model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role, Team, TeamRequest
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_admin import helpers as admin_helpers
 from flask_apscheduler import APScheduler
@@ -37,6 +37,7 @@ admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_i
 admin.add_view(ShiftModelView(Shift, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
 admin.add_view(RoleModelView(Role, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-lock'))
 admin.add_view(UserModelView(User, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-user'))
+admin.add_view(TeamRequestModelView(TeamRequest, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-random'))
 admin.add_view(TeamModelView(Team, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-calendar'))
 ####################### Flask Security ####################
 # Initialize the SQLAlchemy data store and Flask-Security.
@@ -100,22 +101,26 @@ def init_db_data():
         build_sample_db(user_datastore)
 
 def init_logger():
-    handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
+    handler = RotatingFileHandler('cedar-app.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
-    #app.logger.addHandler(handler)
+    handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.INFO)
     gunicorn_access_handlers = logging.getLogger('gunicorn.access').handlers
     app.logger.handlers.extend(gunicorn_access_handlers)
-    app.logger.addHandler(handler)
 
 
 @app.before_first_request
 def setup_logging():
     if not app.debug:
         # In production mode, add log handler to sys.stderr.
-        gunicorn_access_handlers = logging.getLogger('gunicorn.access').handlers
-        app.logger.handlers.extend(gunicorn_access_handlers)
-        app.logger.addHandler(logging.StreamHandler())
-        app.logger.setLevel(logging.INFO)
+        # gunicorn_access_handlers = logging.getLogger('gunicorn.access').handlers
+        # handler = logging.StreamHandler()
+        # handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+        # app.logger.handlers.extend(gunicorn_access_handlers)
+        # app.logger.addHandler(handler)
+        # app.logger.setLevel(logging.INFO)
+        # #init_logger()
         scheduler = APScheduler()
         scheduler.init_app(app)
         scheduler.start()

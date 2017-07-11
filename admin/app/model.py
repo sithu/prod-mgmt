@@ -1,13 +1,17 @@
 import enum
+import random
+
 from app import db
 from sqlalchemy import Column, Integer, String, Date, Time
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import column_property
-from sqlalchemy import select, func
-from datetime import datetime, date
+from sqlalchemy.orm import relationship, column_property, scoped_session, sessionmaker, sessionmaker
+from sqlalchemy import select, func, and_, event
+from datetime import datetime, date, timedelta
 from sqlalchemy_utils import ColorType
 from flask_security import UserMixin, RoleMixin
+from flask import flash
+from flask_admin.babel import gettext
+from sqlalchemy.sql.expression import true
 
 ########################### Flask Security Models ######################
 roles_users = db.Table(
@@ -71,7 +75,7 @@ class Machine(Base):
     status = db.Column(db.Enum('OFF', 'ON', 'BROKEN', 'NOT_IN_USE'), default='ON', nullable=False, index=True)
     power_in_kilowatt = db.Column(db.Integer) 
     photo = db.Column(db.String)
-    average_num_workers = Column(db.Enum('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'), default=1)
+    average_num_workers = Column(db.Enum('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'), default='1')
     machine_to_lead_ratio = db.Column(db.Enum('1-1', '1-2', '1-3', '1-4', '1-5'), default='1-1', nullable=False)
     
     def to_dict(self):
@@ -233,9 +237,26 @@ class Order(db.Model):
     def remaining(self):
         return self.quantity - self.completed
 
+
+class TeamRequest(Base):
+    __tablename__ = 'team_request'
+    start_date = db.Column(db.Date, default=(date.today() + timedelta(days=1)), nullable=False)
+    end_date = db.Column(db.Date, default=(date.today() + timedelta(days=1)), nullable=False)
+    day_off = db.Column(db.String(25))
+    
+    def __repr__(self):
+        return '%s - %s' % (self.start_date, self.end_date)
+
+
 # m-m User-to-Team mapping
 user_team_table = db.Table(
     'user_team',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('team_id', db.Integer, db.ForeignKey('team.id'))
+)
+
+user_team_standbys_table = db.Table(
+    'user_team_standbys',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('team_id', db.Integer, db.ForeignKey('team.id'))
 )
@@ -250,6 +271,7 @@ class Team(Base):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     lead = db.relationship(User)
     members = db.relationship(User, secondary=user_team_table)
+    standbys = db.relationship(User, secondary=user_team_standbys_table)
     
     def __repr__(self):
         return '%s - %s' % (self.date, self.shift.shift_name)
@@ -315,6 +337,80 @@ def after_productionentry_update(mapper, connection, target):
             'production_end_at': datetime.now() 
         })
  
-        
 
-    
+@listens_for(TeamRequest, 'after_insert')
+def after_teamrequest_insert(mapper, connection, target):     
+    print "============ after team reqeust insert =============="
+    print target.day_off, target.start_date, target.end_date
+    txn = connection.begin()
+    Session = sessionmaker()
+    session = Session(bind=connection)
+    teams = []
+    try:
+        print "$$$$$$ Before $$$$$$$"
+        machines = session.query(Machine).filter(Machine.status != 'NOT_IN_USE').all()
+        print "########## After #######", machines
+        assemblers = session.query(User).filter(and_(User.active == true(), User.roles.any(name='assembler'))).all()
+        random.shuffle(assemblers)
+        shifts = session.query(Shift).all()
+        assembler_map = {}
+        for s in shifts:
+            assembler_map[s.id] = []
+        while assemblers:
+            a = assemblers.pop()
+            assembler_map[a.shift_id].append(a)
+        
+        teams = from_start_to_end_date(target.start_date, target.end_date, shifts, machines, assembler_map)
+        if len(teams) > 0:
+            session.add_all(teams)
+            session.commit()
+            txn.commit()
+    except Exception as ex:
+        txn.rollback()
+        flash(gettext('Failed to create teams. %(error)s', error=str(ex)), 'error')
+        print ex
+
+    finally:
+        txn.close()
+
+
+
+def from_start_to_end_date(start, end, shifts, machines, assembler_map):
+    team_lead_id = 3
+    teams = []
+    while start <= end:
+        print "Creating teams for day = %s" % start
+        for s in shifts:
+            m_copy = machines[:]
+            m = m_copy.pop()
+            count = int(m.average_num_workers)
+            members = []
+            standbys = []
+            for a in assembler_map[s.id]:
+                if count > 0:
+                    members.append(a)
+                    count -= 1
+                    continue
+                else:
+                    if m_copy:
+                        # Save a team to DB.
+                        t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=members, standbys=[])
+                        print ">>>>>>>>>>>>> Team=", dir(t)
+                        teams.append(t)
+                        print "saved regular team"
+                        m = m_copy.pop()
+                        count = int(m.average_num_workers) - 1
+                        members = [a]
+                    else:
+                        standbys.append(a)
+            
+            if len(standbys) > 0:
+                # Save the last team with standbys 
+                print "saving standbys...." 
+                t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=[], standbys=standbys)
+                teams.append(t)
+            
+        start += timedelta(days=1) # end of while loop
+
+        return teams
+            

@@ -11,7 +11,7 @@ from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
 from datetime import datetime, timedelta
 from util import display_time, color_boxes_html, image_icon_html, href_link_html
-from wtforms import Form, SelectMultipleField, RadioField
+from wtforms import Form, SelectMultipleField, RadioField, validators
 from wtforms_components import ColorField, DateField
 from wtforms.validators import Required
 from flask_security import login_required, current_user
@@ -542,51 +542,62 @@ class ProductionEntryModelView(RoleBasedModelView):
                     model.order.production_start_at = datetime.now()
 
 
+class TeamRequestModelView(RoleBasedModelView):
+    column_exclude_list = ['updated_at', 'day_off']
+    column_default_sort = ('id', True)
+    form_columns = ('start_date', 'end_date', 'day_off')
+    form_extra_fields = {
+        'day_off': SelectMultipleField('Day Off',
+            choices=[ 
+                ('0', 'Monday'), ('1', 'Tuesday'), ('2', 'Wednesday'), 
+                ('3', 'Thursday'), ('4', 'Friday'), 
+                ('5', 'Saturday'), ('6', 'Sunday')
+            ],
+            default = [ '6' ]
+        )
+    }
+
+    def is_accessible(self):
+        result = super(RoleBasedModelView, self).is_accessible()
+        self.can_edit = False
+        self.can_view_details = False
+        return result
+
+    def on_model_change(self, form, model, is_created=False):
+        today = datetime.now().date()
+        start = form.start_date.data
+        end = form.end_date.data
+        
+        print "-------- %s" % form.day_off.data
+
+        if start <= today:
+            raise validators.ValidationError("'Start Date' must be a future date!")
+        if end < start:
+            raise validators.ValidationError("'Start Date' must be before 'End Date'")
+        
+        if len(form.day_off.data) > 0:
+            model.day_off = ','.join(form.day_off.data)
+        else:
+            model.day_off = ''
+
+
 class TeamModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
     column_exclude_list = ['created_at', 'updated_at']
-    #form_columns = (Shift.shift_name, Shift.start, Shift.end, Shift.total_hours)
-    # Sort the data by id in descending order.
     column_default_sort = ('id', True)
-    #column_list = [Shift.id, Shift.shift_name, Shift.start, Shift.end, Shift.total_hours]
+    form_columns = ('date', 'shift', 'machine', 'lead', 'members', 'standbys')
 
-    #form_create_rules = []
-    #form_edit_rules = []
-    #create_template = 'team_create.html'
-    #edit_template = 'rule_edit.html'
-    form_extra_fields = {
-        'start_date': DateField(label='Start Date', validators=[Required()]),
-        'end_date': DateField(label='End Date', validators=[Required()]),
-        'day_off': SelectMultipleField('Day Off',
-            choices=[ 
-                ('Saturday', 'Saturday'), ('Sunday', 'Sunday'), ('Monday', 'Monday'), ('Tuesday', 'Tuesday'),
-                ('Wednesday', 'Wednesday'), ('Thursday', 'Thursday'), ('Friday', 'Friday')
-            ],
-            default = [ 'Sunday' ]
+    form_ajax_refs = {
+        'lead': UserLeadAjaxModelLoader(
+            "lead", db.session, User, fields=['name']
+        ),
+        'members': UserAssemblerAjaxModelLoader(
+            "members", db.session, User, fields=['name']
+        ),
+        'standbys': UserAssemblerAjaxModelLoader(
+            "standbys", db.session, User, fields=['name']
         )
     }
-
-    def create_form(self, obj=None):
-        form = super(ModelView, self).create_form(obj)
-        # Custom fields
-        # form.start = DateField(label='Start')
-        # form.end = DateField(label='End')
-
-        # Delete Model fields
-        delattr(form, 'shift')
-        delattr(form, 'machine')
-        delattr(form, 'lead')
-        delattr(form, 'date')
-        delattr(form, 'members')
-        delattr(form, 'created_at')
-        delattr(form, 'updated_at')
-        
-        return form
-
-    def on_model_change(self, form, model, is_created=False):
-        if is_created:
-            print "________create_team", form.day_off.data 
-            print "________create_team", form.start_date.data 
-            print "________create_team", form.end_date.data 
-            
+       
+    
