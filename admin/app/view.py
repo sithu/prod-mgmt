@@ -11,7 +11,7 @@ from flask import url_for, redirect, render_template, request, abort, flash
 from sqlalchemy.event import listens_for
 from datetime import datetime, timedelta
 from util import display_time, color_boxes_html, image_icon_html, href_link_html
-from wtforms import Form, SelectMultipleField, RadioField, validators
+from wtforms import Form, SelectMultipleField, RadioField, validators, TextField
 from wtforms_components import ColorField, DateField
 from wtforms.validators import Required
 from flask_security import login_required, current_user
@@ -507,6 +507,7 @@ class ProductionEntryModelView(RoleBasedModelView):
         order = dict(label='For Order', query_factory=order_status_filter)
     )
     form_create_rules = ('shift', 'order', 'date', 'lead', 'members')
+    column_labels = dict(num_hourly_good='Num Hourly Good - Example: 10,20,30',num_hourly_bad='Num Hourly Bad - Example: 0,1,2')
     form_columns = (
         'shift',
         'order',
