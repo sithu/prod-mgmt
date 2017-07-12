@@ -1,6 +1,6 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "python.pythonPath": "/Users/saung/mydoc/project/cedar/admin/flask/bin/python",
+    "python.pythonPath": "/Users/saung/mydoc/project/prod-mgmt/flask/bin/python",
     "files.exclude": {
         "**/*.pyc": true,
         "**/*.map": true
