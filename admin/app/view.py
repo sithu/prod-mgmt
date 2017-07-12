@@ -175,12 +175,13 @@ class UserModelView(RoleBasedModelView):
     form_extra_fields = {
         'photo': ImageUploadField('Image',
                                       base_path=file_path,
-                                      thumbnail_size=(100, 100, True))
+                                      thumbnail_size=(75, 75, True))
     }
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
     column_sortable_list = [ 'id', 'name', 'email', 'active', 'is_in', 'gender']
-
+    column_filters = ('id', 'name','gender', 'is_in', 'active', 'email', 'shift.name', 'roles.name')
+    
     @action('enable', 'Enable', 'Are you sure you want to enable selected users?')
     def action_enable(self, ids):
         self.toggle_user_status(ids, True)
@@ -226,7 +227,7 @@ class ColorModelView(RoleBasedModelView):
     edit_modal = True
     #inline_models = (ColorInlineModelForm(Color),)
     column_hide_backrefs = False
-    column_searchable_list = (Color.name, Color.color_code)
+    column_searchable_list = (Color.id, Color.name, Color.color_code)
     #form_excluded_columns = (Color.name)
     #inline_models = (Color,)
     # Use same rule set for edit page
@@ -253,14 +254,18 @@ class ColorModelView(RoleBasedModelView):
     }
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
+    column_filters = ('id', 'name')
+    
 
 class MachineModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
     column_exclude_list = ['created_at']
-    column_list = [Machine.id, Machine.name, Machine.status, Machine.average_num_workers, 'orders']
+    column_list = [Machine.id, Machine.name, Machine.status, 'machine_to_lead_ratio', Machine.average_num_workers, 'orders']
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
-    column_labels = dict(average_num_workers='Planned Workers', machine_to_lead_ratio='Lead to Machine Ratio')
+    column_labels = dict(
+        average_num_workers='Scheduled Assemblers', machine_to_lead_ratio='Lead to Machine Ratio'
+    )
 
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
@@ -296,11 +301,12 @@ class MachineModelView(RoleBasedModelView):
     form_extra_fields = {
         'photo': ImageUploadField('Image',
                                       base_path=file_path,
-                                      thumbnail_size=(100, 100, True))
+                                      thumbnail_size=(75, 75, True))
     }
     form_columns = ('name','status', 'power_in_kilowatt', 'photo', 'average_num_workers', 'machine_to_lead_ratio')
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
+    column_filters = ('id', 'name', 'status', 'machine_to_lead_ratio')
 
 
 class ProductModelView(RoleBasedModelView):
@@ -365,11 +371,12 @@ class ProductModelView(RoleBasedModelView):
     form_extra_fields = {
         'photo': ImageUploadField('Image',
                                       base_path=file_path,
-                                      thumbnail_size=(100, 100, True))
+                                      thumbnail_size=(75, 75, True))
     }
     # Create form fields adjustment.
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
+    column_filters = ('id', 'name', 'weight', 'time_to_build', 'num_employee_required', 'machine.name', 'raw_material_weight_per_bag')
 
 
 class OrderModelView(RoleBasedModelView):
@@ -440,6 +447,12 @@ class OrderModelView(RoleBasedModelView):
         'raw_material_quantity', 'production_start_at', 'production_end_at'
     ]
     
+    column_searchable_list = (Order.id, Order.name, Order.status)
+    column_filters = (
+        'id', 'name', 'status', 'quantity', 'estimated_time_to_complete', 'raw_material_quantity',
+        'assigned_machine_id'
+    )
+    
     # List column renaming
     column_labels = dict(
         production_entry_orders='Production Entries', 
@@ -449,8 +462,6 @@ class OrderModelView(RoleBasedModelView):
         assigned_machine_id='Machine Id'
     )
     
-    column_searchable_list = (Order.id, Order.name)
-    column_filters = ('status',)
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
 
@@ -484,7 +495,7 @@ class ProductionEntryModelView(RoleBasedModelView):
          'num_good', 'num_bad'
     ]
 
-    column_filters = ('shift.name', 'date', 'lead.name', 'order.assigned_machine_id', 'order.status', 'order.remaining')
+    column_filters = ('shift.name', 'date', 'lead.name', 'order.assigned_machine_id', 'order.status', 'order.remaining', 'members.name', 'num_good', 'num_bad')
     # Sort entry by id descending order.
     column_default_sort = ('id', True)
 
