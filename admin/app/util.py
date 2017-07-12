@@ -58,3 +58,19 @@ def href_link_html(model_id, model_name):
     )
     
     return html
+
+def slot_lead_to_machine(leads, machines):
+    resources = []
+    count = 0
+    lead = leads.pop()
+    for m in machines:
+        ratio = int(m.machine_to_lead_ratio.split('-')[0])
+        if len(leads) > 0 and count >= ratio:
+            lead = leads.pop()
+            count = 1 # reset 0 and just pop() above (1). So, sets to 1
+        else:
+            count += 1
+
+        resources.append(lead)
+
+    return (resources, leads)

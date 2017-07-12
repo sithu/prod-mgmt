@@ -57,7 +57,7 @@ def create_shift():
     shifts = [ ('Morning', 8, 16), ('Evening', 16, 0), ('Night', 0, 8)]
     for t in shifts:
         s = Shift()
-        s.shift_name = t[0]
+        s.name = t[0]
         s.start = time(t[1], 0, 0)
         s.end = time(t[2], 0, 0)
         s.total_hours = 8

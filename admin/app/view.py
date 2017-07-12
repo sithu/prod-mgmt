@@ -3,7 +3,7 @@ import os.path as op
 
 from app import app, db
 from flask_admin.contrib.sqla import ModelView
-from model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role
+from model import Color, Machine, Product, Order, Shift, ProductionEntry, User, Role, Team, TeamRequest
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.form import thumbgen_filename, ImageUploadField, rules, DateTimeField, Select2Field
 from jinja2 import Markup
@@ -216,10 +216,10 @@ class UserModelView(RoleBasedModelView):
 class ShiftModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
-    form_columns = (Shift.shift_name, Shift.start, Shift.end, Shift.total_hours)
+    form_columns = (Shift.name, Shift.start, Shift.end, Shift.total_hours)
     # Sort the data by id in descending order.
     column_default_sort = ('id', True)
-    column_list = [Shift.id, Shift.shift_name, Shift.start, Shift.end, Shift.total_hours]
+    column_list = [Shift.id, Shift.name, Shift.start, Shift.end, Shift.total_hours]
 
 class ColorModelView(RoleBasedModelView):
     details_modal = True
@@ -260,7 +260,7 @@ class MachineModelView(RoleBasedModelView):
     column_exclude_list = ['created_at']
     column_list = [Machine.id, Machine.name, Machine.status, Machine.average_num_workers, 'orders']
     column_searchable_list = (Machine.id, Machine.name, Machine.status)
-    column_labels = dict(average_num_workers='Planned Workers')
+    column_labels = dict(average_num_workers='Planned Workers', machine_to_lead_ratio='Lead to Machine Ratio')
 
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
@@ -484,7 +484,7 @@ class ProductionEntryModelView(RoleBasedModelView):
          'num_good', 'num_bad'
     ]
 
-    column_filters = ('shift.shift_name', 'date', 'lead.name', 'order.assigned_machine_id', 'order.status', 'order.remaining')
+    column_filters = ('shift.name', 'date', 'lead.name', 'order.assigned_machine_id', 'order.status', 'order.remaining')
     # Sort entry by id descending order.
     column_default_sort = ('id', True)
 
@@ -546,6 +546,7 @@ class TeamRequestModelView(RoleBasedModelView):
     column_exclude_list = ['updated_at', 'day_off']
     column_default_sort = ('id', True)
     form_columns = ('start_date', 'end_date', 'day_off')
+    column_labels = dict(id='Team Request Id')
     form_extra_fields = {
         'day_off': SelectMultipleField('Day Off',
             choices=[ 
@@ -572,7 +573,9 @@ class TeamRequestModelView(RoleBasedModelView):
             raise validators.ValidationError("'Start Date' must be a future date!")
         if end < start:
             raise validators.ValidationError("'Start Date' must be before 'End Date'")
-        
+        if (end - start).days > 90:
+            raise validators.ValidationError("You cannot schedule for more than 90 days")
+            
         if len(form.day_off.data) > 0:
             model.day_off = ','.join(form.day_off.data)
         else:
@@ -583,9 +586,14 @@ class TeamModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
     column_default_sort = ('date', False)
-    column_list = ('id', 'date', 'week_day','shift', 'machine', 'lead', 'members', 'standbys')
+    column_sortable_list = [ 'id', 'date', 'machine' ]
+    column_list = ['id', 'date', 'week_day', 'shift', 'machine', 'lead', 'members', 'standbys' ]
+    column_searchable_list = ('id', 'date')
+    column_labels = dict(id='Team Id',week_day='Day')
+    column_filters = ('date', 'shift.name','machine.name', 'lead.name', 'members.name')
+    
     form_columns = ('date', 'shift', 'machine', 'lead', 'members', 'standbys')
-
+    
     form_ajax_refs = {
         'lead': UserLeadAjaxModelLoader(
             "lead", db.session, User, fields=['name']
@@ -597,7 +605,7 @@ class TeamModelView(RoleBasedModelView):
             "standbys", db.session, User, fields=['name']
         )
     }
-       
+
     def _standbys_count(view, context, model, name):
         if len(model.standbys) < 1:
             return ''

@@ -6,13 +6,14 @@ from app import db
 from sqlalchemy import Column, Integer, String, Date, Time
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, column_property, scoped_session, sessionmaker, sessionmaker
-from sqlalchemy import select, func, and_, event
+from sqlalchemy import select, func, and_, event, UniqueConstraint
 from datetime import datetime, date, timedelta
 from sqlalchemy_utils import ColorType
 from flask_security import UserMixin, RoleMixin
 from flask import flash
 from flask_admin.babel import gettext
 from sqlalchemy.sql.expression import true
+from util import slot_lead_to_machine
 
 ########################### Flask Security Models ######################
 roles_users = db.Table(
@@ -99,13 +100,13 @@ class Machine(Base):
 class Shift(db.Model):
     __tablename__ = 'shift'
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
-    shift_name = db.Column(db.String, nullable=False, unique=True)
+    name = db.Column(db.String, nullable=False, unique=True, index=True)
     start = Column(Time, nullable=False)
     end = Column(Time, nullable=False)
     total_hours = Column(Integer, nullable=False)
 
     def __repr__(self):
-        return '%s' % (self.shift_name)
+        return '%s' % (self.name)
 
     def toAM_PM(self, hour):
         if hour == 12:
@@ -273,9 +274,10 @@ class Team(Base):
     lead = db.relationship(User)
     members = db.relationship(User, secondary=user_team_table)
     standbys = db.relationship(User, secondary=user_team_standbys_table)
+    #__table_args__ = (UniqueConstraint('date', 'shift_id', 'machine_id', name='_date_shift_machine_uc'),)
     
     def __repr__(self):
-        return '%s - %s' % (self.date, self.shift.shift_name)
+        return '%d - %s - %s' % (self.id, self.shift.name, self.date)
 
     @hybrid_property
     def member_size(self):
@@ -358,6 +360,8 @@ def after_teamrequest_insert(mapper, connection, target):
         machines = session.query(Machine).filter(Machine.status != 'NOT_IN_USE').all()
         assemblers = session.query(User).filter(and_(User.active == true(), User.roles.any(name='assembler'))).all()
         random.shuffle(assemblers)
+        leads = session.query(User).filter(and_(User.active == true(), User.roles.any(name='lead'))).all()
+        random.shuffle(leads)
         shifts = session.query(Shift).all()
         assembler_map = {}
         for s in shifts:
@@ -366,7 +370,11 @@ def after_teamrequest_insert(mapper, connection, target):
             a = assemblers.pop()
             assembler_map[a.shift_id].append(a)
         
-        teams = from_start_to_end_date(target.start_date, target.end_date, target.day_off, shifts, machines, assembler_map)
+        lead_slot, extra = slot_lead_to_machine(leads, machines)
+        if len(lead_slot) != len(machines):
+            print "Total lead slot does not match with number of machines."
+            return
+        teams = from_start_to_end_date(target.start_date, target.end_date, target.day_off, shifts, machines, assembler_map, lead_slot, extra)
         if len(teams) > 0:
             session.add_all(teams)
             session.commit()
@@ -381,50 +389,46 @@ def after_teamrequest_insert(mapper, connection, target):
 
 
 
-def from_start_to_end_date(start, end, day_off_str, shifts, machines, assembler_map):
+def from_start_to_end_date(start, end, day_off_str, shifts, machines, assembler_map, leader_slot, extra):
     day_offs = []
     if day_off_str and len(day_off_str.strip()) > 0:
         day_offs = [ int(x) for x in day_off_str.split(',') ]
-    team_lead_id = 3
     teams = []
     while start <= end:
-        print "Creating teams for day = %s [%s]" % (start, start.weekday())
         # check current date is in the day offs list
         if start.weekday() in day_offs:
-            print "current day is part of day offs: %d. Skipping..." % start.weekday()
             start += timedelta(days=1) 
             continue
 
         for s in shifts:
-            print "current shift = %s" % s
             m_copy = machines[:]
+            leaders = leader_slot[:]
             m = m_copy.pop()
+            l = leaders.pop()
             members = []
             standbys = []
             for a in assembler_map[s.id]:
                 if len(members) < int(m.average_num_workers):
                     members.append(a)
-                    continue
                 elif len(m_copy) > 0:
                     # Save a team to DB.
-                    t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=members, standbys=[])
-                    print "members = %s" % t.members
+                    t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=l.id, members=members, standbys=[])
                     teams.append(t)
                     m = m_copy.pop()
-                    print "next machine = %s" % m
-                    print "is last machine = %d" % len(m_copy), a
+                    l = leaders.pop()
                     members = [a]
                 else:
                     standbys.append(a)
             
-            if len(standbys) > 0:
+            if len(standbys) > 0 or len(members) > 0:
                 # Save the last team with standbys 
-                print "saving standbys...." 
-                t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=team_lead_id, members=members, standbys=standbys)
+                print "saving standbys = %d, last mem = %d" % (len(standbys),  len(members))
+                standbys.extend(extra)
+                t = Team(date=start, shift_id=s.id, machine_id=m.id, user_id=l.id, members=members, standbys=standbys)
                 teams.append(t)
             
         start += timedelta(days=1) 
         # end of while loop
-
+    
     return teams
             
