@@ -1,13 +1,17 @@
-/*
-* {
-  -webkit-border-radius: 0 !important;
-     -moz-border-radius: 0 !important;
-          border-radius: 0 !important;
+.foo {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+  border: 1px solid rgba(0, 0, 0, .2);
 }
-*/
-body {
-  margin-top: 60px;
-  padding: 10px;
-  background-color: #ECF0F1;
+
+.blue {
+  background: #13b4ff;
 }
-/* disable all rounded corners */
+
+.carousel-inner > .item > img {
+    margin: 0 auto;
+}
+
+/* modified again */
