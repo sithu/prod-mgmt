@@ -38,10 +38,17 @@ PRODUCTION_TIME_SHIFT_BUFFER_IN_SEC = 600
 SCHEDULER_VIEWS_ENABLED = True
 JOBS = [
     {
-        'id': 'job1',
-        'func': 'run:job1',
+        'id': 'test_job',
+        'func': 'app.scheduler:test_job',
         'args': (1, 2),
         'trigger': 'interval',
-        'seconds': 600
+        'seconds': 6000
+    },
+    {
+        'id': 'archive_orders_job',
+        'func': 'app.scheduler:archive_orders_job',
+        'args': (),
+        'trigger': 'interval',
+        'seconds': 3
     }
 ]

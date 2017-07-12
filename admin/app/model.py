@@ -432,3 +432,45 @@ def from_start_to_end_date(start, end, day_off_str, shifts, machines, assembler_
     
     return teams
             
+############################# Histroy Models ##########################
+class OrderHistory(db.Model):
+    """Order table ORM mapping"""
+    __tablename__ = 'order_history'
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    name = db.Column(db.String, index=True)
+    quantity = db.Column(db.Integer, nullable=False, default=0)
+    product_id = db.Column(db.Integer, index=True)
+    product_name = Column(String(75), index=True)
+    raw_material_quantity = db.Column(db.Integer, nullable=False, default=0)
+    estimated_time_to_complete = db.Column(db.Integer, nullable=False)
+    machine_id = Column(Integer, index=True)
+    machine_name = Column(String, index=True)
+    photo = Column(String(100))
+    order_created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    production_start_at = db.Column(db.DateTime)
+    production_end_at = db.Column(db.DateTime)
+    note = db.Column(db.String)
+    
+    def __repr__(self):
+        return '%d - %s - %s' % (self.id, self.name, self.product_name)
+
+
+class ProductionEntryHistory(db.Model):
+    __tablename__ = 'production_entry_history'
+    id = Column(Integer, primary_key = True, index=True)
+    date = Column(Date, default=date.today())
+    shift_name = Column(String(50), index=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order_history.id'), nullable=False)
+    order = db.relationship('OrderHistory', backref='production_entry_h_order_h')
+    lead = Column(String, index=True)
+    assemblers = Column(String)
+    num_hourly_good = Column(String, default='')
+    num_hourly_bad = Column(String, default='')
+    num_good = Column(Integer, default=0)
+    num_bad = Column(Integer, default=0)
+    machine_id = Column(Integer, index=True)
+    photo = Column(String(100))
+    
+    def __repr__(self):
+        return '%d - %d - %s' % (self.id, self.order_id, self.shift_name)
+

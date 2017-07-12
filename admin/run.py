@@ -128,4 +128,4 @@ def setup_logging():
 if __name__ == '__main__':
     #init_logger()    
     init_db_data()
-    app.run(host="0.0.0.0", debug = True)
+    app.run(host="0.0.0.0", debug = False)
