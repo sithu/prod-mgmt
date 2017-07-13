@@ -12,7 +12,9 @@ from app.view import (
     ShiftModelView, ColorModelView, MachineModelView, 
     ProductModelView, OrderModelView, ProductionEntryModelView, 
     RoleBasedModelView, UserModelView, RoleModelView,
-    TeamRequestModelView, TeamModelView
+    TeamRequestModelView, TeamModelView,
+    ActiveOrderModelView, ActiveProductionEntryModelView,
+    ActiveTeamModelView
 )
 from app import app, admin, db
 from flask_admin.consts import ICON_TYPE_GLYPH
@@ -29,16 +31,22 @@ app.config.from_object('config')
 
 
 ################ Flask Admin View Setup #######################
+admin.add_view(ActiveOrderModelView(Order, db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
+admin.add_view(ActiveProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
+
 admin.add_view(MachineModelView(Machine, db.session, menu_class_name='machine', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-wrench'))
-admin.add_view(OrderModelView(Order, db.session, menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
-admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
 admin.add_view(ProductModelView(Product, db.session, menu_class_name='product', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-th-large'))
 admin.add_view(ColorModelView(Color, db.session, menu_class_name='color', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-picture'))
 admin.add_view(ShiftModelView(Shift, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-time'))
+
 admin.add_view(RoleModelView(Role, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-lock'))
 admin.add_view(UserModelView(User, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-user'))
 admin.add_view(TeamRequestModelView(TeamRequest, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-random'))
-admin.add_view(TeamModelView(Team, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-calendar'))
+admin.add_view(ActiveTeamModelView(Team, db.session, category='Employee', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-calendar'))
+# History
+admin.add_view(OrderModelView(Order, db.session, endpoint="order_history", category='History', menu_class_name='order', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-shopping-cart'))
+admin.add_view(ProductionEntryModelView(ProductionEntry, db.session, endpoint="productionentry_history", category='History', menu_class_name='production_entry', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-list'))
+admin.add_view(TeamModelView(Team, db.session, endpoint="team_history", category='History', menu_class_name='shift', menu_icon_type=ICON_TYPE_GLYPH, menu_icon_value='glyphicon glyphicon-calendar'))
 ####################### Flask Security ####################
 # Initialize the SQLAlchemy data store and Flask-Security.
 print "############# Setting Security #############"
@@ -128,4 +136,4 @@ def setup_logging():
 if __name__ == '__main__':
     #init_logger()    
     init_db_data()
-    app.run(host="0.0.0.0", debug = False)
+    app.run(host="0.0.0.0", debug = True)

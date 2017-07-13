@@ -16,7 +16,7 @@ from wtforms_components import ColorField, DateField
 from wtforms.validators import Required
 from flask_security import login_required, current_user
 from sqlalchemy.sql.expression import true
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin.actions import action
 from flask_admin.babel import gettext, ngettext
@@ -30,23 +30,23 @@ try:
 except OSError:
     pass
 
-# TODO - handle for other models with photo
+# TODO - handle for other models with photo, but disable for now as it tries to delete product photos.
 # https://github.com/flask-admin/flask-admin/blob/master/examples/forms/app.py#L67
-@listens_for(Machine, 'after_delete')
-def del_image(mapper, connection, target):
-    if target.path:
-        # Delete image
-        try:
-            os.remove(op.join(file_path, target.photo_url))
-        except OSError:
-            pass
+# @listens_for(Machine, 'after_delete')
+# def del_image(mapper, connection, target):
+#     if target.path:
+#         # Delete image
+#         try:
+#             os.remove(op.join(file_path, target.photo_url))
+#         except OSError:
+#             pass
 
-        # Delete thumbnail
-        try:
-            os.remove(op.join(file_path,
-                              form.thumbgen_filename(target.photo_url)))
-        except OSError:
-            pass
+#         # Delete thumbnail
+#         try:
+#             os.remove(op.join(file_path,
+#                               form.thumbgen_filename(target.photo_url)))
+#         except OSError:
+#             pass
 
 ####################### Formatters ############################
 def date_format(view, value):
@@ -382,6 +382,13 @@ class ProductModelView(RoleBasedModelView):
 class OrderModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
+    
+    def is_accessible(self):
+        result = super(RoleBasedModelView, self).is_accessible()
+        self.can_create = False
+        self.can_export = True
+        return result
+
     # Create form fields
     form_columns = (
         'name',
@@ -483,6 +490,13 @@ class UserAssemblerAjaxModelLoader(QueryAjaxModelLoader):
 
 class ProductionEntryModelView(RoleBasedModelView):
     details_modal = True
+
+    def is_accessible(self):
+        result = super(RoleBasedModelView, self).is_accessible()
+        self.can_create = False
+        self.can_export = True
+        return result
+
     #column_labels = dict(user='Lead', users='Members')
     # List table columns
     column_list = (
@@ -630,3 +644,43 @@ class TeamModelView(RoleBasedModelView):
         'standbys': _standbys_count
     }
     
+########################## Active Views ##############################
+class ActiveOrderModelView(OrderModelView):
+    def is_accessible(self):
+        result = super(OrderModelView, self).is_accessible()
+        self.can_create = True
+        return result
+
+    def get_query(self):
+        return self.session.query(self.model).filter(self.model.status != 'COMPLETED')
+
+    def get_count_query(self):
+        return self.session.query(func.count('*')).filter(self.model.status != 'COMPLETED')
+
+
+class ActiveProductionEntryModelView(ProductionEntryModelView):
+    def is_accessible(self):
+        result = super(ProductionEntryModelView, self).is_accessible()
+        self.can_create = True
+        return result
+
+    def get_query(self):
+        return self.session.query(self.model).join(Order).filter(Order.status != 'COMPLETED')
+
+    def get_count_query(self):
+        return self.session.query(func.count(self.model.id)).join(Order).filter(Order.status != 'COMPLETED')
+
+
+class ActiveTeamModelView(TeamModelView):
+    def is_accessible(self):
+        result = super(TeamModelView, self).is_accessible()
+        self.can_create = True
+        return result
+
+    def get_query(self):
+        today = datetime.now().date()
+        return self.session.query(self.model).filter(self.model.date >= today)
+
+    def get_count_query(self):
+        today = datetime.now().date()
+        return self.session.query(func.count('*')).filter(self.model.date >= today)

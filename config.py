@@ -5,8 +5,7 @@ WEIGHT_UNIT = 'g'
 # Create dummy secrey key so we can use sessions
 SECRET_KEY = '123456790'
 
-# Create in-memory database
-DATABASE_FILE = 'cedar.db'
+DATABASE_FILE = 'prod-mgmt.db'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, DATABASE_FILE)
 SQLALCHEMY_ECHO = False # Print SQL into logs
 
@@ -49,6 +48,6 @@ JOBS = [
         'func': 'app.scheduler:archive_orders_job',
         'args': (),
         'trigger': 'interval',
-        'seconds': 3
+        'seconds': 3600
     }
 ]

@@ -19,6 +19,7 @@ admin = Admin(
     template_mode='bootstrap3',
     category_icon_classes={
         'Employee': 'glyphicon glyphicon-user',
+        'History': 'glyphicon glyphicon-folder-open'
     }
 )
 
