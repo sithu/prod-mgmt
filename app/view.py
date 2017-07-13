@@ -383,12 +383,6 @@ class OrderModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
     
-    def is_accessible(self):
-        result = super(RoleBasedModelView, self).is_accessible()
-        self.can_create = False
-        self.can_export = True
-        return result
-
     # Create form fields
     form_columns = (
         'name',
@@ -491,12 +485,6 @@ class UserAssemblerAjaxModelLoader(QueryAjaxModelLoader):
 class ProductionEntryModelView(RoleBasedModelView):
     details_modal = True
 
-    def is_accessible(self):
-        result = super(RoleBasedModelView, self).is_accessible()
-        self.can_create = False
-        self.can_export = True
-        return result
-
     #column_labels = dict(user='Lead', users='Members')
     # List table columns
     column_list = (
@@ -583,12 +571,6 @@ class TeamRequestModelView(RoleBasedModelView):
             default = [ '6' ]
         )
     }
-
-    def is_accessible(self):
-        result = super(RoleBasedModelView, self).is_accessible()
-        self.can_edit = False
-        self.can_view_details = False
-        return result
 
     def on_model_change(self, form, model, is_created=False):
         today = datetime.now().date()

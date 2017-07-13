@@ -1,17 +1,22 @@
-.foo {
+.box {
   float: left;
-  width: 20px;
-  height: 20px;
-  margin: 5px;
+  width: 15px;
+  height: 15px;
+  margin: 3px;
   border: 1px solid rgba(0, 0, 0, .2);
-}
-
-.blue {
-  background: #13b4ff;
 }
 
 .carousel-inner > .item > img {
     margin: 0 auto;
 }
 
-/* modified again */
+/* Home page dashboard */
+.progress {
+  width: 80%;
+  height: 25px;
+}
+
+.progress-bar {
+  font-size: 21px !important;
+  line-height: 21px !important;
+}
