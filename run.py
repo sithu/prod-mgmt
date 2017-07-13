@@ -23,7 +23,7 @@ from app.model import Color, Machine, Product, Order, Shift, ProductionEntry, Us
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_admin import helpers as admin_helpers
 from flask_apscheduler import APScheduler
-from flask import send_from_directory
+from flask import send_from_directory, jsonify
 from app.build_db import build_sample_db
 
 ################ config.py ####################
@@ -94,7 +94,24 @@ def index():
     app.logger.info('Redirect to admin home')
     return redirect(url_for('admin.index'))
 
+@app.route('/api/dashboard')
+def dashboard():
+    print "___________ /api/dashboard _____________"
+    orders = db.session.query(Order).filter(Order.status == 'IN_PROGRESS').all()
+    print "num completed orders = %d" % len(orders)
+    data = []
+    for o in orders:
+        o_map = {}
+        o_map['id'] = o.id
+        o_map['name'] = o.product.name
+        o_map['photo'] = o.photo
+        o_map['quantity'] = o.quantity
+        o_map['completed'] = o.completed
+        data.append(o_map)
 
+    return jsonify(data)
+
+####################### init ##########################
 def init_db_data():
     app_dir = op.realpath(os.path.dirname(__file__))
     database_path = op.join(app_dir, app.config['DATABASE_FILE'])

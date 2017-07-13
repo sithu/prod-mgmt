@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 ####################### Flask Admin #######################
 admin = Admin(
     app, 
-    name='Popular Plastic', 
+    name='POPULAR plastic', 
     template_mode='bootstrap3',
     category_icon_classes={
         'Employee': 'glyphicon glyphicon-user',

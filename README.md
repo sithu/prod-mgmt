@@ -17,3 +17,9 @@ pip list | wc -l
 ./flask/bin/python run.py 
 
 ```
+
+### Install UI Dependencies
+
+```sh
+bower install
+```

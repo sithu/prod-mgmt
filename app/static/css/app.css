@@ -1,3 +1,7 @@
+body {
+  padding-top: unset !important;
+}
+
 .box {
   float: left;
   width: 15px;
@@ -14,6 +18,7 @@
 .progress {
   width: 80%;
   height: 25px;
+  margin-top: 20px; /* place the bar in the middle of product image */
 }
 
 .progress-bar {
