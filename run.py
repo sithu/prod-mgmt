@@ -63,26 +63,20 @@ def security_context_processor():
         h=admin_helpers,
         get_url=url_for
     )
-################ Logger ######################
-#import logging
-#file_handler = FileHandler('app.log')
-#file_handler.setLevel(logging.DEBUG)
-#file_handler.setFormatter(
-#        Formatter('%(asctime)s %(levelname)s: %(message)s'))
-#app.logger.addHandler(file_handler)
 
-################ LoginManager ######################
-#from flask.ext.bootstrap import Bootstrap
-#from flask.ext.sqlalchemy import SQLAlchemy
-#from flask.ext.login import LoginManager
+################ SQLite Optimization ######################
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
 
-#login_manager = LoginManager()
-#login_manager.session_protection = 'strong'
-#login_manager.login_view = 'auth.login'
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.execute("PRAGMA synchronous=OFF")
+    cursor.execute("PRAGMA cache_size=100000")
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
-#from app.auth import auth as auth_blueprint
-#app.register_blueprint(auth_blueprint, url_prefix='/auth')
-#login_manager.init_app(app)
 
 ################ Flask-APScheduler #################
 def job1(a, b):
