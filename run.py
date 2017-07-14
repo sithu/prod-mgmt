@@ -107,6 +107,7 @@ def dashboard():
         o_map['photo'] = o.photo
         o_map['quantity'] = o.quantity
         o_map['completed'] = o.completed
+        o_map['total_bad'] = o.total_bad
         data.append(o_map)
 
     return jsonify(data)

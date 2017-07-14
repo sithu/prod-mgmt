@@ -14,6 +14,11 @@ body {
     margin: 0 auto;
 }
 
+.navbar-default {
+  background-color: #509ee3;
+  border-color: #509ee3;
+}
+
 /* Home page dashboard */
 .progress {
   width: 80%;
@@ -22,6 +27,28 @@ body {
 }
 
 .progress-bar {
+  background-color: #509ee3;
   font-size: 21px !important;
   line-height: 21px !important;
+}
+
+.container-fluid {
+  height: 100%;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.row-first {
+  height:80%;
+  overflow: hidden;
+}
+
+.row-other {
+  height:100%;
+  overflow: hidden;
+}
+
+h1 {
+  color: #509ee3 !important;
+/*  line-height: 25px; */
 }

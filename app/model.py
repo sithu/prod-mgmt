@@ -223,6 +223,11 @@ class Order(db.Model):
             where(ProductionEntry.order_id==id).\
             correlate_except(ProductionEntry)
     )
+    total_bad = column_property(
+        select([func.sum(ProductionEntry.num_bad)]).\
+            where(ProductionEntry.order_id==id).\
+            correlate_except(ProductionEntry)
+    )
 
     def __repr__(self):
         return '%d - %s - %s' % (self.id, self.name, self.status)
