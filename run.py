@@ -97,9 +97,7 @@ def index():
 
 @app.route('/api/dashboard')
 def dashboard():
-    print "___________ /api/dashboard _____________"
     orders = db.session.query(Order).filter(Order.status == 'IN_PROGRESS').all()
-    print "num completed orders = %d" % len(orders)
     data = []
     for o in orders:
         o_map = {}
@@ -108,7 +106,6 @@ def dashboard():
         o_map['quantity'] = o.quantity
         o_map['completed'] = o.completed
         o_map['total_bad'] = o.total_bad
-        print "=============", o.completed, o.total_bad
         percent = ( Decimal(o.completed) / Decimal(o.quantity) ) * 100
         percent = int(Decimal(percent).quantize(Decimal('1.'), rounding=ROUND_UP))
         o_map['percent'] = percent
@@ -116,10 +113,6 @@ def dashboard():
         data.append(o_map)
 
     return jsonify(data)
-
-@app.route('/api/employee_count')
-def employee_count():
-    orders = db.session.query(Order).filter(Order.status == 'IN_PROGRESS').all()
     
 
 ####################### init ##########################

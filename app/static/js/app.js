@@ -10,16 +10,14 @@ var update = function() {
         type : 'GET',
         url : '../api/dashboard',
         success : function(data){
-            console.log(data);
             if (arraysEqual(data, current_orders)) {
                 // update progress
-                console.log("update progress");
-                console.log(charts.length);
-
+                //console.log("update progress");
+            
                 for(var j = 0; j < data.length; j++) {
                     order = data[j];
                     if ( JSON.stringify(current_orders[j]) === JSON.stringify(order) ) {
-                        console.log("No changes found. Skipping...");
+                        // console.log("No changes found. Skipping...");
                         continue;
                     }
                     $('#title_' + order.id).html(order.machine_product);
@@ -27,21 +25,15 @@ var update = function() {
                     $('#c_' + order.id).html(order.completed);
                     $('#b_' + order.id).html(order.total_bad);
                     chart = charts[j];
-                    console.log(chart);
-                    console.log("current value");
                     current = chart.series[0].data[0];
-                    console.log(current.y);
                     current.y = order.percent;
-                    console.log("new value =" + order.percent);
                     chart.series[0].setData([current]);
                     chart.percent_label.attr({
                         text: order.percent + '<span style="vertical-align:super;font-size:50%">%</span>'
                     })
                 }
             } else {
-                console.log("init all charts");
-                console.log(charts.length);
-
+                // console.log("init all charts");
                 current_orders = [];
                 charts = [];
                 var row_num = 0;
@@ -57,9 +49,7 @@ var update = function() {
                     }
                     row = '#row_' + row_num;
                     $(row).append(template(order));
-                    console.log("draw_donut");
                     chart = draw_donut(order.id + '', order.percent);
-                    console.log(chart);
                     charts.push(chart);
                 }
             }
