@@ -25,6 +25,7 @@ from flask_admin import helpers as admin_helpers
 from flask_apscheduler import APScheduler
 from flask import send_from_directory, jsonify
 from app.build_db import build_sample_db
+from decimal import *
 
 ################ config.py ####################
 app.config.from_object('config')
@@ -103,14 +104,23 @@ def dashboard():
     for o in orders:
         o_map = {}
         o_map['id'] = o.id
-        o_map['name'] = o.product.name
         o_map['photo'] = o.photo
         o_map['quantity'] = o.quantity
         o_map['completed'] = o.completed
         o_map['total_bad'] = o.total_bad
+        print "=============", o.completed, o.total_bad
+        percent = ( Decimal(o.completed) / Decimal(o.quantity) ) * 100
+        percent = int(Decimal(percent).quantize(Decimal('1.'), rounding=ROUND_UP))
+        o_map['percent'] = percent
+        o_map['machine_product'] = '[%s] %s - %s' % ( str(o.assigned_machine.id), o.assigned_machine.name, o.product.name)
         data.append(o_map)
 
     return jsonify(data)
+
+@app.route('/api/employee_count')
+def employee_count():
+    orders = db.session.query(Order).filter(Order.status == 'IN_PROGRESS').all()
+    
 
 ####################### init ##########################
 def init_db_data():

@@ -1,3 +1,8 @@
+var source = $("#orders-template").html(); 
+var template = Handlebars.compile(source); 
+var MAX_ROW = 20;
+var current_orders = [];
+var charts = [];
 var refInterval = window.setInterval('update()', 30000); // 30 seconds
 
 var update = function() {
@@ -6,33 +11,65 @@ var update = function() {
         url : '../api/dashboard',
         success : function(data){
             console.log(data);
+            if (arraysEqual(data, current_orders)) {
+                // update progress
+                console.log("update progress");
+                console.log(charts.length);
+
+                for(var j = 0; j < data.length; j++) {
+                    order = data[j];
+                    if ( JSON.stringify(current_orders[j]) === JSON.stringify(order) ) {
+                        console.log("No changes found. Skipping...");
+                        continue;
+                    }
+                    $('#title_' + order.id).html(order.machine_product);
+                    $('#q_' + order.id).html(order.quantity);
+                    $('#c_' + order.id).html(order.completed);
+                    $('#b_' + order.id).html(order.total_bad);
+                    chart = charts[j];
+                    console.log(chart);
+                    console.log("current value");
+                    current = chart.series[0].data[0];
+                    console.log(current.y);
+                    current.y = order.percent;
+                    console.log("new value =" + order.percent);
+                    chart.series[0].setData([current]);
+                    chart.percent_label.attr({
+                        text: order.percent + '<span style="vertical-align:super;font-size:50%">%</span>'
+                    })
+                }
+            } else {
+                console.log("init all charts");
+                console.log(charts.length);
+
+                current_orders = [];
+                charts = [];
+                var row_num = 0;
+                $('#chart_group').html('');
+
+                for( var i = 0;  i < data.length; i++) {
+                    order = data[i];
+                    current_orders.push(order);
+                    if ( i % 3 == 0) {
+                        row_num++;
+                        row_html = '<div id="row_' + row_num + '" class="flex-row row"></div>';
+                        $('#chart_group').append(row_html);
+                    }
+                    row = '#row_' + row_num;
+                    $(row).append(template(order));
+                    console.log("draw_donut");
+                    chart = draw_donut(order.id + '', order.percent);
+                    console.log(chart);
+                    charts.push(chart);
+                }
+            }
         },
     });
 };
 
-$(function() {
+var draw_donut = function(id, percent) {
 
-  // Uncomment to style it like Apple Watch
-  if (!Highcharts.theme) {
-      Highcharts.setOptions({
-          chart: {
-                	backgroundColor: 'white'
-          },
-          colors: ['#00A2E2', '#00A2E2', '#62CDCA', '#C4D600', '#9F015C', '#FF0700'],
-          title: {
-              style: {
-                  color: 'silver'
-              }
-          },
-          tooltip: {
-              style: {
-                  color: 'silver'
-              }
-          }
-      });
-  }
-    
-  Highcharts.chart('wowreturns', {
+    var chart = new Highcharts.chart(id, {
 
       chart: {
         type: 'solidgauge',
@@ -89,7 +126,7 @@ $(function() {
           color: Highcharts.getOptions().colors[0],
           radius: '100%',
           innerRadius: '100%',
-          y: 50
+          y: percent
         }]
       }]
     },
@@ -104,7 +141,7 @@ $(function() {
         x = shape.x,
         y = shape.y;
 
-        chart.renderer.text(series.data[0].y + '<span style="vertical-align:super;font-size:50%">%</span>')
+        this.percent_label = chart.renderer.text(series.data[0].y + '<span style="vertical-align:super;font-size:50%">%</span>')
           .attr({
             'y': 15,
             'stroke': '#303030',
@@ -125,6 +162,21 @@ $(function() {
         }).add(series.group);
 
     });
+    
+    return chart;
+};
 
 
-});
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length != b.length) return false;
+
+  // If you don't care about the order of the elements inside
+  // the array, you should sort both arrays here.
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i].id !== b[i].id) return false;
+  }
+  return true;
+}

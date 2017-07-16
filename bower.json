@@ -29,6 +29,7 @@
     "bootstrap": "~3.3.1",
     "font-awesome": "~4.2.0",
     "flot.tooltip": "~0.8.4",
-    "highcharts": "^5.0.12"
+    "highcharts": "^5.0.12",
+    "handlebars": "^4.0.10"
   }
 }

@@ -160,6 +160,7 @@ class UserModelView(RoleBasedModelView):
     details_modal = True
     edit_modal = True
     column_list = ['photo', User.id, User.name, User.gender, User.is_in, 'shift', 'roles', User.active, User.email]
+    form_columns = (User.name, User.gender, User.email, User.password, 'roles', 'shift',  User.phone, User.active, User.is_in, 'photo')
     
     def _list_thumbnail(view, context, model, name):
         if not model.photo:
