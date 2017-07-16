@@ -46,7 +46,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(30), nullable=False)
     phone = Column(String(15))
     gender = db.Column(db.Enum('M', 'F'), default='M', nullable=False)
-    NFC_tag_id = db.Column(db.String(25))
+    nfc_tag_id = db.Column(db.String(25))
     active = db.Column(db.Boolean(), default=True)
     is_in = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
@@ -55,6 +55,8 @@ class User(db.Model, UserMixin):
                             backref=db.backref('users', lazy='dynamic'))
     shift_id = db.Column(db.Integer, db.ForeignKey('shift.id'), nullable=False)
     shift = db.relationship('Shift', backref=db.backref('user_shift', lazy='dynamic'))
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
     def __str__(self):
         return self.name

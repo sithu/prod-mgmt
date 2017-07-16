@@ -32,23 +32,43 @@ body {
   line-height: 21px !important;
 }
 
+.jumbotron {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 .container-fluid {
   height: 100%;
   padding-left: 0px;
   padding-right: 0px;
 }
 
-.row-first {
-  height:80%;
-  overflow: hidden;
-}
-
-.row-other {
-  height:100%;
-  overflow: hidden;
-}
-
-h1 {
+h1, h4 {
   color: #509ee3 !important;
 /*  line-height: 25px; */
+}
+
+/* overrides pink color */
+.label-info {
+    background-color: #509ee3;
+}
+
+/* flex box on home page */
+@media only screen and (min-width : 481px) {
+   .flex-row.row {
+	 display: flex;
+	 flex-wrap: wrap;
+   }
+   .flex-row.row > [class*='col-'] {
+	 display: flex;
+	 flex-direction: column;
+   }
+  .flex-row.row:after, 
+  .flex-row.row:before {
+	 display: flex;
+  }
+}
+
+.space { 
+    word-spacing: 25px;
 }
