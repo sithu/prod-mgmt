@@ -94,8 +94,12 @@
     </div>
 </div>
 
+
+{% endblock body %}
+
 {% block tail_js %}
     <script src="/static/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/admin/static/bootstrap/bootstrap3/js/bootstrap.min.js?v=3.3.5" type="text/javascript"></script>
     <script src="/static/lib/handlebars/handlebars.min.js"></script>
     <script src="/static/lib/highcharts/highcharts.js"></script>
     <script src="/static/lib/highcharts/highcharts-more.js"></script>   
@@ -118,8 +122,4 @@
     <script src="/static/js/app.js"></script>
 
 {% endblock %}
-{% block tail %}
-{% endblock %}
 
-
-{% endblock body %}

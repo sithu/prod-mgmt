@@ -32,6 +32,11 @@ body {
   line-height: 21px !important;
 }
 
+.btn-info {
+  background-color: #509ee3;
+  border-color: #509ee3;
+}
+
 .jumbotron {
   padding-top: 0px;
   padding-bottom: 0px;
