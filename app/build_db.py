@@ -27,7 +27,7 @@ def create_colors():
         'Green', 'Red', 'Teal', 'Magneta', 'Salmon', 'White Smoke'
     ]
     color_codes = [
-        'green', 'red', '#008080', 'magneta', 'salmon', 'WhiteSmoke'
+        'green', 'red', '#008080', '#FF00FF', 'salmon', 'WhiteSmoke'
     ]
 
     for i in range(len(color_names)):
@@ -68,8 +68,8 @@ def create_product():
     print "creating Products..."
     products = [
         ('Chair', 'chair.jpg', '50%-50%', 100, 15, 1000, 3, 1000, 1, 3),
-        ('Round Table', 'round_table.jpg', '', 200, 25, 2000, 2, 1000, 2, 4)   
-        ('Dust Bin (No.9038)', 'dustbin.jpg', '', 200, 25, 2000, 2, 1000, 3, 2)   
+        ('Round Table', 'round_table.jpg', '', 200, 25, 2000, 2, 1000, 2, 4),   
+        ('Dust Bin (No.9038)', 'dustbin.jpg', '', 200, 25, 2000, 2, 1000, 3, 2),   
         ('Mesh Cover (No.9003)', 'round_mesh_cover.jpg', '', 200, 25, 2000, 2, 1000, 4, 1)     
     ]
     for p in products:
@@ -93,7 +93,9 @@ def create_order():
     print "creating order..."
     orders = [
         ('Chair x 1000 Orders', 1, 1000),
-        ('Round Table x 2000 Orders', 2, 2000)        
+        ('Round Table x 2000 Orders', 2, 2000), 
+        ('Dust Bin x 3000 Orders', 3, 3000),
+        ('Mesh Cover x 4000 Orders', 4, 4000)
     ]
     for o in orders:
         order = Order()
