@@ -136,19 +136,18 @@ def init_logger():
 @app.before_first_request
 def setup_logging():
     if not app.debug:
-        # In production mode, add log handler to sys.stderr.
-        # gunicorn_access_handlers = logging.getLogger('gunicorn.access').handlers
-        # handler = logging.StreamHandler()
-        # handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
-        # app.logger.handlers.extend(gunicorn_access_handlers)
-        # app.logger.addHandler(handler)
-        # app.logger.setLevel(logging.INFO)
-        # #init_logger()
-        scheduler = APScheduler()
-        scheduler.init_app(app)
-        scheduler.start()
+        gunicorn_access_handlers = logging.getLogger('gunicorn.access').handlers
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+        app.logger.handlers.extend(gunicorn_access_handlers)
+        app.logger.addHandler(handler)
+        app.logger.setLevel(logging.INFO)
+        #init_logger()
+        #scheduler = APScheduler()
+        #scheduler.init_app(app)
+        #scheduler.start()
 
 if __name__ == '__main__':
     #init_logger()    
     init_db_data()
-    app.run(host="0.0.0.0", debug = True)
+    app.run(host="0.0.0.0", debug = False)

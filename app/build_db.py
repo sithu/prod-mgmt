@@ -24,10 +24,10 @@ def build_sample_db(user_datastore):
 def create_colors():
     print "Creating Color..."
     color_names = [
-        'Smoke White', 'Salmon', 'Green', 'Teal'
+        'Green', 'Red', 'Teal', 'Magneta', 'Salmon', 'White Smoke'
     ]
     color_codes = [
-        '#F5F5F5', '#FA8072', '#008000', '#008080'
+        'green', 'red', '#008080', 'magneta', 'salmon', 'WhiteSmoke'
     ]
 
     for i in range(len(color_names)):
@@ -67,8 +67,10 @@ def create_shift():
 def create_product():
     print "creating Products..."
     products = [
-        ('Chair', 'chair.jpg', '50%-50%', 100, 15, 1000, 3, 1000, 1, 1),
-        ('Round Table', 'round_table.jpg', '50%-50%', 200, 25, 2000, 2, 1000, 2, 2)    
+        ('Chair', 'chair.jpg', '50%-50%', 100, 15, 1000, 3, 1000, 1, 3),
+        ('Round Table', 'round_table.jpg', '', 200, 25, 2000, 2, 1000, 2, 4)   
+        ('Dust Bin (No.9038)', 'dustbin.jpg', '', 200, 25, 2000, 2, 1000, 3, 2)   
+        ('Mesh Cover (No.9003)', 'round_mesh_cover.jpg', '', 200, 25, 2000, 2, 1000, 4, 1)     
     ]
     for p in products:
         product = Product()
@@ -119,10 +121,10 @@ def create_production_entry():
 def create_role_and_user(user_datastore):
     with app.app_context():
         print "creating role..."
-        admin_role = Role(name='admin')
-        manager_role = Role(name='manager')
-        lead_role = Role(name='lead')
-        assembler_role = Role(name='assembler')
+        admin_role = Role(name='admin', description='ALL')
+        manager_role = Role(name='manager', description='can_read, can_edit, can_create, can_view_details')
+        lead_role = Role(name='lead', description='can_read, can_edit')
+        assembler_role = Role(name='assembler', description='can_read')
         db.session.add(admin_role)
         db.session.add(manager_role)
         db.session.add(lead_role)
@@ -130,12 +132,11 @@ def create_role_and_user(user_datastore):
         
         print "creating user..."
         special_users = [
-            ('Admin', 'admin@gmail.com', 'admin', admin_role, 1),
-            ('Manager', 'manager@gmail.com', 'manager', manager_role, 1),
-            ('Lead 1', 'lead1@gmail.com', 'lead', lead_role, 1),
-            ('Lead 2', 'lead2@gmail.com', 'lead', lead_role, 1),
-            ('Lead 3', 'lead3@gmail.com', 'lead', lead_role, 2),
-            ('Lead 4', 'lead4@gmail.com', 'lead', lead_role, 3)    
+            ('Admin', 'admin@gmail.com', 'emp0wer*', admin_role, 1, 'admin.jpg'),
+            ('Manager', 'manager@gmail.com', 'c0mpassion2@', manager_role, 1, 'manager.jpg'),
+            ('Lead 1', 'lead1@gmail.com', '1ead0ther', lead_role, 1, 'lead.png'),
+            ('Lead 2', 'lead2@gmail.com', 'lead20ther', lead_role, 2, 'lead.png'),
+            ('Lead 3', 'lead3@gmail.com', 'lead0ther3', lead_role, 3, 'lead.png'),
         ]
         for u in special_users:
             admin_user = user_datastore.create_user(
@@ -143,7 +144,8 @@ def create_role_and_user(user_datastore):
                 email=u[1],
                 password=encrypt_password(u[2]),
                 roles=[u[3]],
-                shift_id=u[4]
+                shift_id=u[4],
+                photo=u[5]
             )
 
         first_names = [
