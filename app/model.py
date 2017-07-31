@@ -13,7 +13,7 @@ from flask_security import UserMixin, RoleMixin
 from flask import flash
 from flask_admin.babel import gettext
 from sqlalchemy.sql.expression import true
-from util import slot_lead_to_machine
+from util import slot_lead_to_machine, num_estimate_per_shift
 
 ########################### Flask Security Models ######################
 roles_users = db.Table(
@@ -170,6 +170,11 @@ class ProductionEntry(db.Model):
     lead = db.relationship(User)
     num_hourly_good = db.Column(db.String, default='')
     num_hourly_bad = db.Column(db.String, default='')
+    num_hourly_damage = db.Column(db.String, default='')
+    total_bad_weight = db.Column(db.Integer, default=0)
+    total_damage_weight = db.Column(db.Integer, default=0)
+    num_estimate = db.Column(db.Integer, default=0)
+    raw_material_quantity_estimate = db.Column(db.Integer, default=0)
     num_good = db.Column(db.Integer, default=0)
     num_bad = db.Column(db.Integer, default=0)
     date = Column(Date, default=date.today())
@@ -343,6 +348,14 @@ def before_productionentry_update(mapper, connection, target):
         num_bad = sum([int(x) for x in target.num_hourly_bad.split(',')])
         target.num_bad = num_bad
 
+    if target.num_hourly_damage:
+        num_bad = sum([int(x) for x in target.num_hourly_damage.split(',')])
+        if target.num_bad and target.num_bad > 0:
+            target.num_bad += num_bad
+        else:
+            target.num_bad = num_bad
+            
+
 
 @listens_for(ProductionEntry, 'after_update')
 def after_productionentry_update(mapper, connection, target):
@@ -353,6 +366,26 @@ def after_productionentry_update(mapper, connection, target):
             'status': 'COMPLETED', 
             'production_end_at': datetime.now() 
         })
+
+
+@listens_for(ProductionEntry, 'before_insert')
+def before_productionentry_insert(mapper, connection, target):
+    print "========== before production entry insert ========="
+    order = Order.query.get(target.order_id)
+    shift = Shift.query.get(target.shift_id)
+    completed = db.session.query(func.sum(ProductionEntry.num_good)).filter(ProductionEntry.order_id == order.id)
+    remaining = order.quantity - completed.count()
+    if remaining > 0:
+        num_estimate, num_raw_bag = num_estimate_per_shift(
+            shift.total_hours,
+            remaining,
+            order.product.time_to_build,
+            order.product.weight,
+            order.product.raw_material_weight_per_bag
+        )
+        target.num_estimate = num_estimate
+        target.raw_material_quantity_estimate = num_raw_bag
+        
  
 
 @listens_for(TeamRequest, 'after_insert')

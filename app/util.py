@@ -1,6 +1,7 @@
 from flask_admin.form import thumbgen_filename
 from jinja2 import Markup
 from flask import url_for
+from decimal import *
 
 intervals = (
     ('weeks', 604800),  # 60 * 60 * 24 * 7
@@ -74,3 +75,23 @@ def slot_lead_to_machine(leads, machines):
         resources.append(lead)
 
     return (resources, leads)
+
+
+def num_estimate_per_shift(hours, order_remaining, time_to_build, unit_weight, raw_material_weight_per_bag):
+    time = hours * 60 * 60
+    estimate = Decimal(time) / Decimal(time_to_build)
+    estimate = int(Decimal(estimate).quantize(Decimal('1.'), rounding=ROUND_UP))
+
+    weight = Decimal(unit_weight)
+    total_weight = Decimal(order_remaining) * weight
+    num_raw_bag = Decimal(total_weight) / raw_material_weight_per_bag
+    num_raw_bag = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
+
+    if order_remaining <= estimate:
+        return (order_remaining, num_raw_bag)
+    else:
+        total_weight = Decimal(estimate) * weight
+        num_raw_bag = Decimal(total_weight) / raw_material_weight_per_bag
+        num_raw_bag = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
+
+        return (estimate, num_raw_bag)  

@@ -486,22 +486,21 @@ class UserAssemblerAjaxModelLoader(QueryAjaxModelLoader):
 class ProductionEntryModelView(RoleBasedModelView):
     details_modal = True
 
-    #column_labels = dict(user='Lead', users='Members')
     # List table columns
     column_list = (
         'id', 'shift', 'date', 'machine_id', 'order', 'Product Photo', 'Colors', 'status',
-        'lead', 'members', 'remaining', 'num_good', 'num_bad'
+        'lead', 'members', 'remaining', 'num_estimate', 'raw_material_quantity_estimate', 'num_good', 'num_bad'
     )
-
     column_sortable_list = [ 
         'id', 'shift', 'date', 'order',
          'num_good', 'num_bad'
     ]
-
+    
     column_filters = ('shift.name', 'date', 'lead.name', 'order.assigned_machine_id', 'order.status', 'order.remaining', 'members.name', 'num_good', 'num_bad')
     # Sort entry by id descending order.
     column_default_sort = ('id', True)
-
+    column_labels = dict(num_bad='Num Reject', num_estimate='Num Estimate', raw_material_quantity_estimate='Raw Material Quantity')
+    
     # Create form fields
     def order_status_filter():
         return db.session.query(Order).filter(Order.status != 'COMPLETED')
@@ -510,16 +509,32 @@ class ProductionEntryModelView(RoleBasedModelView):
         order = dict(label='For Order', query_factory=order_status_filter)
     )
     form_create_rules = ('shift', 'order', 'date', 'lead', 'members')
-    column_labels = dict(num_hourly_good='Num Hourly Good - Example: 10,20,30',num_hourly_bad='Num Hourly Bad - Example: 0,1,2')
+    column_labels = dict(
+        num_hourly_good='Num Hourly Good - Example: 10,20,30',num_hourly_bad='Num Hourly Bad - Example: 0,1,2',
+        num_bad='Num Reject', num_estimate='Num Estimate', raw_material_quantity_estimate='Raw Material Quantity'
+    )
     form_columns = (
         'shift',
         'order',
         'date',
         'lead',
         'members',
+        ProductionEntry.num_estimate,
+        ProductionEntry.raw_material_quantity_estimate,
         ProductionEntry.num_hourly_good,
-        ProductionEntry.num_hourly_bad
+        ProductionEntry.num_hourly_bad,
+        ProductionEntry.num_hourly_damage,
+        ProductionEntry.total_bad_weight,
+        ProductionEntry.total_damage_weight 
     )    
+    form_widget_args = {
+        'num_estimate': {
+            'disabled': True
+        },
+        'raw_material_quantity_estimate': {
+            'disabled': True
+        }
+    }
     form_ajax_refs = {
         'lead': UserLeadAjaxModelLoader(
             "lead", db.session, User, fields=['name']
