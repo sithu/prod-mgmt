@@ -374,7 +374,7 @@ def before_productionentry_insert(mapper, connection, target):
     order = Order.query.get(target.order_id)
     shift = Shift.query.get(target.shift_id)
     completed = db.session.query(func.sum(ProductionEntry.num_good)).filter(ProductionEntry.order_id == order.id)
-    remaining = order.quantity - completed.count()
+    remaining = order.quantity - completed.scalar()
     if remaining > 0:
         num_estimate, num_raw_bag = num_estimate_per_shift(
             shift.total_hours,
