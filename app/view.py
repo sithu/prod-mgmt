@@ -461,7 +461,8 @@ class OrderModelView(RoleBasedModelView):
         estimated_time_to_complete='Estimated Time', 
         production_start_at='Production Start',
         production_end_at='Production End',
-        assigned_machine_id='Machine Id'
+        assigned_machine_id='Machine Id',
+        raw_material_quantity='Raw Material'
     )
     
     # Sort the data by id in descending order.
@@ -511,7 +512,7 @@ class ProductionEntryModelView(RoleBasedModelView):
     form_create_rules = ('shift', 'order', 'date', 'lead', 'members')
     column_labels = dict(
         num_hourly_good='Num Hourly Good - Example: 10,20,30',num_hourly_bad='Num Hourly Bad - Example: 0,1,2',
-        num_bad='Num Reject', num_estimate='Num Estimate', raw_material_quantity_estimate='Raw Material Quantity'
+        num_bad='Num Reject', num_estimate='Num Estimate', raw_material_quantity_estimate='Raw Material'
     )
     form_columns = (
         'shift',

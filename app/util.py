@@ -85,13 +85,13 @@ def num_estimate_per_shift(hours, order_remaining, time_to_build, unit_weight, r
     weight = Decimal(unit_weight)
     total_weight = Decimal(order_remaining) * weight
     num_raw_bag = Decimal(total_weight) / raw_material_weight_per_bag
-    num_raw_bag = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
+    #num_raw_bag = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
 
     if order_remaining <= estimate:
         return (order_remaining, num_raw_bag)
     else:
         total_weight = Decimal(estimate) * weight
         num_raw_bag = Decimal(total_weight) / raw_material_weight_per_bag
-        num_raw_bag = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
+        #num_raw_bag = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
 
         return (estimate, num_raw_bag)  

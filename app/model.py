@@ -144,11 +144,11 @@ class Product(Base):
     '''Model for product table'''
     __tablename__ = 'product'
     name = db.Column(db.String, nullable=False, unique=True)
-    weight = db.Column(db.Integer, nullable=False)
+    weight = db.Column(db.Numeric(8,2), nullable=False)
     time_to_build = db.Column(db.Integer, nullable=False)
     selling_price = db.Column(db.Integer)
     num_employee_required = db.Column(db.Integer, nullable=False)
-    raw_material_weight_per_bag = db.Column(db.Integer, nullable=False)
+    raw_material_weight_per_bag = db.Column(db.Numeric(8,2), nullable=False)
     photo = db.Column(db.String)
     multi_colors_ratio = db.Column(db.String)
     colors = db.relationship(Color, secondary=product_colors_table)
@@ -171,10 +171,10 @@ class ProductionEntry(db.Model):
     num_hourly_good = db.Column(db.String, default='')
     num_hourly_bad = db.Column(db.String, default='')
     num_hourly_damage = db.Column(db.String, default='')
-    total_bad_weight = db.Column(db.Integer, default=0)
-    total_damage_weight = db.Column(db.Integer, default=0)
+    total_bad_weight = db.Column(db.Numeric(8,2))
+    total_damage_weight = db.Column(db.Numeric(8,2))
     num_estimate = db.Column(db.Integer, default=0)
-    raw_material_quantity_estimate = db.Column(db.Integer, default=0)
+    raw_material_quantity_estimate = db.Column(db.Numeric(8,2))
     num_good = db.Column(db.Integer, default=0)
     num_bad = db.Column(db.Integer, default=0)
     date = Column(Date, default=date.today())
@@ -217,7 +217,7 @@ class Order(db.Model):
     quantity = db.Column(db.Integer, nullable=False, default=0)
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id), nullable=False)
     product = db.relationship(Product, backref='product')
-    raw_material_quantity = db.Column(db.Integer, nullable=False, default=0)
+    raw_material_quantity = db.Column(db.Numeric(8,2), nullable=False)
     estimated_time_to_complete = db.Column(db.Integer, nullable=False)
     production_start_at = db.Column(db.DateTime)
     production_end_at = db.Column(db.DateTime)
@@ -315,9 +315,7 @@ def calculate_order_details(target):
     product = Product.query.get(target.product_id)
     weight = Decimal(product.weight)
     total_weight = Decimal(target.quantity) * weight
-    num_raw_bag = Decimal(total_weight) / product.raw_material_weight_per_bag
-    # round results to fixed number
-    target.raw_material_quantity = int(Decimal(num_raw_bag).quantize(Decimal('1.'), rounding=ROUND_UP))
+    target.raw_material_quantity = Decimal(total_weight) / product.raw_material_weight_per_bag
     
     # 2. Calculate estimated time to complete
     target.estimated_time_to_complete = target.quantity * product.time_to_build

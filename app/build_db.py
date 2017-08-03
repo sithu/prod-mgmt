@@ -67,10 +67,10 @@ def create_shift():
 def create_product():
     print "creating Products..."
     products = [
-        ('Chair', 'chair.jpg', '50%-50%', 100, 15, 1000, 3, 1000, 1, 3),
-        ('Round Table', 'round_table.jpg', '', 200, 25, 2000, 2, 1000, 2, 4),   
-        ('Dust Bin (No.9038)', 'dustbin.jpg', '', 200, 25, 2000, 2, 1000, 3, 2),   
-        ('Mesh Cover (No.9003)', 'round_mesh_cover.jpg', '', 200, 25, 2000, 2, 1000, 4, 1)     
+        ('Chair', 'chair.jpg', '50%-50%', 100.45, 15, 1000, 3, 1000, 1, 3),
+        ('Round Table', 'round_table.jpg', '', 200.12, 25, 2000, 2, 1000, 2, 4),   
+        ('Dust Bin (No.9038)', 'dustbin.jpg', '', 200.67, 25, 2000, 2, 1000, 3, 2),   
+        ('Mesh Cover (No.9003)', 'round_mesh_cover.jpg', '', 200.12, 25, 2000, 2, 1000, 4, 1)     
     ]
     for p in products:
         product = Product()
