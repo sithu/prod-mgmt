@@ -323,9 +323,9 @@ class ProductModelView(RoleBasedModelView):
     # List column renaming
     column_labels = dict(
         selling_price='Price', num_employee_required='Employee Required', 
-        machine='Default Machine', weight='Weight (g)',
+        machine='Default Machine', weight='Weight (Lb)',
         time_to_build='Time To Build (sec)', 
-        raw_material_weight_per_bag='Raw Material Unit Weight (g)'
+        raw_material_weight_per_bag='Raw Material Weight Per Bag'
     )
     
     def _colors(view, context, model, name):
