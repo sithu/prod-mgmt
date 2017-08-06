@@ -462,7 +462,7 @@ class OrderModelView(RoleBasedModelView):
         production_start_at='Production Start',
         production_end_at='Production End',
         assigned_machine_id='Machine Id',
-        raw_material_quantity='Raw Material'
+        raw_material_quantity='Raw Material Bags'
     )
     
     # Sort the data by id in descending order.
